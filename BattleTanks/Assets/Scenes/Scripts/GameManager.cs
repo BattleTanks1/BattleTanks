@@ -9,7 +9,6 @@ public class GameManager : MonoBehaviour
     public const int INVALID_ID = -1;
 
     private static GameManager _instance;
-
     public static GameManager Instance { get { return _instance; } }
 
     private void Awake()
@@ -33,12 +32,20 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public List<Tank> getAllTanks()
+    public Tank GetTank(int ID) 
     {
-        return m_tanks;
+        foreach(Tank tank in m_tanks)
+        {
+            if(tank.m_ID == ID)
+            {
+                return tank;
+            }
+        }
+
+        return null;
     }
 
     public int addTank(Tank tank)
