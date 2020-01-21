@@ -21,18 +21,19 @@ public class GameManager : MonoBehaviour
         {
             _instance = this;
         }
+
+        m_tanks = new List<Tank>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        m_tanks = new List<Tank>();
+     
     }
 
     // Update is called once per frame
     void Update()
     {
-
     }
 
     public Tank GetTank(int ID) 
