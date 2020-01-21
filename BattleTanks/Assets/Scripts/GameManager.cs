@@ -28,19 +28,20 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-     
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
     }
 
-    public Tank GetTank(int ID) 
+    public Tank GetTank(int ID)
     {
-        foreach(Tank tank in m_tanks)
+        foreach (Tank tank in m_tanks)
         {
-            if(tank.m_ID == ID)
+            if (tank.m_ID == ID)
             {
                 return tank;
             }

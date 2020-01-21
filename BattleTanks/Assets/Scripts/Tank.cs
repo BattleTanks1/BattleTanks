@@ -16,6 +16,7 @@ public enum eAIState
 
 public class Tank : MonoBehaviour
 {
+    public int m_health { get; private set; }
     public GameObject m_projectileSpawn;
     public GameObject m_projectile;
     [SerializeField]
@@ -33,6 +34,7 @@ public class Tank : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        m_health = 5;
         m_minDistance = 3;
         m_currentTargetID = -1;
         m_ID = GameManager.Instance.addTank(this);
@@ -70,7 +72,6 @@ public class Tank : MonoBehaviour
                     {
                         if (Vector3.Distance(target.transform.position, transform.position) <= Mathf.Abs(m_minDistance))
                         {
-                            print("HI");
                             GameObject projectile;
                             projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
                             m_currentState = eAIState.SetDestinationToSafePosition;
@@ -83,5 +84,10 @@ public class Tank : MonoBehaviour
         }
 
         transform.position += m_velocity * Time.deltaTime;
+    }
+
+    public void damage(int amount)
+    {
+        m_health -= amount;
     }
 }
