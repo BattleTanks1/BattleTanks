@@ -16,7 +16,8 @@ public enum eAIState
 public class Tank : MonoBehaviour
 {
     [SerializeField]
-    public Vector3 m_velocity { get; private set; }
+    private Vector3 m_velocity;
+    public Vector3 Velocity { get { return m_velocity; } private set { m_velocity = Velocity; } }
     [SerializeField]
     public float m_minDistance { get; private set; }
     [SerializeField]
@@ -53,7 +54,7 @@ public class Tank : MonoBehaviour
         {
             if(Vector3.Distance(target.transform.position, transform.position) <= Mathf.Abs(m_minDistance))
             {
-                
+              
             }
         }
     }
