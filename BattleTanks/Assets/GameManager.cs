@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public List<Tank> m_tanks { get; private set; }
+    public List<AITank> m_tanks { get; private set; }
+    public PlayerTank m_player { get; private set; }
     private int m_ID;
     public const int INVALID_ID = -1;
 
@@ -22,7 +23,7 @@ public class GameManager : MonoBehaviour
             _instance = this;
         }
 
-        m_tanks = new List<Tank>();
+        m_tanks = new List<AITank>();
     }
 
     // Start is called before the first frame update
@@ -37,9 +38,9 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public Tank GetTank(int ID)
+    public AITank GetTank(int ID)
     {
-        foreach (Tank tank in m_tanks)
+        foreach (AITank tank in m_tanks)
         {
             if (tank.m_ID == ID)
             {
@@ -50,11 +51,16 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public int addTank(Tank tank)
+    public int addTank(AITank tank)
     {
         m_tanks.Add(tank);
         int ID = m_ID;
         ++m_ID;
         return ID;
+    }
+
+    public void addPlayerTank(PlayerTank tank)
+    {
+        m_player = tank;
     }
 }

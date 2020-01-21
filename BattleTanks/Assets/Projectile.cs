@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float m_movementSpeed;
+    [SerializeField]
+    private float m_movementSpeed;
+    [SerializeField]
     private int m_damage;
 
     private void Start()
@@ -22,7 +24,7 @@ public class Projectile : MonoBehaviour
     {
         if(other.tag == "Tank")
         {
-            Tank tank = other.gameObject.GetComponent<Tank>();
+            AITank tank = other.gameObject.GetComponent<AITank>();
             tank.damage(m_damage);
             Destroy(gameObject);
         }
