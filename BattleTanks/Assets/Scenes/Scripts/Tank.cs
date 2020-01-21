@@ -7,18 +7,23 @@ using UnityEngine;
 
 public enum eAIState
 {
-    FindEnemy = 0,
-    RunToSafety,
+    FindingEnemy = 0,
+    MovingToSafety,
     Attack,
-    Idle
+    Idling
 }
 
 public class Tank : MonoBehaviour
 {
-    public Vector3 m_velocity;
-    public float m_minDistance;
-    public eAIState m_currentState;
+    [SerializeField]
+    public Vector3 m_velocity { get; private set; }
+    [SerializeField]
+    public float m_minDistance { get; private set; }
+    [SerializeField]
+    public eAIState m_currentState { get; private set; }
+    [SerializeField]
     private int m_currentTargetID;
+    [SerializeField]
     public int m_ID { get; private set; }
 
     // Start is called before the first frame update
@@ -36,14 +41,21 @@ public class Tank : MonoBehaviour
                 Vector3.Distance(transform.position, otherTank.transform.position) <= Mathf.Abs(m_minDistance))
             {
                 m_velocity = -m_velocity;
-                m_currentState = eAIState.RunToSafety;
+                m_currentState = eAIState.MovingToSafety;
             }
         }
     }
 
     void onAttack()
     {
-
+        Tank target = GameManager.Instance.GetTank(m_currentTargetID);
+        if(target)
+        {
+            if(Vector3.Distance(target.transform.position, transform.position) <= Mathf.Abs(m_minDistance))
+            {
+                
+            }
+        }
     }
 
     // Update is called once per frame
@@ -51,13 +63,15 @@ public class Tank : MonoBehaviour
     {
         switch(m_currentState)
         {
-            case eAIState.FindEnemy:
+            case eAIState.FindingEnemy:
                 onFindEnemy();
                 break;
-            case eAIState.RunToSafety:
-
+            case eAIState.MovingToSafety:
                 break;
-            case eAIState.Idle:
+            case eAIState.Attack:
+                onAttack();
+                break;
+            case eAIState.Idling:
                 break;
         }
 
