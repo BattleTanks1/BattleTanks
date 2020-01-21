@@ -9,39 +9,41 @@ public enum eAIState
 {
     FindEnemy = 0,
     RunToSafety,
+    Attack,
     Idle
 }
 
-public class TestScript : MonoBehaviour
+public class Tank : MonoBehaviour
 {
     public Vector3 m_velocity;
     public float m_minDistance;
     public eAIState m_currentState;
+    private int m_currentTargetID;
+    public int m_ID { get; private set; }
 
     // Start is called before the first frame update
     void Start()
     {
+        m_currentTargetID = -1;
+        m_ID = GameManager.Instance.addTank(this);
     }
 
     void onFindEnemy()
     {
-        GameObject[] gameObjectss = GameObject.FindGameObjectsWithTag("Unit");
-        foreach (GameObject otherGameObject in gameObjectss)
+        foreach(Tank otherTank in GameManager.Instance.m_tanks)
         {
-            print(otherGameObject.GetInstanceID());
-        }
-
-        GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("Unit");
-        foreach(GameObject otherGameObject in gameObjects)
-        {
-            if(this.gameObject.GetInstanceID() != otherGameObject.GetInstanceID() && 
-                Vector3.Distance(this.transform.position, otherGameObject.transform.position) <= Mathf.Abs(m_minDistance))
-            {   
-                print(Vector3.Distance(this.transform.position, otherGameObject.transform.position));
+            if(m_ID != otherTank.m_ID &&
+                Vector3.Distance(transform.position, otherTank.transform.position) <= Mathf.Abs(m_minDistance))
+            {
                 m_velocity = -m_velocity;
                 m_currentState = eAIState.RunToSafety;
             }
         }
+    }
+
+    void onAttack()
+    {
+
     }
 
     // Update is called once per frame
@@ -53,6 +55,7 @@ public class TestScript : MonoBehaviour
                 onFindEnemy();
                 break;
             case eAIState.RunToSafety:
+
                 break;
             case eAIState.Idle:
                 break;
