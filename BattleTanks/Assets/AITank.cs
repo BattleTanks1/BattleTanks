@@ -37,9 +37,7 @@ public class AITank : Tank
             case eAIState.FindingEnemy:
                 if (isInRange(GameManager.Instance.m_player.transform.position))
                 {
-                    print("Shoot");
                     m_currentState = eAIState.Shoot;
-                    
                 }
                 break;
 
@@ -53,6 +51,7 @@ public class AITank : Tank
 
             case eAIState.Shoot:
                 shoot();
+                m_currentState = eAIState.FindingEnemy;
                 break;
 
             case eAIState.Idling:

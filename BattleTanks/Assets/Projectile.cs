@@ -5,26 +5,22 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [SerializeField]
-    private float m_movementSpeed;
+    private float m_lifeTime = 0.0f;
     [SerializeField]
-    private int m_damage;
+    private float m_movementSpeed = 0.0f;
+    [SerializeField]
+    private int m_damage = 0;
 
     private void Start()
     {
-        m_damage = 1;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        transform.position += transform.forward * m_movementSpeed * Time.deltaTime;
+        Destroy(gameObject, m_lifeTime);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Tank")
+        Tank tank = other.gameObject.GetComponent<Tank>();
+        if (tank)
         {
-            AITank tank = other.gameObject.GetComponent<AITank>();
             tank.damage(m_damage);
             Destroy(gameObject);
         }

@@ -7,7 +7,6 @@ public class GameManager : MonoBehaviour
     public List<AITank> m_tanks { get; private set; }
     public PlayerTank m_player { get; private set; }
     private int m_ID;
-    public const int INVALID_ID = -1;
 
     private static GameManager _instance;
     public static GameManager Instance { get { return _instance; } }
@@ -24,18 +23,6 @@ public class GameManager : MonoBehaviour
         }
 
         m_tanks = new List<AITank>();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     public AITank GetTank(int ID)

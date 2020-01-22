@@ -195,7 +195,7 @@ GameObject:
   - component: {fileID: 151355065}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Tank
+  m_TagString: PlayerTank
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -266,12 +266,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 151355060}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.03, y: 0, z: 0.19}
+  m_LocalPosition: {x: 0.03, y: 0, z: -5.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 64052699}
+  - {fileID: 963194228}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &151355065
 MonoBehaviour:
@@ -282,15 +283,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 151355060}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eaf2bbf5bd39b63448255fba82fc0e28, type: 3}
+  m_Script: {fileID: 11500000, guid: f5cc82fdebca1874db48addd3db5d7ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_movementSpeed: 10
   m_projectileSpawn: {fileID: 64052698}
-  m_projectile: {fileID: 7451743927216444218, guid: fa49e579d18ab7f468fb47b10bf03bc0,
+  m_projectile: {fileID: -6899802536023526607, guid: fa49e579d18ab7f468fb47b10bf03bc0,
     type: 3}
-  m_velocity: {x: 0, y: 0, z: 2.5}
-  m_currentState: 0
-  m_currentTargetID: 0
+  m_projectileSpeed: 500
+  m_health: 5
+  m_velocity: {x: 0, y: 0, z: 0}
+  m_rotationSpeed: 75
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -380,7 +383,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -458,13 +461,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.4049259, y: -0, z: -0, w: 0.91434956}
-  m_LocalPosition: {x: 0, y: 11.17, z: -4.91}
+  m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 26.82, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 47.773003, y: 0, z: 0}
+  m_Father: {fileID: 151355064}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 90.00001, y: 0, z: 0}
 --- !u!1 &1248872156
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,8 +482,8 @@ GameObject:
   - component: {fileID: 1248872158}
   - component: {fileID: 1248872157}
   m_Layer: 0
-  m_Name: Player (1)
-  m_TagString: Tank
+  m_Name: Enemy
+  m_TagString: AITank
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -497,12 +500,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaf2bbf5bd39b63448255fba82fc0e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_movementSpeed: 0
   m_projectileSpawn: {fileID: 7013098}
-  m_projectile: {fileID: 7451743927216444218, guid: fa49e579d18ab7f468fb47b10bf03bc0,
+  m_projectile: {fileID: -6899802536023526607, guid: fa49e579d18ab7f468fb47b10bf03bc0,
     type: 3}
+  m_projectileSpeed: 350
+  m_health: 5
   m_velocity: {x: 0, y: 0, z: 0}
-  m_currentState: 3
-  m_currentTargetID: 0
+  m_rotationSpeed: 0
+  m_currentState: 0
 --- !u!65 &1248872158
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -568,14 +574,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1248872156}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0.00000016391276}
   m_LocalPosition: {x: 0.03, y: 0, z: 8.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7013099}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 180.00002, z: 0}
 --- !u!1 &1307985610
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,5 +623,5 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
