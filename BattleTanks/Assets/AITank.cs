@@ -27,7 +27,7 @@ public class AITank : Tank
     }
 
     // Update is called once per frame
-    protected override void Update() 
+    protected override void Update()
     {
         base.Update();
 

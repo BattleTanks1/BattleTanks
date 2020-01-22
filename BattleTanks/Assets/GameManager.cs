@@ -38,6 +38,19 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
+    public Tank GetTank(Faction faction)
+    {
+        foreach (Tank tank in m_Tanks)
+        {
+            if (tank.m_faction != faction)
+            {
+                return tank;
+            }
+        }
+
+        return null;
+    }
+
     public int addTank(Tank tank)
     {
         m_Tanks.Add(tank);
