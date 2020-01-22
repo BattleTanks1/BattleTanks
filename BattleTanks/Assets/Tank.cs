@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum Faction
+{
+    player,
+    AI
+}
+
 public class Tank : MonoBehaviour
 {
     public int m_ID { get; protected set; }
+    public Faction m_faction { get; protected set; }
+
     public float m_movementSpeed;
     private Timer m_shotTimer;
 
@@ -31,8 +39,8 @@ public class Tank : MonoBehaviour
     public int health { get { return m_health; } protected set { m_health = health; } }
 
     [SerializeField]
-    protected Vector3 m_velocity;
-    public Vector3 velocity { get { return m_velocity; } protected set { m_velocity = velocity; } }
+    protected float m_velocity;
+    public float velocity { get { return m_velocity; } protected set { m_velocity = velocity; } }
 
 
 
@@ -43,7 +51,8 @@ public class Tank : MonoBehaviour
 
     // Start is called before the first frame update
     protected virtual void Start()
-    {  
+    {
+        m_ID = GameManager.Instance.addTank(this);
         m_minDistance = 3;
         m_shotTimer.m_active = true;
         m_shotTimer.m_expiredTime = 2.0f;
@@ -65,6 +74,7 @@ public class Tank : MonoBehaviour
         {
             Rigidbody projectile;
             projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
+            projectile.gameObject.GetComponent<Projectile>().m_parent_id = m_ID;
             projectile.AddForce(transform.TransformDirection(Vector3.forward * m_projectileSpeed));
 
             m_shotTimer.reset();

@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public List<AITank> m_AITanks { get; private set; }
-    private int m_ID;
-    public PlayerTank m_player { get; private set; }
+    public List<Tank> m_Tanks { get; private set; }
+    private int m_ID = 0;
    
 
     private static GameManager _instance;
@@ -23,12 +22,12 @@ public class GameManager : MonoBehaviour
             _instance = this;
         }
 
-        m_AITanks = new List<AITank>();
+        m_Tanks = new List<Tank>();
     }
 
-    public AITank GetTank(int ID)
+    public Tank GetTank(int ID)
     {
-        foreach (AITank tank in m_AITanks)
+        foreach (Tank tank in m_Tanks)
         {
             if (tank.m_ID == ID)
             {
@@ -39,16 +38,11 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public int addTank(AITank tank)
+    public int addTank(Tank tank)
     {
-        m_AITanks.Add(tank);
+        m_Tanks.Add(tank);
         int ID = m_ID;
         ++m_ID;
         return ID;
-    }
-
-    public void addPlayerTank(PlayerTank tank)
-    {
-        m_player = tank;
     }
 }

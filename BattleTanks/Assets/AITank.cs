@@ -23,8 +23,6 @@ public class AITank : Tank
     protected override void Start()
     {
         base.Start();
-
-        m_ID = GameManager.Instance.addTank(this);
     }
 
     // Update is called once per frame
@@ -35,10 +33,10 @@ public class AITank : Tank
         switch(m_currentState)
         {
             case eAIState.FindingEnemy:
-                if (isInRange(GameManager.Instance.m_player.transform.position))
-                {
-                    m_currentState = eAIState.Shoot;
-                }
+                //if (isInRange(GameManager.Instance.m_player.transform.position))
+                //{
+                //    m_currentState = eAIState.Shoot;
+                //}
                 break;
 
             case eAIState.SetDestinationToSafePosition:
@@ -58,6 +56,6 @@ public class AITank : Tank
                 break;
         }
 
-        transform.position += m_velocity * Time.deltaTime;
+        transform.position += transform.forward * m_velocity * Time.deltaTime;
     }
 }

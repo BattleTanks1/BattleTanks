@@ -8,8 +8,6 @@ public class PlayerTank : Tank
     protected override void Start()
     {
         base.Start();
-
-        GameManager.Instance.addPlayerTank(this);
     }
 
     // Update is called once per frame
