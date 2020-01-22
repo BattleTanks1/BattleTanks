@@ -7,12 +7,12 @@ public class Tank : MonoBehaviour
     public int m_ID { get; protected set; }
 
     [SerializeField]
-    private GameObject m_projectileSpawn;
+    private GameObject m_projectileSpawn = null;
     [SerializeField]
-    private GameObject m_projectile;
+    private GameObject m_projectile = null;
 
     [SerializeField]
-    public float m_minDistance { get; protected set; }
+    private float m_minDistance { get; set; }
 
     [SerializeField]
     protected int m_health;
@@ -26,17 +26,25 @@ public class Tank : MonoBehaviour
     protected float m_rotationSpeed;
     public float rotationSpeed { get { return m_rotationSpeed; } protected set { m_rotationSpeed = rotationSpeed; } }
 
+    public float m_movementSpeed;
+    private Timer m_shotTimer;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        m_health = 5;
-        m_minDistance = 3;
+        m_shotTimer = new Timer();
     }
 
-    private void Update()
+    // Start is called before the first frame update
+    protected virtual void Start()
+    {  
+        m_health = 5;
+        m_minDistance = 3;
+        m_shotTimer.m_active = true;
+    }
+
+    protected virtual void Update()
     {
-        transform.position += m_velocity * Time.deltaTime;
+        m_shotTimer.update(Time.deltaTime);
     }
 
     public void damage(int amount)
@@ -46,7 +54,17 @@ public class Tank : MonoBehaviour
 
     protected void shoot()
     {
-        GameObject projectile;
-        projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
+        if(m_shotTimer.isExpired())
+        {
+            GameObject projectile;
+            projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
+
+            m_shotTimer.reset();
+        }
+    }
+
+    protected bool isInRange(Vector3 position)
+    {
+        return (Vector3.Distance(transform.position, position) <= Mathf.Abs(m_minDistance));
     }
 }
