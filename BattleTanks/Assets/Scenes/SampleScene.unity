@@ -287,7 +287,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_movementSpeed: 10
-  m_projectileSpawn: {fileID: 64052698}
+  m_projectileSpawn: {fileID: 7451743927216444223, guid: fa49e579d18ab7f468fb47b10bf03bc0,
+    type: 3}
   m_projectile: {fileID: -6899802536023526607, guid: fa49e579d18ab7f468fb47b10bf03bc0,
     type: 3}
   m_projectileSpeed: 500
@@ -501,7 +502,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_movementSpeed: 0
-  m_projectileSpawn: {fileID: 7013098}
+  m_projectileSpawn: {fileID: 7451743927216444223, guid: fa49e579d18ab7f468fb47b10bf03bc0,
+    type: 3}
   m_projectile: {fileID: -6899802536023526607, guid: fa49e579d18ab7f468fb47b10bf03bc0,
     type: 3}
   m_projectileSpeed: 350

@@ -9,12 +9,11 @@ public class Tank : MonoBehaviour
     private Timer m_shotTimer;
 
     [SerializeField]
-    private GameObject m_projectileSpawn = null;
+    private Transform m_projectileSpawn = null;
     [SerializeField]
     private Rigidbody m_projectile = null;
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
-
     [SerializeField]
     private float m_minDistance { get; set; }
 
@@ -58,7 +57,7 @@ public class Tank : MonoBehaviour
         if(m_shotTimer.isExpired())
         {
             Rigidbody projectile;
-            projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
+            projectile = Instantiate(m_projectile, m_projectileSpawn.position, m_projectile.rotation);
             projectile.AddForce(transform.TransformDirection(Vector3.forward * m_projectileSpeed));
 
             m_shotTimer.reset();
