@@ -270,7 +270,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 64052699}
-  - {fileID: 963194228}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -286,15 +285,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5cc82fdebca1874db48addd3db5d7ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_movementSpeed: 10
-  m_projectileSpawn: {fileID: 7451743927216444223, guid: fa49e579d18ab7f468fb47b10bf03bc0,
-    type: 3}
+  m_projectileSpawn: {fileID: 64052698}
+  m_movementSpeed: 75
+  m_maxSpeed: 20
+  m_rotationSpeed: 75
+  m_maxRotation: 50
+  m_health: 5
   m_projectile: {fileID: -6899802536023526607, guid: fa49e579d18ab7f468fb47b10bf03bc0,
     type: 3}
   m_projectileSpeed: 500
-  m_health: 5
-  m_velocity: {x: 0, y: 0, z: 0}
-  m_rotationSpeed: 75
+  m_minDistance: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -463,11 +463,11 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.70710677, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 26.82, z: -0}
+  m_LocalPosition: {x: 5.08, y: 26.82, z: 6.02}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 151355064}
-  m_RootOrder: 1
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 90.00001, y: 0, z: 0}
 --- !u!1 &1248872156
 GameObject:
@@ -501,15 +501,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eaf2bbf5bd39b63448255fba82fc0e28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_projectileSpawn: {fileID: 7013098}
   m_movementSpeed: 0
-  m_projectileSpawn: {fileID: 7451743927216444223, guid: fa49e579d18ab7f468fb47b10bf03bc0,
-    type: 3}
+  m_maxSpeed: 0
+  m_rotationSpeed: 0
+  m_maxRotation: 0
+  m_health: 5
   m_projectile: {fileID: -6899802536023526607, guid: fa49e579d18ab7f468fb47b10bf03bc0,
     type: 3}
   m_projectileSpeed: 350
-  m_health: 5
-  m_velocity: {x: 0, y: 0, z: 0}
-  m_rotationSpeed: 0
+  m_minDistance: 0
   m_currentState: 0
 --- !u!65 &1248872158
 BoxCollider:
