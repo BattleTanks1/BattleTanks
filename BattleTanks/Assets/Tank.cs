@@ -10,39 +10,43 @@ public enum Faction
 
 public class Tank : MonoBehaviour
 {
-    public int m_ID { get; protected set; }
-    public Faction m_faction { get; protected set; }
+    [SerializeField]
+    protected int m_ID;
+    public int ID { get { return m_ID; } private set { m_ID = ID; } }
 
-    public float m_movementSpeed;
-    private Timer m_shotTimer;
+    public Faction m_faction { get; private set; }
 
     [SerializeField]
     private GameObject m_projectileSpawn = null;
-    [SerializeField]
-    private Rigidbody m_projectile = null;
 
     [SerializeField]
-    private float m_projectileSpeed = 0.0f;
-
-
-    [SerializeField]
-    protected float m_minDistance;
-    public float minDistance { get { return m_minDistance; } protected set { m_minDistance = minDistance; } }
+    protected float m_movementSpeed;
+    public float movementSpeed { get { return m_movementSpeed; } protected set { m_movementSpeed = movementSpeed; } }
 
     [SerializeField]
     protected float m_rotationSpeed;
     public float rotationSpeed { get { return m_rotationSpeed; } protected set { m_rotationSpeed = rotationSpeed; } }
 
-
     [SerializeField]
     protected int m_health;
     public int health { get { return m_health; } protected set { m_health = health; } }
+
+    //Turret
+    private Timer m_shotTimer;
 
     [SerializeField]
     protected float m_velocity;
     public float velocity { get { return m_velocity; } protected set { m_velocity = velocity; } }
 
+    private GameObject m_projectileSpawn = null;
+    [SerializeField]
+    private Rigidbody m_projectile = null;
+    [SerializeField]
+    private float m_projectileSpeed = 0.0f;
 
+    [SerializeField]
+    protected float m_minDistance;
+    public float minDistance { get { return m_minDistance; } protected set { m_minDistance = minDistance; } }
 
     private void Awake()
     {

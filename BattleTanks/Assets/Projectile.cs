@@ -8,8 +8,6 @@ public class Projectile : MonoBehaviour
     [SerializeField]
     private float m_lifeTime = 0.0f;
     [SerializeField]
-    private float m_movementSpeed = 0.0f;
-    [SerializeField]
     private int m_damage = 0;
 
     private void Start()

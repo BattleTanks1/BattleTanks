@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Timer
 {
-    public float m_expiredTime { get; set; }
+    public float m_expiredTime;
     private float m_elaspedTime = 0.0f;
 
     public bool m_active { get; set; }
