@@ -9,13 +9,22 @@ public class Tank : MonoBehaviour
     private Timer m_shotTimer;
 
     [SerializeField]
-    private Transform m_projectileSpawn = null;
+    private GameObject m_projectileSpawn = null;
     [SerializeField]
     private Rigidbody m_projectile = null;
+
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
+
+
     [SerializeField]
-    private float m_minDistance { get; set; }
+    protected float m_minDistance;
+    public float minDistance { get { return m_minDistance; } protected set { m_minDistance = minDistance; } }
+
+    [SerializeField]
+    protected float m_rotationSpeed;
+    public float rotationSpeed { get { return m_rotationSpeed; } protected set { m_rotationSpeed = rotationSpeed; } }
+
 
     [SerializeField]
     protected int m_health;
@@ -25,9 +34,7 @@ public class Tank : MonoBehaviour
     protected Vector3 m_velocity;
     public Vector3 velocity { get { return m_velocity; } protected set { m_velocity = velocity; } }
 
-    [SerializeField]
-    protected float m_rotationSpeed;
-    public float rotationSpeed { get { return m_rotationSpeed; } protected set { m_rotationSpeed = rotationSpeed; } }
+
 
     private void Awake()
     {
@@ -57,7 +64,7 @@ public class Tank : MonoBehaviour
         if(m_shotTimer.isExpired())
         {
             Rigidbody projectile;
-            projectile = Instantiate(m_projectile, m_projectileSpawn.position, m_projectile.rotation);
+            projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
             projectile.AddForce(transform.TransformDirection(Vector3.forward * m_projectileSpeed));
 
             m_shotTimer.reset();
