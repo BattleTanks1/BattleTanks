@@ -97,7 +97,6 @@ public class Tank : MonoBehaviour
     public void damage(int amount)
     {
         m_health -= amount;
-        //Death functionality
     }
 
     protected void shoot()

@@ -34,10 +34,11 @@ public class AITank : Tank
         switch(m_currentState)
         {
             case eAIState.FindingEnemy:
-                //if (isInRange(GameManager.Instance.m_player.transform.position))
-                //{
-                //    m_currentState = eAIState.Shoot;
-                //}
+                Tank target = fGameManager.Instance.GetTank(Faction.player);
+                if(target && isInRange(target.transform.position))
+                {
+                    m_currentState = eAIState.Shoot;
+                }
                 break;
 
             case eAIState.SetDestinationToSafePosition:
