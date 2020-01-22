@@ -38,7 +38,6 @@ public class Tank : MonoBehaviour
     protected float m_velocity;
     public float velocity { get { return m_velocity; } protected set { m_velocity = velocity; } }
 
-    private GameObject m_projectileSpawn = null;
     [SerializeField]
     private Rigidbody m_projectile = null;
     [SerializeField]
