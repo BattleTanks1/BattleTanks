@@ -67,6 +67,16 @@ public class Tank : MonoBehaviour
 
     protected bool isInRange(Vector3 position)
     {
-        return (Vector3.Distance(transform.position, position) <= Mathf.Abs(m_minDistance));
+        bool inRange = false;
+        if(Vector3.Distance(transform.position, position) <= Mathf.Abs(m_minDistance))
+        {
+            Vector3 vBetween = position - transform.position;
+            if (Vector3.Dot(Vector3.forward, vBetween.normalized) <= -0.5f)
+            {
+                inRange = true;
+            }
+        }
+
+        return inRange;
     }
 }
