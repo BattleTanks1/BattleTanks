@@ -41,7 +41,7 @@ public class AITank : Tank
                 break;
 
             case eAIState.SetDestinationToSafePosition:
-                m_velocity = -m_velocity;
+                m_movementSpeed = -m_movementSpeed;
                 m_currentState = eAIState.MovingToSafety;
                 break;
 
@@ -56,7 +56,5 @@ public class AITank : Tank
             case eAIState.Idling:
                 break;
         }
-
-        transform.position += transform.forward * m_velocity * Time.deltaTime;
     }
 }

@@ -14,30 +14,30 @@ public class PlayerTank : Tank
     // Update is called once per frame
     protected override void Update()
     {
-        base.Update();
-
         //Rotation
         if(Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(new Vector3(0, rotationSpeed * Time.deltaTime, 0));
+            rightTurn(Time.deltaTime);
         }
-        else if(Input.GetKey(KeyCode.A))
+        if(Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(new Vector3(0, -rotationSpeed * Time.deltaTime, 0));
+            leftTurn(Time.deltaTime);
         }
         //Movement
-        else if(Input.GetKey(KeyCode.W))
+        if(Input.GetKey(KeyCode.W))
         {
-            transform.position += transform.forward * m_movementSpeed * Time.deltaTime;
+            forward(Time.deltaTime);
         }
-        else if(Input.GetKey(KeyCode.S))
+        if(Input.GetKey(KeyCode.S))
         {
-            transform.position += -transform.forward * m_movementSpeed * Time.deltaTime;
+            backward(Time.deltaTime);
         }
 
-        else if(Input.GetKeyDown(KeyCode.Space))
+        if(Input.GetKeyDown(KeyCode.Space))
         {
             shoot();
         }
+
+        base.Update();
     }
 }

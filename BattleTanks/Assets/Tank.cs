@@ -11,32 +11,32 @@ public enum Faction
 public class Tank : MonoBehaviour
 {
     [SerializeField]
-    protected int m_ID;
-    public int ID { get { return m_ID; } private set { m_ID = ID; } }
+    public int m_ID { get; protected set; }
 
+    [SerializeField]
     public Faction m_faction { get; protected set; }
 
     [SerializeField]
     private GameObject m_projectileSpawn = null;
 
+    //Movement related variables
     [SerializeField]
     protected float m_movementSpeed;
-    public float movementSpeed { get { return m_movementSpeed; } protected set { m_movementSpeed = movementSpeed; } }
+
+    [SerializeField]
+    protected float m_maxSpeed = 20;
 
     [SerializeField]
     protected float m_rotationSpeed;
-    public float rotationSpeed { get { return m_rotationSpeed; } protected set { m_rotationSpeed = rotationSpeed; } }
+
+    [SerializeField]
+    protected float m_maxRotation = 50;
 
     [SerializeField]
     protected int m_health;
-    public int health { get { return m_health; } protected set { m_health = health; } }
 
     //Turret
     private Timer m_shotTimer;
-
-    [SerializeField]
-    protected float m_velocity;
-    public float velocity { get { return m_velocity; } protected set { m_velocity = velocity; } }
 
     [SerializeField]
     private Rigidbody m_projectile = null;
@@ -45,7 +45,6 @@ public class Tank : MonoBehaviour
 
     [SerializeField]
     protected float m_minDistance;
-    public float minDistance { get { return m_minDistance; } protected set { m_minDistance = minDistance; } }
 
     private void Awake()
     {
@@ -61,14 +60,44 @@ public class Tank : MonoBehaviour
         m_shotTimer.m_expiredTime = 2.0f;
     }
 
+    protected void move(float dTime)
+    {
+        transform.Rotate(new Vector3(0,m_rotationSpeed * Time.deltaTime, 0));
+        transform.Translate(transform.forward * m_movementSpeed * dTime);
+        m_movementSpeed = 0;
+        m_rotationSpeed = 0;
+    }
+
+    protected void forward(float dTime)
+    {
+        m_movementSpeed += m_maxSpeed;
+    }
+
+    protected void backward(float dTime)
+    {
+        m_movementSpeed += -m_maxSpeed;
+    }
+
+    protected void leftTurn(float dTime)
+    {
+        m_rotationSpeed += m_maxRotation;
+    }
+
+    protected void rightTurn(float dTime)
+    {
+        m_rotationSpeed += -m_maxRotation;
+    }
+
     protected virtual void Update()
     {
         m_shotTimer.update(Time.deltaTime);
+        move(Time.deltaTime);
     }
 
     public void damage(int amount)
     {
         m_health -= amount;
+        //Death functionality
     }
 
     protected void shoot()
@@ -77,7 +106,7 @@ public class Tank : MonoBehaviour
         {
             Rigidbody projectile;
             projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
-            projectile.gameObject.GetComponent<Projectile>().m_parent_id = m_ID;
+            projectile.gameObject.GetComponent<Projectile>().m_parentID = m_ID;
             projectile.AddForce(transform.TransformDirection(Vector3.forward * m_projectileSpeed));
 
             m_shotTimer.reset();

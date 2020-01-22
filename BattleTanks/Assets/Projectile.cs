@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public int m_parent_id = 0;
+    public int m_parentID = 0;
     [SerializeField]
     private float m_lifeTime = 0.0f;
     [SerializeField]
@@ -18,7 +18,7 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Tank tank = other.gameObject.GetComponent<Tank>();
-        if (tank && tank.ID != m_parent_id)
+        if (tank && tank.m_ID != m_parentID)
         {
             tank.damage(m_damage);
             Destroy(gameObject);
