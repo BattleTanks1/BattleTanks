@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class fGameManager : MonoBehaviour
 {
     public List<Tank> m_Tanks { get; private set; }
     private int m_ID = 0;
    
 
-    private static GameManager _instance;
-    public static GameManager Instance { get { return _instance; } }
+    private static fGameManager _instance;
+    public static fGameManager Instance { get { return _instance; } }
 
     private void Awake()
     {

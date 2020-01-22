@@ -54,7 +54,7 @@ public class Tank : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        m_ID = GameManager.Instance.addTank(this);
+        m_ID = fGameManager.Instance.addTank(this);
         m_minDistance = 3;
         m_shotTimer.m_active = true;
         m_shotTimer.m_expiredTime = 2.0f;
