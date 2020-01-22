@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Tank tank in m_Tanks)
         {
-            if (tank.m_ID == ID)
+            if (tank.ID == ID)
             {
                 return tank;
             }

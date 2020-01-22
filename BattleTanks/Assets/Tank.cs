@@ -14,7 +14,7 @@ public class Tank : MonoBehaviour
     protected int m_ID;
     public int ID { get { return m_ID; } private set { m_ID = ID; } }
 
-    public Faction m_faction { get; private set; }
+    public Faction m_faction { get; protected set; }
 
     [SerializeField]
     private GameObject m_projectileSpawn = null;

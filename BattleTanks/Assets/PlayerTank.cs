@@ -8,6 +8,7 @@ public class PlayerTank : Tank
     protected override void Start()
     {
         base.Start();
+        m_faction = Faction.player;
     }
 
     // Update is called once per frame

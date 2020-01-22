@@ -23,6 +23,7 @@ public class AITank : Tank
     protected override void Start()
     {
         base.Start();
+        m_faction = Faction.AI;
     }
 
     // Update is called once per frame
