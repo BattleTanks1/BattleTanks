@@ -2,42 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerTank : Tank
+public class PlayerTank : MonoBehaviour
 {
     // Start is called before the first frame update
-    protected override void Start()
+    void Start()
     {
-        base.Start();
-        m_faction = Faction.player;
+        GetComponent<TankCore>().m_faction = Faction.player;
     }
 
     // Update is called once per frame
-    protected override void Update()
+    void Update()
     {
+        TankMovement move = GetComponent<TankMovement>();
         //Rotation
-        if(Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
         {
-            rightTurn(Time.deltaTime);
+            move.rightTurn(Time.deltaTime);
         }
         if(Input.GetKey(KeyCode.A))
         {
-            leftTurn(Time.deltaTime);
+            move.leftTurn(Time.deltaTime);
         }
         //Movement
         if(Input.GetKey(KeyCode.W))
         {
-            forward(Time.deltaTime);
+            move.forward(Time.deltaTime);
         }
         if(Input.GetKey(KeyCode.S))
         {
-            backward(Time.deltaTime);
+            move.backward(Time.deltaTime);
         }
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            shoot();
+            
         }
-
-        base.Update();
     }
 }

@@ -16,22 +16,22 @@ public class TankMovement : MonoBehaviour
     [SerializeField]
     protected float m_maxRotation = 50;
 
-    protected void forward(float dTime)
+    public void forward(float dTime)
     {
         m_movementSpeed += m_maxSpeed;
     }
 
-    protected void backward(float dTime)
+    public void backward(float dTime)
     {
         m_movementSpeed += -m_maxSpeed;
     }
 
-    protected void leftTurn(float dTime)
+    public void leftTurn(float dTime)
     {
         m_rotationSpeed += m_maxRotation;
     }
 
-    protected void rightTurn(float dTime)
+    public void rightTurn(float dTime)
     {
         m_rotationSpeed += -m_maxRotation;
     }
@@ -46,7 +46,7 @@ public class TankMovement : MonoBehaviour
     void Update()
     {
         transform.Rotate(new Vector3(0, m_rotationSpeed * Time.deltaTime, 0));
-        transform.Translate(transform.forward * m_movementSpeed * dTime);
+        transform.Translate(transform.forward * m_movementSpeed * Time.deltaTime);
         m_movementSpeed = 0;
         m_rotationSpeed = 0;
     }

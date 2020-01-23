@@ -17,7 +17,7 @@ public class Projectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Tank tank = other.gameObject.GetComponent<Tank>();
+        TankCore tank = other.gameObject.GetComponent<TankCore>();
         if (tank && tank.m_ID != m_parentID)
         {
             tank.damage(m_damage);

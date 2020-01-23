@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public List<Tank> m_Tanks { get; private set; }
+    public List<TankCore> m_Tanks { get; private set; }
     private int m_ID = 0;
    
 
@@ -22,12 +22,12 @@ public class GameManager : MonoBehaviour
             _instance = this;
         }
 
-        m_Tanks = new List<Tank>();
+        m_Tanks = new List<TankCore>();
     }
 
-    public Tank GetTank(int ID)
+    public TankCore GetTank(int ID)
     {
-        foreach (Tank tank in m_Tanks)
+        foreach (TankCore tank in m_Tanks)
         {
             if (tank.m_ID == ID)
             {
@@ -38,9 +38,9 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public Tank GetTank(Faction faction)
+    public TankCore GetTank(Faction faction)
     {
-        foreach (Tank tank in m_Tanks)
+        foreach (TankCore tank in m_Tanks)
         {
             if (tank.m_faction != faction)
             {
@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public int addTank(Tank tank)
+    public int addTank(TankCore tank)
     {
         m_Tanks.Add(tank);
         int ID = m_ID;

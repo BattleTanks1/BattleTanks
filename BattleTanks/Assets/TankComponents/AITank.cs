@@ -5,7 +5,7 @@ using UnityEngine;
 //http://lecturer.ukdw.ac.id/~mahas/dossier/gameng_AIFG.pdf
 //https://www.reddit.com/r/gamedev/comments/9onssu/where_can_i_learn_more_about_rts_ai/
 
-public enum eAIState
+public enum AIState
 {
     FindingEnemy = 0,
     MovingToSafety,
@@ -14,46 +14,41 @@ public enum eAIState
     Idling
 }
 
-public class AITank : Tank
+public class TankAI : MonoBehaviour
 {
     [SerializeField]
-    private eAIState m_currentState;
+    private AIState m_currentState;
 
     // Start is called before the first frame update
-    protected override void Start()
+    void Start()
     {
-        base.Start();
-        m_faction = Faction.AI;
+        GetComponent<TankCore>().m_faction = Faction.AI;
     }
 
     // Update is called once per frame
-    protected override void Update()
+    void Update()
     {
-        base.Update();
-
         switch(m_currentState)
         {
-            case eAIState.FindingEnemy:
+            case AIState.FindingEnemy:
                 //if (isInRange(GameManager.Instance.m_player.transform.position))
                 //{
                 //    m_currentState = eAIState.Shoot;
                 //}
                 break;
 
-            case eAIState.SetDestinationToSafePosition:
-                m_movementSpeed = -m_movementSpeed;
-                m_currentState = eAIState.MovingToSafety;
+            case AIState.SetDestinationToSafePosition:
+                m_currentState = AIState.MovingToSafety;
                 break;
 
-            case eAIState.MovingToSafety:
+            case AIState.MovingToSafety:
                 break;
 
-            case eAIState.Shoot:
-                shoot();
-                m_currentState = eAIState.FindingEnemy;
+            case AIState.Shoot:
+                m_currentState = AIState.FindingEnemy;
                 break;
 
-            case eAIState.Idling:
+            case AIState.Idling:
                 break;
         }
     }
