@@ -35,7 +35,13 @@ public class PlayerTank : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            
+            //Shoot
         }
+
+        //Find the mouse position relative to the tank position
+            //Get mouse position on screen frame
+            //Get tank position on screen frame
+            //Get vector between them
+            //Set as new target angle for turret
     }
 }

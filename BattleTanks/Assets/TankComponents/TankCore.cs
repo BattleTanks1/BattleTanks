@@ -20,12 +20,12 @@ public class TankCore : MonoBehaviour
     protected int m_health;
 
     // Start is called before the first frame update
-    protected virtual void Start()
+    void Start()
     {
         m_ID = GameManager.Instance.addTank(this);
     }
 
-    protected virtual void Update()
+    void Update()
     {
         
     }
