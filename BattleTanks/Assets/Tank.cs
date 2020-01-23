@@ -19,18 +19,6 @@ public class Tank : MonoBehaviour
     [SerializeField]
     private GameObject m_projectileSpawn = null;
 
-    //Movement related variables
-    [SerializeField]
-    protected float m_movementSpeed;
-
-    [SerializeField]
-    protected float m_maxSpeed = 20;
-
-    [SerializeField]
-    protected float m_rotationSpeed;
-
-    [SerializeField]
-    protected float m_maxRotation = 50;
 
     [SerializeField]
     protected int m_health;
@@ -40,6 +28,7 @@ public class Tank : MonoBehaviour
 
     [SerializeField]
     private Rigidbody m_projectile = null;
+
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
 
@@ -60,38 +49,9 @@ public class Tank : MonoBehaviour
         m_shotTimer.m_expiredTime = 2.0f;
     }
 
-    protected void move(float dTime)
-    {
-        transform.Rotate(new Vector3(0,m_rotationSpeed * Time.deltaTime, 0));
-        transform.Translate(transform.forward * m_movementSpeed * dTime);
-        m_movementSpeed = 0;
-        m_rotationSpeed = 0;
-    }
-
-    protected void forward(float dTime)
-    {
-        m_movementSpeed += m_maxSpeed;
-    }
-
-    protected void backward(float dTime)
-    {
-        m_movementSpeed += -m_maxSpeed;
-    }
-
-    protected void leftTurn(float dTime)
-    {
-        m_rotationSpeed += m_maxRotation;
-    }
-
-    protected void rightTurn(float dTime)
-    {
-        m_rotationSpeed += -m_maxRotation;
-    }
-
     protected virtual void Update()
     {
         m_shotTimer.update(Time.deltaTime);
-        move(Time.deltaTime);
     }
 
     public void damage(int amount)
