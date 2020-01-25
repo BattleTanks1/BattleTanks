@@ -26,6 +26,7 @@ public class AITank : Tank
 {
     [SerializeField]
     private eAIState m_currentState;
+    bool reachedTarget = false;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -40,31 +41,51 @@ public class AITank : Tank
     {
         base.Update();
 
-        switch(m_currentState)
+        //switch(m_currentState)
+        //{
+        //    case eAIState.FindingEnemy:
+        //        Tank target = fGameManager.Instance.GetTank(Faction.player);
+        //        if(target && isInRange(target.transform.position))
+        //        {
+        //            m_currentState = eAIState.Shoot;
+        //        }
+        //        break;
+
+        //    case eAIState.SetDestinationToSafePosition:
+        //        m_movementSpeed = -m_movementSpeed;
+        //        m_currentState = eAIState.MovingToSafety;
+        //        break;
+
+        //    case eAIState.MovingToSafety:
+        //        break;
+
+        //    case eAIState.Shoot:
+        //        shoot();
+        //        m_currentState = eAIState.FindingEnemy;
+        //        break;
+
+        //    case eAIState.Idling:
+        //        break;
+        //}
+
+
+        PlayerTank target = fGameManager.Instance.m_player;
+        if (InfluenceMap.Instance.getValueOnPosition(target.transform.position) <= 3.0f)
         {
-            case eAIState.FindingEnemy:
-                Tank target = fGameManager.Instance.GetTank(Faction.player);
-                if(target && isInRange(target.transform.position))
-                {
-                    m_currentState = eAIState.Shoot;
-                }
-                break;
-
-            case eAIState.SetDestinationToSafePosition:
-                m_movementSpeed = -m_movementSpeed;
-                m_currentState = eAIState.MovingToSafety;
-                break;
-
-            case eAIState.MovingToSafety:
-                break;
-
-            case eAIState.Shoot:
-                shoot();
-                m_currentState = eAIState.FindingEnemy;
-                break;
-
-            case eAIState.Idling:
-                break;
+            if (target && Vector3.Distance(fGameManager.Instance.m_player.transform.position, transform.position) >= Mathf.Abs(0.001f))
+            {
+                float step = m_speed * Time.deltaTime;
+                transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
+            }
+        }
+        else
+        {
+            print("Hit");
+            if (target && Vector3.Distance(fGameManager.Instance.m_player.transform.position, transform.position) >= Mathf.Abs(10.0f))
+            {
+                float step = m_speed * Time.deltaTime;
+                transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
+            }
         }
     }
 }

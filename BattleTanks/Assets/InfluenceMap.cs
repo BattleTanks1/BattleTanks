@@ -53,6 +53,9 @@ public class InfluenceMap : MonoBehaviour
     Point[,] map;
     List<GameObject> m_boxes;
 
+    private static InfluenceMap _instance;
+    public static InfluenceMap Instance { get { return _instance; } }
+
     List<Vector2Int> getAdjacentPositions(Vector2Int position)
     {
         List<Vector2Int> adjacentPositions = new List<Vector2Int>();
@@ -73,6 +76,20 @@ public class InfluenceMap : MonoBehaviour
         }
 
         return adjacentPositions;
+    }
+
+
+
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
     }
 
     // Start is called before the first frame update
@@ -116,13 +133,13 @@ public class InfluenceMap : MonoBehaviour
                     map[adjacentPosition.y, adjacentPosition.x].value += (tempStrength -= strength * (distance / maxDistance));
                     frontier.Enqueue(adjacentPosition);
 
-                    //Create box at location
-                    Vector3 i = new Vector3(adjacentPosition.x * spacing, 0, adjacentPosition.y * spacing);
+                    ////Create box at location
+                    //Vector3 i = new Vector3(adjacentPosition.x * spacing, 0, adjacentPosition.y * spacing);
 
-                    GameObject clone;
-                    clone = Instantiate(box, i, Quaternion.identity);
-                    clone.transform.localScale += new Vector3(0, map[adjacentPosition.y, adjacentPosition.x].value, 0);
-                    m_boxes.Add(clone);
+                    //GameObject clone;
+                    //clone = Instantiate(box, i, Quaternion.identity);
+                    //clone.transform.localScale += new Vector3(0, map[adjacentPosition.y, adjacentPosition.x].value, 0);
+                    //m_boxes.Add(clone);
                 }
             }
         }
@@ -134,6 +151,16 @@ public class InfluenceMap : MonoBehaviour
                 map[y, x].visited = false;
             }
         }
+    }
+
+    public float getValueOnPosition(Vector3 position)
+    {
+        Vector3 tankPosition = position;
+        tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
+        tankPosition.z = Mathf.Abs(Mathf.Round(tankPosition.z));
+
+        Vector2Int positionOnGrid = new Vector2Int((int)tankPosition.x, (int)tankPosition.z);
+        return map[positionOnGrid.y, positionOnGrid.x].value;
     }
 
     // Update is called once per frame
