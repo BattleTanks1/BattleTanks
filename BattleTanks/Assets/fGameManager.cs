@@ -6,7 +6,8 @@ public class fGameManager : MonoBehaviour
 {
     public List<Tank> m_Tanks { get; private set; }
     private int m_ID = 0;
-   
+
+    public PlayerTank m_player;
 
     private static fGameManager _instance;
     public static fGameManager Instance { get { return _instance; } }

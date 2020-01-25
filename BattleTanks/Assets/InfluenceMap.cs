@@ -13,8 +13,28 @@ using UnityEngine;
 
 //http://www.gameaipro.com/GameAIPro2/GameAIPro2_Chapter30_Modular_Tactical_Influence_Maps.pdf
 
+
+
+//https://www.gamedev.net/articles/programming/artificial-intelligence/the-core-mechanics-of-influence-mapping-r2799/
+
 //  -Choose whatever is a relevant cell size for your setup, let's say 1 unity distance unit.
 //- Then you either use Mathf.Floor, Mathf.Round, or Mathf.Ceil(which ever gives best result for you, doesn't matter which you use as long as you are consistent) on both axis from your plane.
+
+
+/*
+  Situation Summary -- 
+  Influence maps do a great job of summarizing all the little details in the world and making them easy to understand at a glance. 
+  Who's in control of what area? Where are the borders between the territories? How much enemy presence is there in each area?
+
+Historical Statistics -- 
+Beyond just storing information about the current situation, influence maps can also remember what happened for a certain period of time. 
+Was this area being assaulted? How well did my previous attack go?
+
+
+Future Predictions -- 
+An often ignored aspect of influence maps, they can also help predict the future. Using the map of the terrain, 
+you can figure out where an enemy would go and how his influence would extend in the future.
+ * */
 
 public class Point
 {
@@ -24,8 +44,6 @@ public class Point
 
 public class InfluenceMap : MonoBehaviour
 {
-    public float maxValue;
-    public float maxDistance;
     public GameObject box;
     public Vector2Int mapSize;  
     public float spacing;
@@ -57,8 +75,6 @@ public class InfluenceMap : MonoBehaviour
         return adjacentPositions;
     }
 
-
-
     // Start is called before the first frame update
     void Start()
     {
@@ -76,9 +92,9 @@ public class InfluenceMap : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
-    void createInfluence(Vector2Int position)
+    void createInfluence(Vector2Int position, float maxDistance, float strength)
     {
-        map[position.y, position.x].value = maxValue;
+        map[position.y, position.x].value = strength;
         map[position.y, position.x].visited = true;
 
         Queue<Vector2Int> frontier = new Queue<Vector2Int>();
@@ -95,9 +111,9 @@ public class InfluenceMap : MonoBehaviour
                 {
                     map[adjacentPosition.y, adjacentPosition.x].visited = true;
                     float distance = Vector2.Distance(new Vector2(adjacentPosition.x, adjacentPosition.y), new Vector2(position.x, position.y));
-                    float tempMaxValue = maxValue;
+                    float tempStrength = strength;
 
-                    map[adjacentPosition.y, adjacentPosition.x].value += (tempMaxValue -= maxValue * (distance / maxDistance));
+                    map[adjacentPosition.y, adjacentPosition.x].value += (tempStrength -= strength * (distance / maxDistance));
                     frontier.Enqueue(adjacentPosition);
 
                     //Create box at location
@@ -130,7 +146,7 @@ public class InfluenceMap : MonoBehaviour
     {
         while(true)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.1f);
             foreach (GameObject box in m_boxes)
             {
                 Destroy(box);
@@ -140,7 +156,7 @@ public class InfluenceMap : MonoBehaviour
             {
                 for (int x = 0; x < mapSize.x; ++x)
                 {
-                    map[y, x].value = maxValue;
+                    map[y, x].value = 0.0f;
                 }
             }
 
@@ -150,8 +166,7 @@ public class InfluenceMap : MonoBehaviour
                 tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
                 tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
 
-                createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y));
-                print("Create Influence");
+                createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
             }
         }
     }

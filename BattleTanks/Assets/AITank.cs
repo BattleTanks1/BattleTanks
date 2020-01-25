@@ -5,15 +5,13 @@ using UnityEngine;
 //http://lecturer.ukdw.ac.id/~mahas/dossier/gameng_AIFG.pdf
 //https://www.reddit.com/r/gamedev/comments/9onssu/where_can_i_learn_more_about_rts_ai/
 
-//   http://dl.booktolearn.com/ebooks2/computer/artificialintelligence/9781138483972_AI_for_Games_3rd_a694.pdf
-
+//http://dl.booktolearn.com/ebooks2/computer/artificialintelligence/9781138483972_AI_for_Games_3rd_a694.pdf
 
 public class Transition
 {
     //When conditions are met - it is said to trigger
     //When transition goes to new state - it has fired
 }
-
 
 public enum eAIState
 {
@@ -33,6 +31,7 @@ public class AITank : Tank
     protected override void Start()
     {
         base.Start();
+        m_ID = fGameManager.Instance.addTank(this);
         m_faction = Faction.AI;
     }
 
