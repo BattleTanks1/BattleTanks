@@ -13,6 +13,9 @@ using UnityEngine;
 
 //http://www.gameaipro.com/GameAIPro2/GameAIPro2_Chapter30_Modular_Tactical_Influence_Maps.pdf
 
+//  -Choose whatever is a relevant cell size for your setup, let's say 1 unity distance unit.
+//- Then you either use Mathf.Floor, Mathf.Round, or Mathf.Ceil(which ever gives best result for you, doesn't matter which you use as long as you are consistent) on both axis from your plane.
+
 public class Point
 {
     public float value = 0.0f;
@@ -21,14 +24,16 @@ public class Point
 
 public class InfluenceMap : MonoBehaviour
 {
-    public float origMaxValue;
     public float maxValue;
     public float maxDistance;
     public GameObject box;
     public Vector2Int mapSize;  
     public float spacing;
     public float scalar;
+
+    private bool spawned = false;
     Point[,] map;
+    List<GameObject> m_boxes;
 
     List<Vector2Int> getAdjacentPositions(Vector2Int position)
     {
@@ -52,55 +57,28 @@ public class InfluenceMap : MonoBehaviour
         return adjacentPositions;
     }
 
+
+
     // Start is called before the first frame update
     void Start()
     {
+        m_boxes = new List<GameObject>();
         map = new Point[(int)mapSize.y, (int)mapSize.x];
         for(int y = 0; y < mapSize.y; ++y)
         {
-            for(int x = 0; x < mapSize.x; ++x)
+            for (int x = 0; x < mapSize.x; ++x)
             {
                 map[y, x] = new Point();
             }
         }
 
-
-
-
-        //        -Choose whatever is a relevant cell size for your setup, let's say 1 unity distance unit.
-        //- Then you either use Mathf.Floor, Mathf.Round, or Mathf.Ceil(which ever gives best result for you, doesn't matter which you use as long as you are consistent) on both axis from your plane.
-
-        for (int y = 0; y < mapSize.y; ++y)
-        {
-            for (int x = 0; x < mapSize.x; ++x)
-            {
-                foreach(Tank tank in fGameManager.Instance.getAllTanks())
-                {
-                    Vector3 tankPosition = tank.transform.position;
-                    tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
-                    tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
-
-                    createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y));
-                }
-            }
-        }
-
-        for (int y = 0; y < mapSize.y; ++y)
-        {
-            for (int x = 0; x < mapSize.x; ++x)
-            {
-                Vector3 position = new Vector3(x * spacing, 0, y * spacing);
-
-                GameObject clone;
-                clone = Instantiate(box, position, Quaternion.identity);
-                clone.transform.localScale += new Vector3(0, map[y, x].value + (map[y, x].value / 2.0f), 0);
-            }
-        }
+        IEnumerator coroutine = Propogate();
+        StartCoroutine(coroutine);
     }
 
     void createInfluence(Vector2Int position)
     {
-        map[position.y, position.x].value = 1;
+        map[position.y, position.x].value = maxValue;
         map[position.y, position.x].visited = true;
 
         Queue<Vector2Int> frontier = new Queue<Vector2Int>();
@@ -111,32 +89,70 @@ public class InfluenceMap : MonoBehaviour
             Vector2Int lastPosition = frontier.Dequeue();
 
             foreach (Vector2Int adjacentPosition in getAdjacentPositions(lastPosition))
-            {
-                if (!map[adjacentPosition.y, adjacentPosition.x].visited)
+            { 
+                if (Vector2Int.Distance(position, adjacentPosition) <= maxDistance &&
+                    !map[adjacentPosition.y, adjacentPosition.x].visited)
                 {
-
-                    if (maxValue <= 0)
-                    {
-                        print("Hi");
-                        maxValue = origMaxValue;
-                        return;
-                    }
                     map[adjacentPosition.y, adjacentPosition.x].visited = true;
                     float distance = Vector2.Distance(new Vector2(adjacentPosition.x, adjacentPosition.y), new Vector2(position.x, position.y));
-                    maxValue -= maxValue * (distance / maxDistance);
+                    float tempMaxValue = maxValue;
 
-                    map[adjacentPosition.y, adjacentPosition.x].value = maxValue;
+                    map[adjacentPosition.y, adjacentPosition.x].value += (tempMaxValue -= maxValue * (distance / maxDistance));
                     frontier.Enqueue(adjacentPosition);
+
+                    //Create box at location
+                    Vector3 i = new Vector3(adjacentPosition.x * spacing, 0, adjacentPosition.y * spacing);
+
+                    GameObject clone;
+                    clone = Instantiate(box, i, Quaternion.identity);
+                    clone.transform.localScale += new Vector3(0, map[adjacentPosition.y, adjacentPosition.x].value, 0);
+                    m_boxes.Add(clone);
                 }
             }
         }
 
-        maxValue = origMaxValue;
+        for (int y = 0; y < mapSize.y; ++y)
+        {
+            for (int x = 0; x < mapSize.x; ++x)
+            {
+                map[y, x].visited = false;
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    IEnumerator Propogate()
+    {
+        while(true)
+        {
+            yield return new WaitForSeconds(0.5f);
+            foreach (GameObject box in m_boxes)
+            {
+                Destroy(box);
+            }
+
+            for (int y = 0; y < mapSize.y; ++y)
+            {
+                for (int x = 0; x < mapSize.x; ++x)
+                {
+                    map[y, x].value = maxValue;
+                }
+            }
+
+            foreach (Tank tank in fGameManager.Instance.getAllTanks())
+            {
+                Vector3 tankPosition = tank.transform.position;
+                tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
+                tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
+
+                createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y));
+                print("Create Influence");
+            }
+        }
     }
 }
