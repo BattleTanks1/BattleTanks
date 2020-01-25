@@ -38,6 +38,11 @@ public class fGameManager : MonoBehaviour
         return null;
     }
 
+    public List<Tank> getAllTanks()
+    {
+        return m_Tanks;
+    }
+
     public Tank GetTank(Faction faction)
     {
         foreach (Tank tank in m_Tanks)

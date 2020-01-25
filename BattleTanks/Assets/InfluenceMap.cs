@@ -21,6 +21,7 @@ public class Point
 
 public class InfluenceMap : MonoBehaviour
 {
+    public float origMaxValue;
     public float maxValue;
     public float maxDistance;
     public GameObject box;
@@ -63,33 +64,26 @@ public class InfluenceMap : MonoBehaviour
             }
         }
 
-        Vector2Int middlePosition = new Vector2Int();
-        middlePosition.x = mapSize.x / 2;
-        middlePosition.y = mapSize.y / 2;
 
-        map[middlePosition.y, middlePosition.x].value = 1;
-        map[middlePosition.y, middlePosition.x].visited = true;
 
-        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
-        frontier.Enqueue(middlePosition);
 
-        while(frontier.Count != 0)
+        //        -Choose whatever is a relevant cell size for your setup, let's say 1 unity distance unit.
+        //- Then you either use Mathf.Floor, Mathf.Round, or Mathf.Ceil(which ever gives best result for you, doesn't matter which you use as long as you are consistent) on both axis from your plane.
+
+        for (int y = 0; y < mapSize.y; ++y)
         {
-            Vector2Int lastPosition = frontier.Dequeue();
-
-            foreach(Vector2Int adjacentPosition in getAdjacentPositions(lastPosition))
+            for (int x = 0; x < mapSize.x; ++x)
             {
-                if(!map[adjacentPosition.y, adjacentPosition.x].visited)
+                foreach(Tank tank in fGameManager.Instance.getAllTanks())
                 {
-                    map[adjacentPosition.y, adjacentPosition.x].visited = true;
-                    float distance = Vector2.Distance(new Vector2(adjacentPosition.x, adjacentPosition.y), new Vector2(middlePosition.x, middlePosition.y));
-                    maxValue -= maxValue * (distance / maxDistance);
-                    print(maxValue);
-                    map[adjacentPosition.y, adjacentPosition.x].value = maxValue;
-                    frontier.Enqueue(adjacentPosition); 
+                    Vector3 tankPosition = tank.transform.position;
+                    tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
+                    tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
+
+                    createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y));
                 }
             }
-        }   
+        }
 
         for (int y = 0; y < mapSize.y; ++y)
         {
@@ -102,6 +96,42 @@ public class InfluenceMap : MonoBehaviour
                 clone.transform.localScale += new Vector3(0, map[y, x].value + (map[y, x].value / 2.0f), 0);
             }
         }
+    }
+
+    void createInfluence(Vector2Int position)
+    {
+        map[position.y, position.x].value = 1;
+        map[position.y, position.x].visited = true;
+
+        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
+        frontier.Enqueue(position);
+
+        while (frontier.Count != 0)
+        {
+            Vector2Int lastPosition = frontier.Dequeue();
+
+            foreach (Vector2Int adjacentPosition in getAdjacentPositions(lastPosition))
+            {
+                if (!map[adjacentPosition.y, adjacentPosition.x].visited)
+                {
+
+                    if (maxValue <= 0)
+                    {
+                        print("Hi");
+                        maxValue = origMaxValue;
+                        return;
+                    }
+                    map[adjacentPosition.y, adjacentPosition.x].visited = true;
+                    float distance = Vector2.Distance(new Vector2(adjacentPosition.x, adjacentPosition.y), new Vector2(position.x, position.y));
+                    maxValue -= maxValue * (distance / maxDistance);
+
+                    map[adjacentPosition.y, adjacentPosition.x].value = maxValue;
+                    frontier.Enqueue(adjacentPosition);
+                }
+            }
+        }
+
+        maxValue = origMaxValue;
     }
 
     // Update is called once per frame
