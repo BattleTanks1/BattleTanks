@@ -45,7 +45,7 @@ public class Point
 public class InfluenceMap : MonoBehaviour
 {
     public GameObject box;
-    public Vector2Int mapSize;  
+    public Vector2Int mapSize;
     public float spacing;
     public float scalar;
 
@@ -67,9 +67,9 @@ public class InfluenceMap : MonoBehaviour
             }
         }
 
-        for(int y = position.y - 1; y <= position.y + 1; y += 2)
+        for (int y = position.y - 1; y <= position.y + 1; y += 2)
         {
-            if(y >= 0 && y < mapSize.y)
+            if (y >= 0 && y < mapSize.y)
             {
                 adjacentPositions.Add(new Vector2Int(position.x, y));
             }
@@ -77,8 +77,6 @@ public class InfluenceMap : MonoBehaviour
 
         return adjacentPositions;
     }
-
-
 
     private void Awake()
     {
@@ -97,7 +95,7 @@ public class InfluenceMap : MonoBehaviour
     {
         m_boxes = new List<GameObject>();
         map = new Point[(int)mapSize.y, (int)mapSize.x];
-        for(int y = 0; y < mapSize.y; ++y)
+        for (int y = 0; y < mapSize.y; ++y)
         {
             for (int x = 0; x < mapSize.x; ++x)
             {
@@ -122,7 +120,7 @@ public class InfluenceMap : MonoBehaviour
             Vector2Int lastPosition = frontier.Dequeue();
 
             foreach (Vector2Int adjacentPosition in getAdjacentPositions(lastPosition))
-            { 
+            {
                 if (Vector2Int.Distance(position, adjacentPosition) <= maxDistance &&
                     !map[adjacentPosition.y, adjacentPosition.x].visited)
                 {
@@ -133,13 +131,13 @@ public class InfluenceMap : MonoBehaviour
                     map[adjacentPosition.y, adjacentPosition.x].value += (tempStrength -= strength * (distance / maxDistance));
                     frontier.Enqueue(adjacentPosition);
 
-                    ////Create box at location
-                    //Vector3 i = new Vector3(adjacentPosition.x * spacing, 0, adjacentPosition.y * spacing);
+                    //Create box at location
+                    Vector3 i = new Vector3(adjacentPosition.x * spacing, 0, adjacentPosition.y * spacing);
 
-                    //GameObject clone;
-                    //clone = Instantiate(box, i, Quaternion.identity);
-                    //clone.transform.localScale += new Vector3(0, map[adjacentPosition.y, adjacentPosition.x].value, 0);
-                    //m_boxes.Add(clone);
+                    GameObject clone;
+                    clone = Instantiate(box, i, Quaternion.identity);
+                    clone.transform.localScale += new Vector3(0, map[adjacentPosition.y, adjacentPosition.x].value, 0);
+                    m_boxes.Add(clone);
                 }
             }
         }
@@ -151,7 +149,26 @@ public class InfluenceMap : MonoBehaviour
                 map[y, x].visited = false;
             }
         }
+
+
+        //Scan only where box is 
+        //get Distance from centre - scan acordingly.
+
+        //for (int y = 0; y < mapSize.y; ++y)
+        //{
+        //    for (int x = 0; x < mapSize.x; ++x)
+        //    {
+        //        float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
+        //        if (distance <= maxDistance)
+        //        {
+        //            map[y, x].value += (strength - strength * (distance / maxDistance));
+        //        }
+        //    }
+        //}
     }
+
+
+
 
     public float getValueOnPosition(Vector3 position)
     {
@@ -179,6 +196,7 @@ public class InfluenceMap : MonoBehaviour
                 Destroy(box);
             }
 
+            //minset - Compilar optimization
             for (int y = 0; y < mapSize.y; ++y)
             {
                 for (int x = 0; x < mapSize.x; ++x)
