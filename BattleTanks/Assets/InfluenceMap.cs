@@ -198,7 +198,6 @@ public class InfluenceMap : MonoBehaviour
                 }
             }
         }
-
     }
 
     public float getValueOnPosition(Vector3 position)
@@ -243,8 +242,8 @@ public class InfluenceMap : MonoBehaviour
                 tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
                 tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
 
-                //createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
-                createThreat(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_threat);
+                createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
+                //createThreat(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_threat);
             }
         }
     }
