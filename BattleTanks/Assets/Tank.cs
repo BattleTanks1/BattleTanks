@@ -10,6 +10,7 @@ public enum Faction
 
 public class Tank : MonoBehaviour
 {
+    public int m_threat;
     public float m_speed;
     public float m_strength;
     public int m_proximity;
