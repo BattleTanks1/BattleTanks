@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerTank : Tank
 {
+    public Vector3 m_newPosition;
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -16,30 +17,6 @@ public class PlayerTank : Tank
     // Update is called once per frame
     protected override void Update()
     {
-        //Rotation
-        if(Input.GetKey(KeyCode.D))
-        {
-            rightTurn(Time.deltaTime);
-        }
-        if(Input.GetKey(KeyCode.A))
-        {
-            leftTurn(Time.deltaTime);
-        }
-        //Movement
-        if(Input.GetKey(KeyCode.W))
-        {
-            forward(Time.deltaTime);
-        }
-        if(Input.GetKey(KeyCode.S))
-        {
-            backward(Time.deltaTime);
-        }
-
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            shoot();
-        }
-
         base.Update();
     }
 }

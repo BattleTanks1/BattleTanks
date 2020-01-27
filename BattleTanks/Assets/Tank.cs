@@ -5,7 +5,8 @@ using UnityEngine;
 public enum Faction
 {
     player,
-    AI
+    AIRed,
+    AIBlue
 }
 
 public class Tank : MonoBehaviour
@@ -18,8 +19,7 @@ public class Tank : MonoBehaviour
     [SerializeField]
     public int m_ID { get; protected set; }
 
-    [SerializeField]
-    public Faction m_faction { get; protected set; }
+    public Faction m_faction;
 
     [SerializeField]
     private GameObject m_projectileSpawn = null;
@@ -72,62 +72,10 @@ public class Tank : MonoBehaviour
         m_rotationSpeed = 0;
     }
 
-    protected void forward(float dTime)
-    {
-        m_movementSpeed += m_maxSpeed;
-    }
-
-    protected void backward(float dTime)
-    {
-        m_movementSpeed += -m_maxSpeed;
-    }
-
-    protected void leftTurn(float dTime)
-    {
-        m_rotationSpeed += m_maxRotation;
-    }
-
-    protected void rightTurn(float dTime)
-    {
-        m_rotationSpeed += -m_maxRotation;
-    }
 
     protected virtual void Update()
     {
         m_shotTimer.update(Time.deltaTime);
         move(Time.deltaTime);
-    }
-
-    public void damage(int amount)
-    {
-        m_health -= amount;
-    }
-
-    protected void shoot()
-    {
-        if(m_shotTimer.isExpired())
-        {
-            Rigidbody projectile;
-            projectile = Instantiate(m_projectile, m_projectileSpawn.transform.position, m_projectile.transform.rotation);
-            projectile.gameObject.GetComponent<Projectile>().m_parentID = m_ID;
-            projectile.AddForce(transform.TransformDirection(Vector3.forward * m_projectileSpeed));
-
-            m_shotTimer.reset();
-        }
-    }
-
-    protected bool isInRange(Vector3 position)
-    {
-        bool inRange = false;
-        if(Vector3.Distance(transform.position, position) <= Mathf.Abs(m_minDistance))
-        {
-            Vector3 vBetween = position - transform.position;
-            if (Vector3.Dot(Vector3.forward, vBetween.normalized) <= -0.5f)
-            {
-                inRange = true;
-            }
-        }
-
-        return inRange;
     }
 }

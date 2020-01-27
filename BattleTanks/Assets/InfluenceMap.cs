@@ -235,7 +235,7 @@ public class InfluenceMap : MonoBehaviour
                 }
             }
 
-            foreach (Tank tank in fGameManager.Instance.getAllTanks())
+            foreach (Tank tank in fGameManager.Instance.getAllAITanks())
             {
                 Vector3 tankPosition = tank.transform.position;
                 tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
