@@ -41,7 +41,6 @@ you can figure out where an enemy would go and how his influence would extend in
 //Proximity map
 //Threat map
 
-
 public class Point
 {
     public float value = 0.0f;
@@ -193,7 +192,7 @@ public class InfluenceMap : MonoBehaviour
 
                     GameObject clone;
                     clone = Instantiate(box, i, Quaternion.identity);
-                    clone.transform.localScale = new Vector3(1, m_threatMap[y, x].value, 1);
+                    clone.transform.localScale += new Vector3(0, m_threatMap[y, x].value, 0);
                     m_boxes.Add(clone);
                 }
             }
