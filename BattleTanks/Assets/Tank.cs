@@ -12,7 +12,7 @@ public class Tank : MonoBehaviour
 {
     public float m_speed;
     public float m_strength;
-    public float m_proximity;
+    public int m_proximity;
 
     [SerializeField]
     public int m_ID { get; protected set; }

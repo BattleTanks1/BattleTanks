@@ -26,7 +26,6 @@ public class AITank : Tank
 {
     [SerializeField]
     private eAIState m_currentState;
-    bool reachedTarget = false;
 
     // Start is called before the first frame update
     protected override void Start()

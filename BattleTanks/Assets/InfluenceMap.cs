@@ -39,7 +39,7 @@ you can figure out where an enemy would go and how his influence would extend in
 public class Point
 {
     public float value = 0.0f;
-    public bool visited = false;
+    public bool blocked = false;
 }
 
 public class InfluenceMap : MonoBehaviour
@@ -49,7 +49,6 @@ public class InfluenceMap : MonoBehaviour
     public float spacing;
     public float scalar;
 
-    private bool spawned = false;
     Point[,] map;
     List<GameObject> m_boxes;
 
@@ -93,6 +92,8 @@ public class InfluenceMap : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        LayerMask layerMask = LayerMask.GetMask("Scenery");
+        RaycastHit hit;
         m_boxes = new List<GameObject>();
         map = new Point[(int)mapSize.y, (int)mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
@@ -100,6 +101,15 @@ public class InfluenceMap : MonoBehaviour
             for (int x = 0; x < mapSize.x; ++x)
             {
                 map[y, x] = new Point();
+
+                // Check for a Wall.
+                
+                
+                // Does the ray intersect any objects excluding the player layer
+                if (Physics.Raycast(new Vector3(x, 0, y), transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity, layerMask))
+                {
+                   // map[y, x].blocked = true;
+                }
             }
         }
 
@@ -107,68 +117,47 @@ public class InfluenceMap : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
-    void createInfluence(Vector2Int position, float maxDistance, float strength)
+    void createInfluence(Vector2Int position, int maxDistance, float strength)
     {
-        map[position.y, position.x].value = strength;
-        map[position.y, position.x].visited = true;
-
-        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
-        frontier.Enqueue(position);
-
-        while (frontier.Count != 0)
+        Vector2Int horizontalDistance = new Vector2Int(maxDistance, maxDistance);
+        if(position.x - horizontalDistance.x < 0)
         {
-            Vector2Int lastPosition = frontier.Dequeue();
+            horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
+        }
+        else if (position.x + horizontalDistance.y >= mapSize.x)
+        {
+            horizontalDistance.y -= mapSize.x - position.x;
+        }
+        Vector2Int verticalDistance = new Vector2Int(maxDistance, maxDistance);
+        if (position.y - verticalDistance.x < 0)
+        {
+            verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
+        }
+        else if (position.y + verticalDistance.y >= mapSize.y)
+        {
+            verticalDistance.x -= mapSize.y - position.y;
+        }
 
-            foreach (Vector2Int adjacentPosition in getAdjacentPositions(lastPosition))
+        for (int y = position.y - verticalDistance.x; y < position.y + verticalDistance.y; ++y)
+        {
+            for (int x = position.x - horizontalDistance.x; x < position.x + horizontalDistance.y; ++x)
             {
-                if (Vector2Int.Distance(position, adjacentPosition) <= maxDistance &&
-                    !map[adjacentPosition.y, adjacentPosition.x].visited)
+                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
+                if (!map[y, x].blocked && distance <= maxDistance)
                 {
-                    map[adjacentPosition.y, adjacentPosition.x].visited = true;
-                    float distance = Vector2.Distance(new Vector2(adjacentPosition.x, adjacentPosition.y), new Vector2(position.x, position.y));
-                    float tempStrength = strength;
-
-                    map[adjacentPosition.y, adjacentPosition.x].value += (tempStrength -= strength * (distance / maxDistance));
-                    frontier.Enqueue(adjacentPosition);
+                    map[y, x].value += (strength - strength * (distance / maxDistance));
 
                     //Create box at location
-                    Vector3 i = new Vector3(adjacentPosition.x * spacing, 0, adjacentPosition.y * spacing);
+                    Vector3 i = new Vector3(x * spacing, 0, y * spacing);
 
                     GameObject clone;
                     clone = Instantiate(box, i, Quaternion.identity);
-                    clone.transform.localScale += new Vector3(0, map[adjacentPosition.y, adjacentPosition.x].value, 0);
+                    clone.transform.localScale += new Vector3(0, map[y, x].value, 0);
                     m_boxes.Add(clone);
                 }
             }
         }
-
-        for (int y = 0; y < mapSize.y; ++y)
-        {
-            for (int x = 0; x < mapSize.x; ++x)
-            {
-                map[y, x].visited = false;
-            }
-        }
-
-
-        //Scan only where box is 
-        //get Distance from centre - scan acordingly.
-
-        //for (int y = 0; y < mapSize.y; ++y)
-        //{
-        //    for (int x = 0; x < mapSize.x; ++x)
-        //    {
-        //        float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
-        //        if (distance <= maxDistance)
-        //        {
-        //            map[y, x].value += (strength - strength * (distance / maxDistance));
-        //        }
-        //    }
-        //}
     }
-
-
-
 
     public float getValueOnPosition(Vector3 position)
     {
