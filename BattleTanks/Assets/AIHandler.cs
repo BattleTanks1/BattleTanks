@@ -10,24 +10,34 @@ public class AIHandler : MonoBehaviour
 {
     GraphPoint[,] m_map;
 
+    private static AIHandler _instance;
+    public static AIHandler Instance { get { return _instance; } }
+
+    private void Awake()
+    {
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
+    }
+
+
     // Start is called before the first frame update
     void Start()
     {
         Vector2Int mapSize = InfluenceMap.Instance.mapSize;
         m_map = new GraphPoint[mapSize.y, mapSize.x];
-        for(int y= 0; y < mapSize.y; ++y)
+        for (int y = 0; y < mapSize.y; ++y)
         {
-            for(int x = 0; x < mapSize.x; ++x)
+            for (int x = 0; x < mapSize.x; ++x)
             {
                 m_map[y, x] = new GraphPoint();
             }
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
 
@@ -60,13 +70,14 @@ public class AIHandler : MonoBehaviour
         Queue<Vector2Int> frontier = new Queue<Vector2Int>();
         frontier.Enqueue(positionOnGrid);
 
+        Vector3 safePosition = new Vector3();
         bool targetFound = false;
         while(!targetFound && frontier.Count > 0)
         {
             Vector2Int lastPosition = frontier.Dequeue();
-            foreach(Vector2Int adjacentPosition in getAdjacentPositions(lastPosition))
+            foreach (Vector2Int adjacentPosition in getAdjacentPositions(lastPosition))
             {
-                if(m_map[adjacentPosition.y, adjacentPosition.x].visited)
+                if (m_map[adjacentPosition.y, adjacentPosition.x].visited)
                 {
                     continue;
                 }
@@ -74,14 +85,15 @@ public class AIHandler : MonoBehaviour
                 m_map[adjacentPosition.y, adjacentPosition.x].visited = true;
                 frontier.Enqueue(adjacentPosition);
 
-                if(InfluenceMap.Instance.getPointOnThreatMap(adjacentPosition).value )
-
-
+                if (InfluenceMap.Instance.getPointOnThreatMap(adjacentPosition).value <= 0.0f)
+                {
+                    targetFound = true;
+                    safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
+                    break;
+                }
             }
-
-
         }
 
-        return new Vector3();
+        return safePosition;
     }
 }

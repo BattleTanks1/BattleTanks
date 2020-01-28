@@ -17,7 +17,7 @@ public class Transition
 public enum eAIState
 {
     FindingEnemy = 0,
-    MovingToSafety,
+    MovingToNewPosition,
     Shoot,
     SetDestinationToSafePosition,
     Idling
@@ -26,8 +26,8 @@ public enum eAIState
 public class AITank : Tank
 {
     [SerializeField]
-    private eAIState m_currentState;
-    public Vector3 positionToMoveTo;
+    public eAIState m_currentState;
+    public Vector3 m_positionToMoveTo;
     public float m_scaredValue;
 
     // Start is called before the first frame update
@@ -51,7 +51,6 @@ public class AITank : Tank
                 {
                     float step = m_speed * Time.deltaTime;
                     transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
-                    
                 }
             }
             else
@@ -75,12 +74,21 @@ public class AITank : Tank
                     }
                     break;
                 case eAIState.SetDestinationToSafePosition:
-                    onSetDestinationToSafePosition();
-                    break;
-                case eAIState.MovingToSafety:
+                    m_positionToMoveTo = AIHandler.Instance.getClosestSafePosition(transform.position);
+                    m_currentState = eAIState.MovingToNewPosition;
 
                     break;
+
+                case eAIState.MovingToNewPosition:
+                    if(transform.position == m_positionToMoveTo)
+                    {
+                        m_currentState = eAIState.Idling;
+                    }
+                    break;
             }
+
+
+
         }
     }
 }
