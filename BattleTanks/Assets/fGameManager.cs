@@ -26,7 +26,21 @@ public class fGameManager : MonoBehaviour
         m_AItanks = new List<AITank>();
     }
 
-    public Tank GetTank(int ID)
+    public AITank getBlueTank()
+    {
+        AITank blueTank = null;
+        foreach (AITank tank in m_AItanks)
+        {
+            if (tank.m_faction == Faction.AIBlue)
+            {
+                blueTank = tank;
+            }
+        }
+
+        return blueTank;
+    }
+
+    public Tank GetAITank(int ID)
     {
         foreach (Tank tank in m_AItanks)
         {
@@ -44,20 +58,7 @@ public class fGameManager : MonoBehaviour
         return m_AItanks;
     }
 
-    public Tank GetTank(Faction faction)
-    {
-        foreach (Tank tank in m_AItanks)
-        {
-            if (tank.m_faction != faction)
-            {
-                return tank;
-            }
-        }
-
-        return null;
-    }
-
-    public int addTank(AITank tank)
+    public int addAITank(AITank tank)
     {
         m_AItanks.Add(tank);
         int ID = m_ID;

@@ -20,7 +20,6 @@ public class Projectile : MonoBehaviour
         Tank tank = other.gameObject.GetComponent<Tank>();
         if (tank && tank.m_ID != m_parentID)
         {
-            tank.damage(m_damage);
             Destroy(gameObject);
         }
     }

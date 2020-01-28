@@ -41,6 +41,9 @@ you can figure out where an enemy would go and how his influence would extend in
 //Proximity map
 //Threat map
 
+//Red Positive
+//Blue Negative
+
 public class Point
 {
     public float value = 0.0f;
@@ -82,6 +85,26 @@ public class InfluenceMap : MonoBehaviour
         }
 
         return adjacentPositions;
+    }
+
+    public bool isPositionInThreat(AITank tank)
+    {
+        if(tank.m_faction == Faction.AIRed)
+        {
+            if(getValueOnPositionThreatMap(tank.transform.position) <= -tank.m_scaredValue)
+            {
+                return true;
+            }
+        }
+        else if(tank.m_faction == Faction.AIBlue)
+        {
+            if(getValueOnPositionThreatMap(tank.transform.position) >= tank.m_scaredValue)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void Awake()
@@ -126,6 +149,7 @@ public class InfluenceMap : MonoBehaviour
         {
             horizontalDistance.y -= mapSize.x - position.x;
         }
+
         Vector2Int verticalDistance = new Vector2Int(maxDistance, maxDistance);
         if (position.y - verticalDistance.x < 0)
         {
@@ -199,7 +223,7 @@ public class InfluenceMap : MonoBehaviour
         }
     }
 
-    public float getValueOnPosition(Vector3 position)
+    public float getValueOnPositionProxMap(Vector3 position)
     {
         Vector3 tankPosition = position;
         tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
@@ -209,11 +233,21 @@ public class InfluenceMap : MonoBehaviour
         return proximityMap[positionOnGrid.y, positionOnGrid.x].value;
     }
 
-    // Update is called once per frame
-    void Update()
+    public float getValueOnPositionThreatMap(Vector3 position)
     {
+        Vector3 tankPosition = position;
+        tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
+        tankPosition.z = Mathf.Abs(Mathf.Round(tankPosition.z));
 
+        Vector2Int positionOnGrid = new Vector2Int((int)tankPosition.x, (int)tankPosition.z);
+        return m_threatMap[positionOnGrid.y, positionOnGrid.x].value;
     }
+
+    public Point getPointOnThreatMap(Vector2Int position)
+    {
+        return m_threatMap[position.y, position.x];
+    }
+
 
     IEnumerator Propogate()
     {
@@ -241,8 +275,14 @@ public class InfluenceMap : MonoBehaviour
                 tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
                 tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
 
-                createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
-                //createThreat(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_threat);
+                if(tank.m_faction == Faction.AIBlue)
+                {
+                    tank.m_strength = -tank.m_strength;
+                    tank.m_threat = -tank.m_threat;
+                }
+                
+                //createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
+                createThreat(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_threat);
             }
         }
     }

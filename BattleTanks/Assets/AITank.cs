@@ -13,6 +13,7 @@ public class Transition
     //When transition goes to new state - it has fired
 }
 
+
 public enum eAIState
 {
     FindingEnemy = 0,
@@ -27,22 +28,13 @@ public class AITank : Tank
     [SerializeField]
     private eAIState m_currentState;
     public Vector3 positionToMoveTo;
+    public float m_scaredValue;
 
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
-        if(m_faction == Faction.AIRed)
-        {
-
-        }
-        else if(m_faction == Faction.AIRed)
-        {
-
-        }
-        m_ID = fGameManager.Instance.addTank(this);
-
-        
+        m_ID = fGameManager.Instance.addAITank(this);
     }
 
     // Update is called once per frame
@@ -52,18 +44,19 @@ public class AITank : Tank
 
         if(m_faction == Faction.AIRed)
         {
-            PlayerTank target = fGameManager.Instance.m_player;
-            if (InfluenceMap.Instance.getValueOnPosition(target.transform.position) <= 3.0f)
+            AITank target = fGameManager.Instance.getBlueTank();
+            if (target && InfluenceMap.Instance.getValueOnPositionProxMap(target.transform.position) <= 3.0f)
             {
-                if (target && Vector3.Distance(fGameManager.Instance.m_player.transform.position, transform.position) >= Mathf.Abs(0.001f))
+                if (target && Vector3.Distance(target.transform.position, transform.position) >= Mathf.Abs(0.001f))
                 {
                     float step = m_speed * Time.deltaTime;
                     transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
+                    
                 }
             }
             else
             {
-                if (target && Vector3.Distance(fGameManager.Instance.m_player.transform.position, transform.position) >= Mathf.Abs(10.0f))
+                if (target && Vector3.Distance(target.transform.position, transform.position) >= Mathf.Abs(10.0f))
                 {
                     float step = m_speed * Time.deltaTime;
                     transform.position = Vector3.MoveTowards(transform.position, target.transform.position, step);
@@ -72,7 +65,22 @@ public class AITank : Tank
         }
         else if(m_faction == Faction.AIBlue)
         {
+            //Idling
+            switch (m_currentState)
+            {
+                case eAIState.Idling:
+                    if (InfluenceMap.Instance.isPositionInThreat(this))
+                    {
+                        m_currentState = eAIState.SetDestinationToSafePosition;
+                    }
+                    break;
+                case eAIState.SetDestinationToSafePosition:
+                    onSetDestinationToSafePosition();
+                    break;
+                case eAIState.MovingToSafety:
 
+                    break;
+            }
         }
     }
 }
