@@ -5,6 +5,8 @@ using UnityEngine;
 public class fGameManager : MonoBehaviour
 {
     public List<AITank> m_AItanks { get; private set; }
+    [SerializeField]
+    public Vector2Int m_mapSize;
     private int m_ID = 0;
 
     public PlayerTank m_player;
@@ -24,6 +26,7 @@ public class fGameManager : MonoBehaviour
         }
 
         m_AItanks = new List<AITank>();
+        m_mapSize = new Vector2Int(128, 128);
     }
 
     public AITank getBlueTank()

@@ -45,7 +45,7 @@ public class AITank : Tank
         if(m_faction == Faction.AIRed)
         {
             AITank target = fGameManager.Instance.getBlueTank();
-            if (target && InfluenceMap.Instance.getValueOnPositionProxMap(target.transform.position) <= 3.0f)
+            if (target && InfluenceMap.Instance.getPointOnProximityMap(target.transform.position).value <= 3.0f)
             {
                 if (target && Vector3.Distance(target.transform.position, transform.position) >= Mathf.Abs(0.001f))
                 {
@@ -74,7 +74,7 @@ public class AITank : Tank
                     }
                     break;
                 case eAIState.SetDestinationToSafePosition:
-                    m_positionToMoveTo = AIHandler.Instance.getClosestSafePosition(transform.position);
+                    m_positionToMoveTo = PathFinding.Instance.getClosestSafePosition(transform.position);
                     m_currentState = eAIState.MovingToNewPosition;
 
                     break;
@@ -86,9 +86,6 @@ public class AITank : Tank
                     }
                     break;
             }
-
-
-
         }
     }
 }
