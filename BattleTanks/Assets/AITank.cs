@@ -29,6 +29,7 @@ public class AITank : Tank
     public eAIState m_currentState;
     public Vector3 m_positionToMoveTo;
     public float m_scaredValue;
+    public float m_maxValueAtPosition;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -75,8 +76,6 @@ public class AITank : Tank
                     break;
                 case eAIState.SetDestinationToSafePosition:
                     m_positionToMoveTo = PathFinding.Instance.getClosestSafePosition(transform.position, 8);
-                    print(m_positionToMoveTo.x);
-                    print(m_positionToMoveTo.z);
                     m_currentState = eAIState.MovingToNewPosition;
 
                     break;

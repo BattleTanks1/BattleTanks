@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Faction
-{
-    player,
-    AIRed,
-    AIBlue
-}
+
 
 public class Tank : MonoBehaviour
 {
@@ -20,7 +15,8 @@ public class Tank : MonoBehaviour
     [SerializeField]
     public int m_ID { get; protected set; }
 
-    public Faction m_faction;
+    [SerializeField]
+    public eFactionName m_factionName { get; protected set; }
 
     [SerializeField]
     private GameObject m_projectileSpawn = null;

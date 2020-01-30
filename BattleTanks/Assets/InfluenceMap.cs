@@ -144,10 +144,10 @@ public class InfluenceMap : MonoBehaviour
                     proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
 
                     //Create box at location
-                    GameObject clone;
-                    clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
-                    clone.transform.localScale += new Vector3(0, proximityMap[y, x].value, 0);
-                    m_boxes.Add(clone);
+                    //GameObject clone;
+                    //clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
+                    //clone.transform.localScale += new Vector3(0, proximityMap[y, x].value, 0);
+                    //m_boxes.Add(clone);
                 }
             }
         }
@@ -165,11 +165,11 @@ public class InfluenceMap : MonoBehaviour
                 {
                     m_threatMap[y, x].value = strength * (1 - ((distance / threatDistance) * (distance / threatDistance)));
 
-                    //Create box at location
-                    GameObject clone;
-                    clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
-                    clone.transform.localScale += new Vector3(0, m_threatMap[y, x].value, 0);
-                    m_boxes.Add(clone);
+                    ////Create box at location
+                    //GameObject clone;
+                    //clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
+                    //clone.transform.localScale += new Vector3(0, m_threatMap[y, x].value, 0);
+                    //m_boxes.Add(clone);
                 }
             }
         }
@@ -217,20 +217,23 @@ public class InfluenceMap : MonoBehaviour
                 }
             }
 
-            foreach (Tank tank in fGameManager.Instance.getAllAITanks())
+            foreach(Faction faction in fGameManager.Instance.m_factions)
             {
-                Vector3 tankPosition = tank.transform.position;
-                tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
-                tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
-
-                if(tank.m_faction == Faction.AIBlue)
+                foreach(Tank tank in faction.m_tanks)
                 {
-                    tank.m_strength = -tank.m_strength;
-                    tank.m_threat = -tank.m_threat;
+                    Vector3 tankPosition = tank.transform.position;
+                    tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
+                    tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
+
+                    if (tank.m_factionName == eFactionName.Blue)
+                    {
+                        tank.m_strength = -tank.m_strength;
+                        tank.m_threat = -tank.m_threat;
+                    }
+
+                    //createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
+                    createThreat(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_threat);
                 }
-                
-                //createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
-                createThreat(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_threat);
             }
         }
     }

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class fGameManager : MonoBehaviour
 {
-    public List<AITank> m_AItanks { get; private set; }
+    public Faction[] m_factions { get; private set; }
+    //spublic List<Faction> m_factions { get; private set; }
     [SerializeField]
     public Vector2Int m_mapSize;
     private int m_ID = 0;
@@ -25,47 +26,34 @@ public class fGameManager : MonoBehaviour
             _instance = this;
         }
 
-        m_AItanks = new List<AITank>();
+        Faction[] m_factions = new Faction[(int)eFactionName.Total];
+        {
+            new Faction(eFactionName.Red);
+            new Faction(eFactionName.Blue);
+        }
+
         m_mapSize = new Vector2Int(128, 128);
     }
 
-    public AITank getBlueTank()
+    private void Update()
     {
-        AITank blueTank = null;
-        foreach (AITank tank in m_AItanks)
-        {
-            if (tank.m_faction == Faction.AIBlue)
-            {
-                blueTank = tank;
-            }
-        }
 
-        return blueTank;
     }
 
-    public Tank GetAITank(int ID)
+    public int addTank(Tank tank)
     {
-        foreach (Tank tank in m_AItanks)
-        {
-            if (tank.m_ID == ID)
-            {
-                return tank;
-            }
-        }
-
-        return null;
-    }
-
-    public List<AITank> getAllAITanks()
-    {
-        return m_AItanks;
-    }
-
-    public int addAITank(AITank tank)
-    {
-        m_AItanks.Add(tank);
         int ID = m_ID;
         ++m_ID;
+        switch (tank.m_factionName)
+        {
+            case eFactionName.Red:
+                m_factions[(int)tank.m_factionName].addTank(tank);
+                break;
+            case eFactionName.Blue:
+                m_factions[(int)tank.m_factionName].addTank(tank);
+                break;
+        }
+
         return ID;
     }
 }
