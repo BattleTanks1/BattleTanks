@@ -44,6 +44,40 @@ you can figure out where an enemy would go and how his influence would extend in
 //Red Positive
 //Blue Negative
 
+public class SearchRect
+{
+    public SearchRect(Vector2Int position, int distance)
+    {
+        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        left = distance;
+        right = distance;
+        top = distance;
+        bottom = distance;
+
+        if (position.x - distance < 0)
+        {
+            left -= Mathf.Abs(position.x - distance);
+        }
+        else if(position.x + distance > mapSize.x)
+        {
+            right -= (position.x + distance) - mapSize.x;
+        }
+        if (position.y - distance < 0)
+        {
+            top -= Mathf.Abs(position.y - distance);
+        }
+        else if(position.y + distance > mapSize.y)
+        {
+            bottom -= (position.y + distance) - mapSize.y; 
+        }
+    }
+
+    public int left { get; private set; }
+    public int right { get; private set; }
+    public int top { get; private set; }
+    public int bottom { get; private set; }
+}
+
 public class Point
 {
     public float value = 0.0f;
@@ -93,47 +127,6 @@ public class InfluenceMap : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
-    private void clampToMapSize(Vector2Int horizontalDistance, Vector2Int verticalDistance, Vector2Int position)
-    {
-        //Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-        //Vector2Int horizontalDistance = new Vector2Int(threatDistance, threatDistance);
-        //if (position.x - horizontalDistance.x < 0)
-        //{
-        //    horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
-        //}
-        //else if (position.x + horizontalDistance.y >= mapSize.x)
-        //{
-        //    horizontalDistance.y -= mapSize.x - position.x;
-        //}
-        //Vector2Int verticalDistance = new Vector2Int(threatDistance, threatDistance);
-        //if (position.y - verticalDistance.x < 0)
-        //{
-        //    verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
-        //}
-        //else if (position.y + verticalDistance.y >= mapSize.y)
-        //{
-        //    verticalDistance.x -= mapSize.y - position.y;
-        //}
-
-        //if (position.x - horizontalDistance.x < 0)
-        //{
-        //    horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
-        //}
-        //else if (position.x + horizontalDistance.y >= mapSize.x)
-        //{
-        //    horizontalDistance.y -= mapSize.x - position.x;
-        //}
-
-        //if (position.y - verticalDistance.x < 0)
-        //{
-        //    verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
-        //}
-        //else if (position.y + verticalDistance.y >= mapSize.y)
-        //{
-        //    verticalDistance.x -= mapSize.y - position.y;
-        //}
-    }
-
     public bool isPositionInThreat(AITank tank)
     {
         if (tank.m_faction == Faction.AIRed)
@@ -156,29 +149,10 @@ public class InfluenceMap : MonoBehaviour
 
     private void createInfluence(Vector2Int position, int maxDistance, float strength)
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-        Vector2Int horizontalDistance = new Vector2Int(maxDistance, maxDistance);
-        if (position.x - horizontalDistance.x < 0)
+        SearchRect searchableRect = new SearchRect(position, maxDistance);
+        for (int y = position.y - searchableRect.top; y < position.y + searchableRect.bottom; ++y)
         {
-            horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
-        }
-        else if (position.x + horizontalDistance.y >= mapSize.x)
-        {
-            horizontalDistance.y -= mapSize.x - position.x;
-        }
-        Vector2Int verticalDistance = new Vector2Int(maxDistance, maxDistance);
-        if (position.y - verticalDistance.x < 0)
-        {
-            verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
-        }
-        else if (position.y + verticalDistance.y >= mapSize.y)
-        {
-            verticalDistance.x -= mapSize.y - position.y;
-        }
-
-        for (int y = position.y - verticalDistance.x; y < position.y + verticalDistance.y; ++y)
-        {
-            for (int x = position.x - horizontalDistance.x; x < position.x + horizontalDistance.y; ++x)
+            for (int x = position.x - searchableRect.left; x < position.x + searchableRect.right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
@@ -197,29 +171,10 @@ public class InfluenceMap : MonoBehaviour
 
     private void createThreat(Vector2Int position, int threatDistance, float strength)
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-        Vector2Int horizontalDistance = new Vector2Int(threatDistance, threatDistance);
-        if (position.x - horizontalDistance.x < 0)
+        SearchRect searchableRect = new SearchRect(position, threatDistance);
+        for (int y = position.y - searchableRect.top; y < position.y + searchableRect.bottom; ++y)
         {
-            horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
-        }
-        else if (position.x + horizontalDistance.y >= mapSize.x)
-        {
-            horizontalDistance.y -= mapSize.x - position.x;
-        }
-        Vector2Int verticalDistance = new Vector2Int(threatDistance, threatDistance);
-        if (position.y - verticalDistance.x < 0)
-        {
-            verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
-        }
-        else if (position.y + verticalDistance.y >= mapSize.y)
-        {
-            verticalDistance.x -= mapSize.y - position.y;
-        }
-
-        for (int y = position.y - verticalDistance.x; y < position.y + verticalDistance.y; ++y)
-        {
-            for (int x = position.x - horizontalDistance.x; x < position.x + horizontalDistance.y; ++x)
+            for (int x = position.x - searchableRect.left; x < position.x + searchableRect.right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= threatDistance)

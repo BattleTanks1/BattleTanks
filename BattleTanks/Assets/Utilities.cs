@@ -38,4 +38,16 @@ public static class Utilities
         return directions2D;
     }
 
+    static public Vector2Int[] get()
+    {
+        Vector2Int[] directions2D = new Vector2Int[(int)eDirection2D.Total]
+        {
+            new Vector2Int(-1, 0),
+            new Vector2Int(1, 0),
+            new Vector2Int(0, 1),
+            new Vector2Int(0, -1)
+        };
+
+        return directions2D;
+    }
 }
