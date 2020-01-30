@@ -49,27 +49,11 @@ public class SearchRect
     public SearchRect(Vector2Int position, int distance)
     {
         Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-        left = distance;
-        right = distance;
-        top = distance;
-        bottom = distance;
 
-        if (position.x - distance < 0)
-        {
-            left -= Mathf.Abs(position.x - distance);
-        }
-        else if(position.x + distance > mapSize.x)
-        {
-            right -= (position.x + distance) - mapSize.x;
-        }
-        if (position.y - distance < 0)
-        {
-            top -= Mathf.Abs(position.y - distance);
-        }
-        else if(position.y + distance > mapSize.y)
-        {
-            bottom -= (position.y + distance) - mapSize.y; 
-        }
+        left = Mathf.Max(position.x - distance, 0);
+        right = Mathf.Min(position.x + distance, mapSize.x);
+        top = Mathf.Max(position.y - distance, 0);
+        bottom = Mathf.Min(position.y + distance, mapSize.y);
     }
 
     public int left { get; private set; }
@@ -150,16 +134,16 @@ public class InfluenceMap : MonoBehaviour
     private void createInfluence(Vector2Int position, int maxDistance, float strength)
     {
         SearchRect searchableRect = new SearchRect(position, maxDistance);
-        for (int y = position.y - searchableRect.top; y < position.y + searchableRect.bottom; ++y)
+        for (int y = searchableRect.top; y < searchableRect.bottom; ++y)
         {
-            for (int x = position.x - searchableRect.left; x < position.x + searchableRect.right; ++x)
+            for (int x = searchableRect.left; x < searchableRect.right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
                     proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
 
-                    ////Create box at location
+                    //Create box at location
                     GameObject clone;
                     clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
                     clone.transform.localScale += new Vector3(0, proximityMap[y, x].value, 0);
@@ -172,9 +156,9 @@ public class InfluenceMap : MonoBehaviour
     private void createThreat(Vector2Int position, int threatDistance, float strength)
     {
         SearchRect searchableRect = new SearchRect(position, threatDistance);
-        for (int y = position.y - searchableRect.top; y < position.y + searchableRect.bottom; ++y)
+        for (int y = searchableRect.top; y < searchableRect.bottom; ++y)
         {
-            for (int x = position.x - searchableRect.left; x < position.x + searchableRect.right; ++x)
+            for (int x = searchableRect.left; x < searchableRect.right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= threatDistance)
