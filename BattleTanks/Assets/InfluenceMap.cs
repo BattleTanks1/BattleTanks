@@ -61,7 +61,6 @@ public class InfluenceMap : MonoBehaviour
     private static InfluenceMap _instance;
     public static InfluenceMap Instance { get { return _instance; } }
 
-
     private void Awake()
     {
         if (_instance != null && _instance != this)
@@ -94,26 +93,45 @@ public class InfluenceMap : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
-    private void clampDistanceToMap(Vector2Int horizontalDistance, Vector2Int verticalDistance, Vector2Int position)
+    private void clampToMapSize(Vector2Int horizontalDistance, Vector2Int verticalDistance, Vector2Int position)
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-        if (position.x - horizontalDistance.x < 0)
-        {
-            horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
-        }
-        else if (position.x + horizontalDistance.y >= mapSize.x)
-        {
-            horizontalDistance.y -= mapSize.x - position.x;
-        }
+        //Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        //Vector2Int horizontalDistance = new Vector2Int(threatDistance, threatDistance);
+        //if (position.x - horizontalDistance.x < 0)
+        //{
+        //    horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
+        //}
+        //else if (position.x + horizontalDistance.y >= mapSize.x)
+        //{
+        //    horizontalDistance.y -= mapSize.x - position.x;
+        //}
+        //Vector2Int verticalDistance = new Vector2Int(threatDistance, threatDistance);
+        //if (position.y - verticalDistance.x < 0)
+        //{
+        //    verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
+        //}
+        //else if (position.y + verticalDistance.y >= mapSize.y)
+        //{
+        //    verticalDistance.x -= mapSize.y - position.y;
+        //}
 
-        if (position.y - verticalDistance.x < 0)
-        {
-            verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
-        }
-        else if (position.y + verticalDistance.y >= mapSize.y)
-        {
-            verticalDistance.x -= mapSize.y - position.y;
-        }
+        //if (position.x - horizontalDistance.x < 0)
+        //{
+        //    horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
+        //}
+        //else if (position.x + horizontalDistance.y >= mapSize.x)
+        //{
+        //    horizontalDistance.y -= mapSize.x - position.x;
+        //}
+
+        //if (position.y - verticalDistance.x < 0)
+        //{
+        //    verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
+        //}
+        //else if (position.y + verticalDistance.y >= mapSize.y)
+        //{
+        //    verticalDistance.x -= mapSize.y - position.y;
+        //}
     }
 
     public bool isPositionInThreat(AITank tank)
@@ -136,11 +154,27 @@ public class InfluenceMap : MonoBehaviour
         return false;
     }
 
-    void createInfluence(Vector2Int position, int maxDistance, float strength)
+    private void createInfluence(Vector2Int position, int maxDistance, float strength)
     {
+        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
         Vector2Int horizontalDistance = new Vector2Int(maxDistance, maxDistance);
+        if (position.x - horizontalDistance.x < 0)
+        {
+            horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
+        }
+        else if (position.x + horizontalDistance.y >= mapSize.x)
+        {
+            horizontalDistance.y -= mapSize.x - position.x;
+        }
         Vector2Int verticalDistance = new Vector2Int(maxDistance, maxDistance);
-        clampDistanceToMap(horizontalDistance, verticalDistance, position);
+        if (position.y - verticalDistance.x < 0)
+        {
+            verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
+        }
+        else if (position.y + verticalDistance.y >= mapSize.y)
+        {
+            verticalDistance.x -= mapSize.y - position.y;
+        }
 
         for (int y = position.y - verticalDistance.x; y < position.y + verticalDistance.y; ++y)
         {
@@ -152,10 +186,8 @@ public class InfluenceMap : MonoBehaviour
                     proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
 
                     ////Create box at location
-                    Vector3 i = new Vector3(x, 0, y);
-
                     GameObject clone;
-                    clone = Instantiate(m_box, i, Quaternion.identity);
+                    clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
                     clone.transform.localScale += new Vector3(0, proximityMap[y, x].value, 0);
                     m_boxes.Add(clone);
                 }
@@ -163,11 +195,27 @@ public class InfluenceMap : MonoBehaviour
         }
     }
 
-    void createThreat(Vector2Int position, int threatDistance, float strength)
+    private void createThreat(Vector2Int position, int threatDistance, float strength)
     {
+        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
         Vector2Int horizontalDistance = new Vector2Int(threatDistance, threatDistance);
+        if (position.x - horizontalDistance.x < 0)
+        {
+            horizontalDistance.x -= Mathf.Abs(position.x - horizontalDistance.x);
+        }
+        else if (position.x + horizontalDistance.y >= mapSize.x)
+        {
+            horizontalDistance.y -= mapSize.x - position.x;
+        }
         Vector2Int verticalDistance = new Vector2Int(threatDistance, threatDistance);
-        clampDistanceToMap(horizontalDistance, verticalDistance, position);
+        if (position.y - verticalDistance.x < 0)
+        {
+            verticalDistance.x -= Mathf.Abs(position.y - verticalDistance.x);
+        }
+        else if (position.y + verticalDistance.y >= mapSize.y)
+        {
+            verticalDistance.x -= mapSize.y - position.y;
+        }
 
         for (int y = position.y - verticalDistance.x; y < position.y + verticalDistance.y; ++y)
         {
@@ -179,10 +227,8 @@ public class InfluenceMap : MonoBehaviour
                     m_threatMap[y, x].value = strength * (1 - ((distance / threatDistance) * (distance / threatDistance)));
 
                     //Create box at location
-                    Vector3 i = new Vector3(x, 0, y);
-
                     GameObject clone;
-                    clone = Instantiate(m_box, i, Quaternion.identity);
+                    clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
                     clone.transform.localScale += new Vector3(0, m_threatMap[y, x].value, 0);
                     m_boxes.Add(clone);
                 }
@@ -211,7 +257,7 @@ public class InfluenceMap : MonoBehaviour
         return m_threatMap[position.y, position.x];
     }
 
-    IEnumerator Propogate()
+    private IEnumerator Propogate()
     {
         while(true)
         {

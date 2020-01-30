@@ -71,16 +71,22 @@ public class AITank : Tank
                     if (InfluenceMap.Instance.isPositionInThreat(this))
                     {
                         m_currentState = eAIState.SetDestinationToSafePosition;
+                        print("Scared");
                     }
                     break;
                 case eAIState.SetDestinationToSafePosition:
                     m_positionToMoveTo = PathFinding.Instance.getClosestSafePosition(transform.position);
+                    print(m_positionToMoveTo.x);
+                    print(m_positionToMoveTo.z);
                     m_currentState = eAIState.MovingToNewPosition;
 
                     break;
 
                 case eAIState.MovingToNewPosition:
-                    if(transform.position == m_positionToMoveTo)
+
+                    float step = m_speed * Time.deltaTime;
+                    transform.position = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
+                    if (transform.position == m_positionToMoveTo)
                     {
                         m_currentState = eAIState.Idling;
                     }

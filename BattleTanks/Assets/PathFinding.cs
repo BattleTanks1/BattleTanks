@@ -86,9 +86,8 @@ public class PathFinding : MonoBehaviour
         frontier.Enqueue(positionOnGrid);
 
         Vector3 safePosition = new Vector3();
-        bool targetFound = false;
-       
-        while (!targetFound && frontier.Count > 0)
+        bool safePositionFound = false;
+        while (!safePositionFound && frontier.Count > 0)
         {
             Vector2Int lastPosition = frontier.Dequeue();
             getAdjacentPositions(m_adjacentPositions, lastPosition);
@@ -104,7 +103,7 @@ public class PathFinding : MonoBehaviour
 
                 if (InfluenceMap.Instance.getPointOnThreatMap(adjacentPosition).value <= 0.0f)
                 {
-                    targetFound = true;
+                    safePositionFound = true;
                     safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
                     break;
                 }
