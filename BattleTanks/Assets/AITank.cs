@@ -36,6 +36,7 @@ public class AITank : Tank
     {
         base.Start();
         m_ID = fGameManager.Instance.addAITank(this);
+        m_currentState = eAIState.Idling;
     }
 
     // Update is called once per frame

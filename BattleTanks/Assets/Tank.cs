@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
-
 public class Tank : MonoBehaviour
 {
     public float m_safePositionValue;

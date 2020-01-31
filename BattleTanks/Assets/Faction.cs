@@ -8,24 +8,43 @@ public enum eFactionName
     Blue,
     Total
 }
-
-public class Faction : MonoBehaviour
+public enum eFactionControllerType
 {
-    public Faction(eFactionName name)
+    eHuman = 0,
+    eAI
+}
+
+abstract public class Faction 
+{
+    public List<Tank> m_tanks;
+    public eFactionName m_name { get; private set; }
+    public eFactionControllerType m_controllerType { get; private set; }
+
+    public Faction(eFactionName name, eFactionControllerType controllerType)
     {
         m_name = name;
+        m_controllerType = controllerType;
     }
 
-    public List<Tank> m_tanks { get; private set; }
-    public eFactionName m_name { get; private set; }
-
-    private void Start()
+    protected virtual void Start()
     {
         m_tanks = new List<Tank>();
+    }
+
+    protected virtual void Update()
+    {
+
     }
 
     public void addTank(Tank tank)
     {
         m_tanks.Add(tank);
     }
+}
+
+public class FactionHuman : Faction
+{
+    public FactionHuman(eFactionName name) :
+        base(name, eFactionControllerType.eHuman)
+    { }
 }

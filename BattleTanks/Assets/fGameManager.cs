@@ -5,12 +5,9 @@ using UnityEngine;
 public class fGameManager : MonoBehaviour
 {
     public Faction[] m_factions { get; private set; }
-    //spublic List<Faction> m_factions { get; private set; }
     [SerializeField]
     public Vector2Int m_mapSize;
-    private int m_ID = 0;
-
-    public PlayerTank m_player;
+    private int m_ID = 0; //Unique ID per ship
 
     private static fGameManager _instance;
     public static fGameManager Instance { get { return _instance; } }
@@ -28,8 +25,8 @@ public class fGameManager : MonoBehaviour
 
         Faction[] m_factions = new Faction[(int)eFactionName.Total];
         {
-            new Faction(eFactionName.Red);
-            new Faction(eFactionName.Blue);
+            new FactionAI(eFactionName.Red);
+            new FactionAI(eFactionName.Blue);
         }
 
         m_mapSize = new Vector2Int(128, 128);
