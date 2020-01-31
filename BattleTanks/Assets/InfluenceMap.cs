@@ -44,23 +44,6 @@ you can figure out where an enemy would go and how his influence would extend in
 //Red Positive
 //Blue Negative
 
-public class SearchRect
-{
-    public SearchRect(Vector2Int position, int distance)
-    {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-
-        left = Mathf.Max(position.x - distance, 0);
-        right = Mathf.Min(position.x + distance, mapSize.x);
-        top = Mathf.Max(position.y - distance, 0);
-        bottom = Mathf.Min(position.y + distance, mapSize.y);
-    }
-
-    public int left { get; private set; }
-    public int right { get; private set; }
-    public int top { get; private set; }
-    public int bottom { get; private set; }
-}
 
 public class Point
 {
@@ -142,12 +125,6 @@ public class InfluenceMap : MonoBehaviour
                 if (distance <= maxDistance)
                 {
                     proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
-
-                    //Create box at location
-                    //GameObject clone;
-                    //clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
-                    //clone.transform.localScale += new Vector3(0, proximityMap[y, x].value, 0);
-                    //m_boxes.Add(clone);
                 }
             }
         }
@@ -164,29 +141,29 @@ public class InfluenceMap : MonoBehaviour
                 if (distance <= threatDistance)
                 {
                     m_threatMap[y, x].value = strength * (1 - ((distance / threatDistance) * (distance / threatDistance)));
-
-                    ////Create box at location
-                    //GameObject clone;
-                    //clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
-                    //clone.transform.localScale += new Vector3(0, m_threatMap[y, x].value, 0);
-                    //m_boxes.Add(clone);
                 }
             }
         }
     }
 
+    void spawnCube(int x, int y)
+    { 
+        GameObject clone;
+        clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
+        clone.transform.localScale += new Vector3(0, m_threatMap[y, x].value, 0);
+        m_boxes.Add(clone);
+    }
+
     public Point getPointOnProximityMap(Vector3 position)
     {
-        Vector2Int positionOnGrid = new Vector2Int((int)Mathf.Abs(Mathf.Round(position.x)), 
-            (int)Mathf.Abs(Mathf.Round(position.z)));
+        Vector2Int positionOnGrid = Utilities.getPositionOnGrid(position);
 
         return proximityMap[positionOnGrid.y, positionOnGrid.x];
     }
 
     public Point getPointOnThreatMap(Vector3 position)
     {
-        Vector2Int positionOnGrid = new Vector2Int((int)Mathf.Abs(Mathf.Round(position.x)),
-            (int)Mathf.Abs(Mathf.Round(position.z)));
+        Vector2Int positionOnGrid = Utilities.getPositionOnGrid(position);
 
         return m_threatMap[positionOnGrid.y, positionOnGrid.x];
     }
@@ -221,10 +198,6 @@ public class InfluenceMap : MonoBehaviour
             {
                 foreach(Tank tank in faction.m_tanks)
                 {
-                    Vector3 tankPosition = tank.transform.position;
-                    tankPosition.x = Mathf.Abs(Mathf.Round(tankPosition.x));
-                    tankPosition.y = Mathf.Abs(Mathf.Round(tankPosition.z));
-
                     if (tank.m_factionName == eFactionName.Blue)
                     {
                         tank.m_strength = -tank.m_strength;
@@ -232,7 +205,7 @@ public class InfluenceMap : MonoBehaviour
                     }
 
                     //createInfluence(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_strength);
-                    createThreat(new Vector2Int((int)tankPosition.x, (int)tankPosition.y), tank.m_proximity, tank.m_threat);
+                    createThreat(Utilities.getPositionOnGrid(tank.transform.position), tank.m_proximity, tank.m_threat);
                 }
             }
         }

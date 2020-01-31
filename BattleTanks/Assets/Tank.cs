@@ -9,6 +9,7 @@ public class Tank : MonoBehaviour
     public float m_speed;
     public float m_strength;
     public int m_proximity;
+    public Vector3 m_oldPosition { get; protected set; }
 
     [SerializeField]
     public int m_ID { get; protected set; }
@@ -57,6 +58,9 @@ public class Tank : MonoBehaviour
         m_minDistance = 3;
         m_shotTimer.m_active = true;
         m_shotTimer.m_expiredTime = 2.0f;
+
+        m_oldPosition = transform.position;
+        fGameManager.Instance.updatePositionOnMap(this);
     }
 
     protected void move(float dTime)

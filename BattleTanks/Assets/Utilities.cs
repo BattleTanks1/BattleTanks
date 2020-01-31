@@ -2,6 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class SearchRect
+{
+    public SearchRect(Vector2Int position, int distance)
+    {
+        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+
+        left = Mathf.Max(position.x - distance, 0);
+        right = Mathf.Min(position.x + distance, mapSize.x);
+        top = Mathf.Max(position.y - distance, 0);
+        bottom = Mathf.Min(position.y + distance, mapSize.y);
+    }
+
+    public int left { get; private set; }
+    public int right { get; private set; }
+    public int top { get; private set; }
+    public int bottom { get; private set; }
+}
+
 public enum eDirection2D
 {
     Left = 0,
@@ -49,5 +67,10 @@ public static class Utilities
         };
 
         return directions2D;
+    }
+
+    static public Vector2Int getPositionOnGrid(Vector3 position)
+    {
+        return new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.z));
     }
 }
