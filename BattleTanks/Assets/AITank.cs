@@ -13,6 +13,38 @@ public class Transition
     //When transition goes to new state - it has fired
 }
 
+public enum eAIUniMessageType
+{
+    EnemySpottedAtPosition = 0
+}
+
+public class AIUnitMessage
+{
+    public AIUnitMessage(Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
+    {
+        m_position = position;
+        m_messageType = messageType;
+        m_senderID = senderID;
+        m_senderFaction = senderFaction;
+        m_targetID = Utilities.INVALID_ID;
+    }
+
+    public AIUnitMessage(int targetID, Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
+    {
+        m_targetID = targetID;
+        m_position = position;
+        m_messageType = messageType;
+        m_senderID = senderID;
+        m_senderFaction = senderFaction;
+    }
+
+    public Vector2Int m_position { get; private set; }
+    public int m_targetID { get; private set; }
+    public eAIUniMessageType m_messageType { get; private set; }
+    public int m_senderID { get; private set; }
+    public eFactionName m_senderFaction { get; private set; }
+}
+
 public enum eAIState
 {
     AwaitingDecision = 0,
@@ -61,8 +93,13 @@ public class AITank : Tank
                         if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), new Vector2Int(x, y)) <= m_visibilityDistance &&
                             fGameManager.Instance.isEnemyOnPosition(new Vector2Int(x, y), m_factionName))
                         {
-                            //Send message to commander
                             m_currentState = eAIState.AwaitingDecision;
+
+                            //Send message to commander
+                            GraphPoint pointOnEnemy = fGameManager.Instance.getPointOnMap(new Vector2Int(x, y));
+                            AIUnitMessage message = new AIUnitMessage(pointOnEnemy.tankID, new Vector2Int(x, y), eAIUniMessageType.EnemySpottedAtPosition,
+                                m_ID, m_factionName);
+                            fGameManager.Instance.sendAIControllerMessage(message);
                         }
                     }
                 }

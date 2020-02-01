@@ -28,6 +28,11 @@ abstract public class Faction
         m_tanks = new List<Tank>();
     }
 
+    public virtual void update()
+    {
+
+    }
+
     public void addTank(Tank tank)
     {
         m_tanks.Add(tank);

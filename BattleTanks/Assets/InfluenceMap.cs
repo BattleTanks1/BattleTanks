@@ -144,7 +144,7 @@ public class InfluenceMap : MonoBehaviour
         }
     }
 
-    void spawnCube(int x, int y)
+    private void spawnCube(int x, int y)
     { 
         GameObject clone;
         clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);

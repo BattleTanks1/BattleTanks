@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public enum eAIUniMessageType
-{
-    EnemySpottedAtPosition = 0
-}
-
-public class AIUnitMessage
-{
-   
-}
-
 public class GraphPoint
 {
     public void assign(int ID, eFactionName factionName)
@@ -35,8 +25,7 @@ public class fGameManager : MonoBehaviour
     public Faction[] m_factions;
     public Vector2Int m_mapSize { get; private set; }
     private int m_ID = 0; //Unique ID per ship
-    public GraphPoint[,] m_map { get; private set; }
-
+    private GraphPoint[,] m_map;
     private static fGameManager _instance;
     public static fGameManager Instance { get { return _instance; } }
 
@@ -119,5 +108,34 @@ public class fGameManager : MonoBehaviour
     {
         return m_map[position.y, position.x].tankID != Utilities.INVALID_ID &&
             m_map[position.y, position.x].tankFactionName != factionName;
+    }
+
+    public void sendAIControllerMessage(AIUnitMessage message)
+    {
+        switch (message.m_senderFaction)
+        {
+            case eFactionName.Red:
+                {
+                    FactionAI faction = m_factions[(int)message.m_senderFaction] as FactionAI;
+                    faction.addMessage(message);
+                }
+                break;
+            case eFactionName.Blue:
+                {
+                    FactionAI faction = m_factions[(int)message.m_senderFaction] as FactionAI;
+                    faction.addMessage(message);
+                }
+                break;
+        }
+    }
+
+    public GraphPoint getPointOnMap(Vector2Int position)
+    {
+        return m_map[position.y, position.x];
+    }
+
+    public GraphPoint getPointOnMap(int y, int x)
+    {
+        return m_map[y, x];
     }
 }
