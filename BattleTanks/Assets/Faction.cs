@@ -14,7 +14,7 @@ public enum eFactionControllerType
     eAI
 }
 
-abstract public class Faction 
+abstract public class Faction
 {
     public List<Tank> m_tanks;
     public eFactionName m_name { get; private set; }
@@ -24,16 +24,7 @@ abstract public class Faction
     {
         m_name = name;
         m_controllerType = controllerType;
-    }
-
-    protected virtual void Start()
-    {
         m_tanks = new List<Tank>();
-    }
-
-    protected virtual void Update()
-    {
-
     }
 
     public void addTank(Tank tank)

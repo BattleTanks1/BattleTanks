@@ -26,10 +26,12 @@ public class AITank : Tank
 {
     [SerializeField]
     public eAIState m_currentState;
+    public eAIBehaviour m_behaviour;
+
     public Vector3 m_positionToMoveTo;
     public float m_scaredValue;
     public float m_maxValueAtPosition;
-    public int m_targetID = -1;
+    public int m_targetID = Utilities.INVALID_ID;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -51,12 +53,12 @@ public class AITank : Tank
 
                 break;
             case eAIState.FindEnemy:
-                SearchRect searchRect = new SearchRect(Utilities.getPositionOnGrid(transform.position), m_visibilityDistance);
+                SearchRect searchRect = new SearchRect(Utilities.convertToGridPosition(transform.position), m_visibilityDistance);
                 for(int y = searchRect.top; y <= searchRect.bottom; ++y)
                 {
                     for (int x = searchRect.left; x <= searchRect.right; ++x)
                     {
-                        if (Vector2Int.Distance(Utilities.getPositionOnGrid(transform.position), new Vector2Int(x, y)) <= m_visibilityDistance &&
+                        if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), new Vector2Int(x, y)) <= m_visibilityDistance &&
                             fGameManager.Instance.isEnemyOnPosition(new Vector2Int(x, y), m_factionName))
                         {
                             //Send message to commander
@@ -72,7 +74,7 @@ public class AITank : Tank
                 break;
 
             case eAIState.MovingToNewPosition:
-                float step = m_speed * Time.deltaTime;
+                float step = m_movementSpeed * Time.deltaTime;
                 Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
                 if(!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
                 {

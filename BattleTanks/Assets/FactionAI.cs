@@ -17,31 +17,28 @@ public class FactionAI : Faction
 {
     public FactionAI(eFactionName name) : 
         base(name, eFactionControllerType.eAI)
-    {}
+    {
+       
+    }
 
     eAIBehaviour m_behaviour;
     eAIControllerState m_currentState;
 
-    // Start is called before the first frame update
-    protected override void Start()
-    {
-        base.Start();
-    }
 
     // Update is called once per frame
-    protected override void Update()
-    {
-        base.Start();
+    //protected override void Update()
+    //{
+    //    base.Start();
 
-        switch (m_currentState)
-        {
-            case eAIControllerState.MakeInitialDecision:
-                foreach(Tank tank in m_tanks)
-                {
-                    AITank tankAI = tank as AITank;
+    //    switch (m_currentState)
+    //    {
+    //        case eAIControllerState.MakeInitialDecision:
+    //            foreach(Tank tank in m_tanks)
+    //            {
+    //                AITank tankAI = tank as AITank;
                     
-                }
-                break;
-        }
-    }
+    //            }
+    //            break;
+    //    }
+    //}
 }

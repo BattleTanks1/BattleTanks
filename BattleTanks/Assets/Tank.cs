@@ -5,37 +5,21 @@ using UnityEngine;
 public class Tank : MonoBehaviour
 {
     public float m_safePositionValue;
-    public int m_threat;
-    public float m_speed;
-    public float m_strength;
+    public float m_movementSpeed;
     public int m_visibilityDistance;
-    public int m_proximity;
+
+    public float m_threatStrength;
+    public int m_threatDistance;
+
+    public float m_proximityStrength;
+    public int m_proximityDistance;
     public Vector3 m_oldPosition { get; protected set; }
 
     [SerializeField]
     public int m_ID { get; protected set; }
 
     [SerializeField]
-    public eFactionName m_factionName { get; protected set; }
-
-    [SerializeField]
-    private GameObject m_projectileSpawn = null;
-
-    //Movement related variables
-    [SerializeField]
-    protected float m_movementSpeed;
-
-    [SerializeField]
-    protected float m_maxSpeed = 20;
-
-    [SerializeField]
-    protected float m_rotationSpeed;
-
-    [SerializeField]
-    protected float m_maxRotation = 50;
-
-    [SerializeField]
-    protected int m_health;
+    public eFactionName m_factionName;
 
     //Turret
     private Timer m_shotTimer;
@@ -45,9 +29,6 @@ public class Tank : MonoBehaviour
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
 
-    [SerializeField]
-    protected float m_minDistance;
-
     private void Awake()
     {
         m_shotTimer = new Timer();
@@ -56,7 +37,6 @@ public class Tank : MonoBehaviour
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        m_minDistance = 3;
         m_shotTimer.m_active = true;
         m_shotTimer.m_expiredTime = 2.0f;
 
@@ -64,18 +44,8 @@ public class Tank : MonoBehaviour
         fGameManager.Instance.updatePositionOnMap(this);
     }
 
-    protected void move(float dTime)
-    {
-        transform.Rotate(new Vector3(0,m_rotationSpeed * Time.deltaTime, 0));
-        transform.Translate(transform.forward * m_movementSpeed * dTime);
-        m_movementSpeed = 0;
-        m_rotationSpeed = 0;
-    }
-
-
     protected virtual void Update()
     {
         m_shotTimer.update(Time.deltaTime);
-        move(Time.deltaTime);
     }
 }

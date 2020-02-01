@@ -82,7 +82,7 @@ public class PathFinding : MonoBehaviour
     {
         reset();
         Queue<Vector2Int> frontier = new Queue<Vector2Int>();
-        Vector2Int positionOnGrid = Utilities.getPositionOnGrid(position);
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
         frontier.Enqueue(positionOnGrid);
 
         Vector3 safePosition = new Vector3();

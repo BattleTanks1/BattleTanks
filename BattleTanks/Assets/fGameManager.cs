@@ -23,18 +23,17 @@ public class GraphPoint
 
     public void reset()
     {
-        tankID = -1;
+        tankID = Utilities.INVALID_ID;
     }
 
-    public int tankID = -1;
+    public int tankID = Utilities.INVALID_ID;
     public eFactionName tankFactionName;
 }
 
 public class fGameManager : MonoBehaviour
 {
-    public Faction[] m_factions { get; private set; }
-    [SerializeField]
-    public Vector2Int m_mapSize;
+    public Faction[] m_factions;
+    public Vector2Int m_mapSize { get; private set; }
     private int m_ID = 0; //Unique ID per ship
     public GraphPoint[,] m_map { get; private set; }
 
@@ -52,12 +51,11 @@ public class fGameManager : MonoBehaviour
             _instance = this;
         }
 
-        Faction[] m_factions = new Faction[(int)eFactionName.Total];
-        {
-            new FactionAI(eFactionName.Red);
-            new FactionAI(eFactionName.Blue);
-        }
+        m_factions = new Faction[(int)eFactionName.Total];
+        m_factions[(int)eFactionName.Red] = new FactionAI(eFactionName.Red);
+        m_factions[(int)eFactionName.Blue] = new FactionAI(eFactionName.Blue);
 
+        m_mapSize = new Vector2Int(128, 128);
         m_map = new GraphPoint[m_mapSize.y, m_mapSize.x];
         for (int y = 0; y < m_mapSize.y; ++y)
         {
@@ -66,8 +64,6 @@ public class fGameManager : MonoBehaviour
                 m_map[y, x] = new GraphPoint();
             }
         }
-
-        m_mapSize = new Vector2Int(128, 128);
     }
 
     private void Update()
@@ -94,8 +90,8 @@ public class fGameManager : MonoBehaviour
 
     public void updatePositionOnMap(Tank tank)
     {
-        Vector2Int oldPositionOnGrid = Utilities.getPositionOnGrid(tank.m_oldPosition);
-        Vector2Int currentPositionOnGrid = Utilities.getPositionOnGrid(tank.transform.position);
+        Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(tank.m_oldPosition);
+        Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
 
         if (oldPositionOnGrid != currentPositionOnGrid)
         {
@@ -107,7 +103,7 @@ public class fGameManager : MonoBehaviour
 
     public bool isPositionOccupied(Vector3 newPosition, int tankID)
     {
-        Vector2Int newPositionOnGrid = Utilities.getPositionOnGrid(newPosition);
+        Vector2Int newPositionOnGrid = Utilities.convertToGridPosition(newPosition);
 
         //Tank moving in same grid
         if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID == tankID)
@@ -116,14 +112,12 @@ public class fGameManager : MonoBehaviour
         }
 
         return m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != tankID &&
-            m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != -1;
+            m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != Utilities.INVALID_ID;
     }
 
     public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName)
     {
-        return m_map[position.y, position.x].tankID != -1 &&
+        return m_map[position.y, position.x].tankID != Utilities.INVALID_ID &&
             m_map[position.y, position.x].tankFactionName != factionName;
     }
-
-    public void sendMessageToAIController()
 }

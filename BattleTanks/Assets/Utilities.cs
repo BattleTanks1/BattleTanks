@@ -39,6 +39,7 @@ public enum eDirection2D
 
 public static class Utilities
 {
+    public const int INVALID_ID = -1;
     static public Vector2Int[] get2DDirections()
     {
         Vector2Int[] directions2D = new Vector2Int[(int)eDirection2D.Total]
@@ -77,7 +78,7 @@ public static class Utilities
         return directions2D;
     }
 
-    static public Vector2Int getPositionOnGrid(Vector3 position)
+    static public Vector2Int convertToGridPosition(Vector3 position)
     {
         return new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.z));
     }
