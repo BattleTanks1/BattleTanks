@@ -10,8 +10,16 @@ public class SearchRect
 
         left = Mathf.Max(position.x - distance, 0);
         right = Mathf.Min(position.x + distance, mapSize.x);
+        if(right == mapSize.x)
+        {
+            --right;
+        }
         top = Mathf.Max(position.y - distance, 0);
         bottom = Mathf.Min(position.y + distance, mapSize.y);
+        if(bottom == mapSize.y)
+        {
+            --bottom;
+        }
     }
 
     public int left { get; private set; }

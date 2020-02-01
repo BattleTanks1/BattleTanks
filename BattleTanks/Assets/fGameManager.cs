@@ -59,11 +59,11 @@ public class fGameManager : MonoBehaviour
         }
 
         m_map = new GraphPoint[m_mapSize.y, m_mapSize.x];
-        for(int y = 0; y < m_mapSize.y; ++y)
+        for (int y = 0; y < m_mapSize.y; ++y)
         {
-            for(int x = 0; x < m_mapSize.x; ++x)
+            for (int x = 0; x < m_mapSize.x; ++x)
             {
-                m_map[y, x] = new GraphPoint();        
+                m_map[y, x] = new GraphPoint();
             }
         }
 
@@ -101,7 +101,29 @@ public class fGameManager : MonoBehaviour
         {
             m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
         }
-   
+
         m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(tank.m_ID, tank.m_factionName);
     }
+
+    public bool isPositionOccupied(Vector3 newPosition, int tankID)
+    {
+        Vector2Int newPositionOnGrid = Utilities.getPositionOnGrid(newPosition);
+
+        //Tank moving in same grid
+        if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID == tankID)
+        {
+            return false;
+        }
+
+        return m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != tankID &&
+            m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != -1;
+    }
+
+    public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName)
+    {
+        return m_map[position.y, position.x].tankID != -1 &&
+            m_map[position.y, position.x].tankFactionName != factionName;
+    }
+
+    public void sendMessageToAIController()
 }

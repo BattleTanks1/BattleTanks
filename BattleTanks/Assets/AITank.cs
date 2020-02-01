@@ -29,6 +29,7 @@ public class AITank : Tank
     public Vector3 m_positionToMoveTo;
     public float m_scaredValue;
     public float m_maxValueAtPosition;
+    public int m_targetID = -1;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -50,7 +51,19 @@ public class AITank : Tank
 
                 break;
             case eAIState.FindEnemy:
-                
+                SearchRect searchRect = new SearchRect(Utilities.getPositionOnGrid(transform.position), m_visibilityDistance);
+                for(int y = searchRect.top; y <= searchRect.bottom; ++y)
+                {
+                    for (int x = searchRect.left; x <= searchRect.right; ++x)
+                    {
+                        if (Vector2Int.Distance(Utilities.getPositionOnGrid(transform.position), new Vector2Int(x, y)) <= m_visibilityDistance &&
+                            fGameManager.Instance.isEnemyOnPosition(new Vector2Int(x, y), m_factionName))
+                        {
+                            //Send message to commander
+                            m_currentState = eAIState.AwaitingDecision;
+                        }
+                    }
+                }
                 break;
             case eAIState.SetDestinationToSafePosition:
                 m_positionToMoveTo = PathFinding.Instance.getClosestSafePosition(transform.position, 8);
@@ -59,14 +72,17 @@ public class AITank : Tank
                 break;
 
             case eAIState.MovingToNewPosition:
-
                 float step = m_speed * Time.deltaTime;
-                m_oldPosition = transform.position;
-                transform.position = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
-                fGameManager.Instance.updatePositionOnMap(this);
-                if (transform.position == m_positionToMoveTo)
+                Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
+                if(!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
                 {
-                    m_currentState = eAIState.AwaitingDecision;
+                    m_oldPosition = transform.position;
+                    transform.position = newPosition;
+                    fGameManager.Instance.updatePositionOnMap(this);
+                    if (transform.position == m_positionToMoveTo)
+                    {
+                        m_currentState = eAIState.AwaitingDecision;
+                    }
                 }
                 break;
         }

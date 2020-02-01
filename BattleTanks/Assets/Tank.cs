@@ -8,6 +8,7 @@ public class Tank : MonoBehaviour
     public int m_threat;
     public float m_speed;
     public float m_strength;
+    public int m_visibilityDistance;
     public int m_proximity;
     public Vector3 m_oldPosition { get; protected set; }
 

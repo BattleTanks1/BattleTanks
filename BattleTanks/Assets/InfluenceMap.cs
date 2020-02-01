@@ -117,9 +117,9 @@ public class InfluenceMap : MonoBehaviour
     private void createInfluence(Vector2Int position, int maxDistance, float strength)
     {
         SearchRect searchableRect = new SearchRect(position, maxDistance);
-        for (int y = searchableRect.top; y < searchableRect.bottom; ++y)
+        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
         {
-            for (int x = searchableRect.left; x < searchableRect.right; ++x)
+            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
@@ -133,9 +133,9 @@ public class InfluenceMap : MonoBehaviour
     private void createThreat(Vector2Int position, int threatDistance, float strength)
     {
         SearchRect searchableRect = new SearchRect(position, threatDistance);
-        for (int y = searchableRect.top; y < searchableRect.bottom; ++y)
+        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
         {
-            for (int x = searchableRect.left; x < searchableRect.right; ++x)
+            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= threatDistance)
