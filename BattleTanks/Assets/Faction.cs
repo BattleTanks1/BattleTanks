@@ -8,6 +8,7 @@ public enum eFactionName
     Blue,
     Total
 }
+
 public enum eFactionControllerType
 {
     eHuman = 0,

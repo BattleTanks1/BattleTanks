@@ -13,6 +13,7 @@ public class Tank : MonoBehaviour
 
     public float m_proximityStrength;
     public int m_proximityDistance;
+
     public Vector3 m_oldPosition { get; protected set; }
 
     [SerializeField]

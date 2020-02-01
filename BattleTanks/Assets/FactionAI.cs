@@ -15,15 +15,13 @@ public enum eAIControllerState
 
 public class FactionAI : Faction
 {
-    public FactionAI(eFactionName name) : 
-        base(name, eFactionControllerType.eAI)
+    public FactionAI(eFactionName name) : base(name, eFactionControllerType.eAI)
     {
        
     }
 
     eAIBehaviour m_behaviour;
     eAIControllerState m_currentState;
-
 
     // Update is called once per frame
     //protected override void Update()
