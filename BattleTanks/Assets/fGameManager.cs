@@ -110,7 +110,7 @@ public class fGameManager : MonoBehaviour
             m_map[position.y, position.x].tankFactionName != factionName;
     }
 
-    public void sendAIControllerMessage(AIUnitMessage message)
+    public void sendAIControllerMessage(MessageToAIController message)
     {
         switch (message.m_senderFaction)
         {

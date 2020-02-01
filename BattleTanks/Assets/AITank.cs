@@ -18,9 +18,9 @@ public enum eAIUniMessageType
     EnemySpottedAtPosition = 0
 }
 
-public class AIUnitMessage
+public class MessageToAIController
 {
-    public AIUnitMessage(Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
+    public MessageToAIController(Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
     {
         m_position = position;
         m_messageType = messageType;
@@ -29,7 +29,7 @@ public class AIUnitMessage
         m_targetID = Utilities.INVALID_ID;
     }
 
-    public AIUnitMessage(int targetID, Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
+    public MessageToAIController(int targetID, Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
     {
         m_targetID = targetID;
         m_position = position;
@@ -49,6 +49,7 @@ public enum eAIState
 {
     AwaitingDecision = 0,
     FindEnemy,
+    TargetEnemy,
     MovingToNewPosition,
     Shoot,
     SetDestinationToSafePosition,
@@ -97,7 +98,7 @@ public class AITank : Tank
 
                             //Send message to commander
                             GraphPoint pointOnEnemy = fGameManager.Instance.getPointOnMap(new Vector2Int(x, y));
-                            AIUnitMessage message = new AIUnitMessage(pointOnEnemy.tankID, new Vector2Int(x, y), eAIUniMessageType.EnemySpottedAtPosition,
+                            MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, new Vector2Int(x, y), eAIUniMessageType.EnemySpottedAtPosition,
                                 m_ID, m_factionName);
                             fGameManager.Instance.sendAIControllerMessage(message);
                         }
@@ -124,6 +125,38 @@ public class AITank : Tank
                     }
                 }
                 break;
+            case eAIState.TargetEnemy:
+                {
+                    if(isTargetStillInSight(m_targetID))
+                    {
+                        //Shoot
+                    }
+                    else
+                    {
+                        m_currentState = eAIState.AwaitingDecision;
+                    }
+                }
+                break;
         }
+    }
+
+    private bool isTargetStillInSight(int targetID)
+    {
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+        SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
+        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+        {
+            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+            {
+                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                if (distance <= m_visibilityDistance &&
+                    fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

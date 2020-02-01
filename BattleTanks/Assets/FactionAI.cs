@@ -10,64 +10,107 @@ public enum eAIBehaviour
 
 public enum eAIControllerState
 {
-    MakeInitialDecision = 0
+    MakeInitialDecision = 0,
+    Maintain
+}
+
+public class MessageToAIUnit
+{
+    public MessageToAIUnit(int targetID, int receiverID, eAIState messageType)
+    {
+        m_targetID = targetID;
+        m_receiverID = receiverID;
+        m_messageType = messageType;
+    }
+
+    public int m_targetID { get; private set; }
+    public int m_receiverID { get; private set; }
+    public eAIState m_messageType { get; private set; }
 }
 
 public class FactionAI : Faction
 {
-    public FactionAI(eFactionName name) : base(name, eFactionControllerType.eAI)
+    public FactionAI(eFactionName name) : 
+        base(name, eFactionControllerType.eAI)
     {
 
     }
 
     eAIBehaviour m_behaviour;
     eAIControllerState m_currentState;
-    Queue<AIUnitMessage> m_receivedMessages;
-
+    Queue<MessageToAIController> m_receivedMessages;
+    Queue<MessageToAIUnit> m_messagesToSend;
 
     public override void update()
     {
         base.update();
-        handleMessages();
 
+        handleReceivedMessages();
+        handleToSendMessages();
+
+        //Handle the flow of Battle
         switch (m_currentState)
         {
             case eAIControllerState.MakeInitialDecision:
                 foreach (Tank tank in m_tanks)
                 {
                     AITank tankAI = tank as AITank;
+
                     tankAI.m_currentState = eAIState.FindEnemy;
                 }
+                m_currentState = eAIControllerState.Maintain;
+                break;
+            case eAIControllerState.Maintain:
+
                 break;
         }
     }
 
-    public void addMessage(AIUnitMessage newMessage)
+    public void addMessage(MessageToAIController newMessage)
     {
         m_receivedMessages.Enqueue(newMessage);
     }
 
-    private void handleMessages()
+    private void handleToSendMessages()
     {
-        while(m_receivedMessages.Count > 0)
+        while(m_messagesToSend.Count > 0)
         {
-            AIUnitMessage receivedMessage = m_receivedMessages.Dequeue();
-            switch (receivedMessage.m_messageType)
+            MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
+            AITank tank = getTank(messageToSend.m_receiverID);
+            switch (messageToSend.m_messageType)
             {
-                case eAIUniMessageType.EnemySpottedAtPosition:
-                    if(isEnemyStillInSight(receivedMessage))
+                case eAIState.TargetEnemy:
                     {
-
+                        tank.m_targetID = messageToSend.m_targetID;
+                        tank.m_currentState = messageToSend.m_messageType;
                     }
                     break;
             }
         }
     }
 
-    private Tank getTank(int ID)
+    private void handleReceivedMessages()
     {
-        Tank tank = null;
-        foreach(Tank i in m_tanks)
+        while(m_receivedMessages.Count > 0)
+        {
+            MessageToAIController receivedMessage = m_receivedMessages.Dequeue();
+            switch (receivedMessage.m_messageType)
+            {
+                case eAIUniMessageType.EnemySpottedAtPosition:
+                    if(isEnemyStillInSight(receivedMessage))
+                    {
+                        m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID, 
+                           eAIState.TargetEnemy));
+                    }
+                    break;
+            }
+        }
+    }
+
+    private AITank getTank(int ID)
+    {
+        AITank tank = null;
+        foreach(AITank i in m_tanks)
         {
             if(i.m_ID == ID)
             {
@@ -78,9 +121,9 @@ public class FactionAI : Faction
         return tank;
     }
 
-    private bool isEnemyStillInSight(AIUnitMessage receivedMessage)
+    private bool isEnemyStillInSight(MessageToAIController receivedMessage)
     {
-        Tank messageSender = getTank(receivedMessage.m_senderID);
+        AITank messageSender = getTank(receivedMessage.m_senderID);
         if(!messageSender)
         {
             return false;
