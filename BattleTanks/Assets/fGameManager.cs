@@ -109,8 +109,14 @@ public class fGameManager : MonoBehaviour
 
     public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName)
     {
-        return m_map[position.y, position.x].tankID != Utilities.INVALID_ID &&
-            m_map[position.y, position.x].tankFactionName != factionName;
+        if(m_map[position.y, position.x].tankID != Utilities.INVALID_ID)
+        {
+            return m_map[position.y, position.x].tankFactionName != factionName;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void sendAIControllerMessage(MessageToAIController message)

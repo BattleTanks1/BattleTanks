@@ -67,8 +67,7 @@ public class Tank : MonoBehaviour
 
     public Vector3 m_oldPosition { get; protected set; }
 
-    [SerializeField]
-    public int m_ID { get; protected set; }
+    public int m_ID;
 
     [SerializeField]
     public eFactionName m_factionName;
@@ -78,8 +77,7 @@ public class Tank : MonoBehaviour
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
 
-
-    public float m_expiredTime;
+    public float m_timeBetweenShot;
     private float m_elaspedTime = 0.0f;
 
     //AI Stuff
@@ -97,12 +95,15 @@ public class Tank : MonoBehaviour
     protected virtual void Start()
     {
         m_oldPosition = transform.position;
-        fGameManager.Instance.updatePositionOnMap(this);
         m_ID = fGameManager.Instance.addTank(this);
+        fGameManager.Instance.updatePositionOnMap(this);
+        m_elaspedTime = m_timeBetweenShot;
     }
 
     protected virtual void Update()
-    { 
+    {
+        m_elaspedTime += Time.deltaTime;
+
         switch (m_currentState)
         {
             case eAIState.AwaitingDecision:
@@ -152,6 +153,7 @@ public class Tank : MonoBehaviour
             case eAIState.ShootAtEnemy:
                 {
                     bool targetFound = false;
+                    Vector3 enemyPosition = new Vector3();
                     Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
                     SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
 
@@ -164,20 +166,32 @@ public class Tank : MonoBehaviour
                                 fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
                             {
                                 targetFound = true;
+                                enemyPosition = new Vector3(x, 0, y);
 
-                                //Shoot
-                                Rigidbody clone;
-                                clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
-                                Vector3 vBetween = new Vector3(x, 0, y) - transform.position;
-                                clone.velocity = transform.TransformDirection(vBetween.normalized * 10);
+                                break;
                             }
+                        }
+
+                        if(targetFound)
+                        {
+                            break;
                         }
                     }
 
-                    if (!targetFound)
+                    if(targetFound && m_elaspedTime >= m_timeBetweenShot)
+                    {
+                        m_elaspedTime = 0.0f;
+                        Rigidbody clone;
+                        clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
+                        Vector3 vBetween = enemyPosition - transform.position;
+                        clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
+                        print(enemyPosition.x);
+                        print(enemyPosition.z);
+                    }
+                    else if (!targetFound)
                     {
                         m_targetID = Utilities.INVALID_ID;
-                        m_currentState = eAIState.AwaitingDecision;
+                        m_currentState = eAIState.FindEnemy;
                     }
                 }
                 break;

@@ -67,6 +67,7 @@ public class FactionAI : Faction
                     {
                         tank.m_targetID = messageToSend.m_targetID;
                         tank.m_currentState = messageToSend.m_messageType;
+                        Debug.Log("Shoot At Enemy");
                     }
                     break;
             }
