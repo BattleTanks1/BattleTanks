@@ -16,17 +16,21 @@ public enum eAIControllerState
 
 public class MessageToAIUnit
 {
-    public MessageToAIUnit(int targetID, int receiverID, eAIState messageType)
+    public MessageToAIUnit(int targetID, int receiverID, eAIState messageType, Vector2Int lastTargetPosition)
     {
         m_targetID = targetID;
         m_receiverID = receiverID;
         m_messageType = messageType;
+        m_lastTargetPosition = lastTargetPosition;
     }
 
     public int m_targetID { get; private set; }
     public int m_receiverID { get; private set; }
     public eAIState m_messageType { get; private set; }
+    public Vector2Int m_lastTargetPosition { get; private set; }
 }
+
+//Handle existing targets positions - Target might of moved when Tank is moving there
 
 public class FactionAI : Faction
 {
@@ -75,11 +79,12 @@ public class FactionAI : Faction
             Tank tank = getTank(messageToSend.m_receiverID);
             switch (messageToSend.m_messageType)
             {
-                case eAIState.ShootAtEnemy:
+                case eAIState.TargetEnemy:
                     {
                         tank.m_targetID = messageToSend.m_targetID;
                         tank.m_currentState = messageToSend.m_messageType;
-
+                        tank.m_positionToMoveTo = Utilities.convertToWorldPosition(messageToSend.m_lastTargetPosition);
+                        
                         Debug.Log("Shoot At Enemy");
                     }
                     break;
@@ -98,7 +103,7 @@ public class FactionAI : Faction
                     if(isEnemyStillInSight(receivedMessage))
                     {
                         m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID, 
-                           eAIState.ShootAtEnemy));
+                           eAIState.TargetEnemy, receivedMessage.m_lastTargetPosition));
 
                         m_visibleTargets.Add(receivedMessage.m_targetID);
                     }
@@ -155,24 +160,32 @@ public class FactionAI : Faction
         int targetID = Utilities.INVALID_ID;
         float distance = float.MaxValue;
         Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+        Vector2Int closestTargetPositionOnGrid = new Vector2Int();
 
-        foreach(int visibleTargetID in m_visibleTargets)
+        foreach (int visibleTargetID in m_visibleTargets)
         {
             Vector2Int targetPositionOnGrid = new Vector2Int();
-            if(isTargetInSight(visibleTargetID, targetPositionOnGrid))
+            if (isTargetInSight(visibleTargetID, out targetPositionOnGrid))
             {
                 float i = Vector2Int.Distance(targetPositionOnGrid, tankPositionOnGrid);
                 if(i < distance)
                 {
                     distance = i;
                     targetID = visibleTargetID;
+                    closestTargetPositionOnGrid = targetPositionOnGrid;
                 }
             }
         }
+
+        tank.m_targetID = targetID;
+        tank.m_currentState = eAIState.TargetEnemy;
+        tank.m_positionToMoveTo = Utilities.convertToWorldPosition(closestTargetPositionOnGrid);
     }
 
-    private bool isTargetInSight(int targetID, Vector2Int targetGridPosition)
+    private bool isTargetInSight(int targetID, out Vector2Int targetGridPosition)
     {
+        Vector2Int position = new Vector2Int();
+        bool targetFound = false;
         foreach (Tank tank in m_tanks)
         {
             Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
@@ -185,13 +198,16 @@ public class FactionAI : Faction
                     if (distance <= tank.m_visibilityDistance &&
                         fGameManager.Instance.getPointOnMap(y, x).tankID == targetID)
                     {
-                        targetGridPosition = new Vector2Int(x, y);
-                        return true;
+                        position = new Vector2Int(x, y);
+                        targetFound = true;
+                        goto End;
                     }
                 }
             }
         }
 
-        return false;
+    End:
+        targetGridPosition = position;
+        return targetFound;
     }
 }

@@ -121,7 +121,7 @@ public class InfluenceMap : MonoBehaviour
                 if (distance <= maxDistance)
                 {
                     proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
-                    spawnCube(x, y, proximityMap[y, x].value);
+                    //spawnCube(x, y, proximityMap[y, x].value);
                 }
             }
         }

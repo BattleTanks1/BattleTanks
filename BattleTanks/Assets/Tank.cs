@@ -21,10 +21,10 @@ public enum eAIUniMessageType
 
 public class MessageToAIController
 {
-    public MessageToAIController(int targetID, Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
+    public MessageToAIController(int targetID, Vector2Int lastTargetPosition, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
     {
         m_targetID = targetID;
-        m_position = position;
+        m_lastTargetPosition = lastTargetPosition;
         m_messageType = messageType;
         m_senderID = senderID;
         m_senderFaction = senderFaction;
@@ -36,7 +36,7 @@ public class MessageToAIController
         m_messageType = messageType;
     }
 
-    public Vector2Int m_position { get; private set; }
+    public Vector2Int m_lastTargetPosition { get; private set; }
     public int m_targetID { get; private set; }
     public eAIUniMessageType m_messageType { get; private set; }
     public int m_senderID { get; private set; }
@@ -47,7 +47,7 @@ public enum eAIState
 {
     AwaitingDecision = 0,
     FindEnemy,
-    ShootAtEnemy,
+    TargetEnemy,
     MovingToNewPosition,
     SetDestinationToSafePosition,
 }
@@ -70,6 +70,7 @@ public class Tank : MonoBehaviour
     [SerializeField]
     public eFactionName m_factionName;
 
+    public float m_shootRange;
     [SerializeField]
     protected Rigidbody m_projectile = null;
     [SerializeField]
@@ -135,64 +136,87 @@ public class Tank : MonoBehaviour
                 break;
 
             case eAIState.MovingToNewPosition:
-                float step = m_movementSpeed * Time.deltaTime;
-                Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
-                if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
                 {
-                    m_oldPosition = transform.position;
-                    transform.position = newPosition;
-                    fGameManager.Instance.updatePositionOnMap(this);
-                    if (transform.position == m_positionToMoveTo)
+                    float step = m_movementSpeed * Time.deltaTime;
+                    Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
+                    if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
                     {
-                        m_currentState = eAIState.AwaitingDecision;
+                        m_oldPosition = transform.position;
+                        transform.position = newPosition;
+                        fGameManager.Instance.updatePositionOnMap(this);
+                        if (transform.position == m_positionToMoveTo)
+                        {
+                            m_currentState = eAIState.AwaitingDecision;
+                        }
                     }
                 }
                 break;
-            case eAIState.ShootAtEnemy:
+            case eAIState.TargetEnemy:
                 {
-                    bool targetFound = false;
-                    Vector3 enemyPosition = new Vector3();
-                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-                    SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
-
-                    for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+                    //Moving to enemy position - 'm_positionToMoveTo
+                    if (Vector3.Distance(m_positionToMoveTo, transform.position) > m_shootRange)
                     {
-                        for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                        float step = m_movementSpeed * Time.deltaTime;
+                        Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
+                        if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
                         {
-                            float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-                            if (distance <= m_visibilityDistance &&
-                                fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
-                            {
-                                targetFound = true;
-                                enemyPosition = new Vector3(x, 0, y);
+                            m_oldPosition = transform.position;
+                            transform.position = newPosition;
+                            fGameManager.Instance.updatePositionOnMap(this);
+                        }
+                    }
+                    //Close enough to shoot
+                    else
+                    {
+                        bool targetFound = false;
+                        Vector3 enemyPosition = new Vector3();
+                        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+                        SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
 
+                        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+                        {
+                            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                            {
+                                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                                if (distance <= m_visibilityDistance &&
+                                    fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                                {
+                                    targetFound = true;
+                                    enemyPosition = new Vector3(x, 0, y);
+
+                                    break;
+                                }
+                            }
+
+                            if (targetFound)
+                            {
                                 break;
                             }
                         }
-
-                        if(targetFound)
+                        
+                        if (targetFound)
                         {
-                            break;
+                            if (targetFound && m_elaspedTime >= m_timeBetweenShot)
+                            {
+                                m_elaspedTime = 0.0f;
+
+                                Rigidbody clone;
+                                clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
+                                Vector3 vBetween = enemyPosition - transform.position;
+                                clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
+                            }
+                        }
+                        //Target not found
+                        else 
+                        {
+                            print("Lost sight of Enemy");
+
+                            fGameManager.Instance.sendAIControllerMessage(new MessageToAIController(m_targetID, eAIUniMessageType.LostSightOfEnemy, m_factionName));
+                            m_targetID = Utilities.INVALID_ID;
+                            m_currentState = eAIState.FindEnemy;
                         }
                     }
-
-                    if(targetFound && m_elaspedTime >= m_timeBetweenShot)
-                    {
-                        m_elaspedTime = 0.0f;
-
-                        Rigidbody clone;
-                        clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
-                        Vector3 vBetween = enemyPosition - transform.position;
-                        clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
-                    }
-                    else if (!targetFound)
-                    {
-                        print("Lost sight of Enemy");
-
-                        fGameManager.Instance.sendAIControllerMessage(new MessageToAIController(m_targetID, eAIUniMessageType.LostSightOfEnemy, m_factionName));
-                        m_targetID = Utilities.INVALID_ID;
-                        m_currentState = eAIState.FindEnemy;
-                    }
+                    
                 }
                 break;
         }

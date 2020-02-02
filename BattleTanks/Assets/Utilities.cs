@@ -83,4 +83,9 @@ public static class Utilities
     {
         return new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.z));
     }
+
+    static public Vector3 convertToWorldPosition(Vector2Int position)
+    {
+        return new Vector3(position.x, 0, position.y);
+    }
 }
