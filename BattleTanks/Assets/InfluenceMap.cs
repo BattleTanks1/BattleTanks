@@ -138,7 +138,6 @@ public class InfluenceMap : MonoBehaviour
                 if (distance <= maxDistance)
                 {
                     m_threatMap[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
-                    spawnCube(x, y);
                 }
             }
         }

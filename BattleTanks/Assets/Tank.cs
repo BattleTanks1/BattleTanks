@@ -73,14 +73,14 @@ public class Tank : MonoBehaviour
     [SerializeField]
     public eFactionName m_factionName;
 
-    //Turret
-    private Timer m_shotTimer;
-
     [SerializeField]
     protected Rigidbody m_projectile = null;
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
 
+
+    public float m_expiredTime;
+    private float m_elaspedTime = 0.0f;
 
     //AI Stuff
     [SerializeField]
@@ -92,27 +92,17 @@ public class Tank : MonoBehaviour
     public float m_maxValueAtPosition;
     public int m_targetID = Utilities.INVALID_ID;
 
-    private void Awake()
-    {
-        m_shotTimer = new Timer();
-    }
 
     // Start is called before the first frame update
     protected virtual void Start()
     {
-        m_shotTimer.m_active = true;
-        m_shotTimer.m_expiredTime = 2.0f;
-
         m_oldPosition = transform.position;
         fGameManager.Instance.updatePositionOnMap(this);
         m_ID = fGameManager.Instance.addTank(this);
-        m_currentState = eAIState.AwaitingDecision;
     }
 
     protected virtual void Update()
-    {
-        m_shotTimer.update(Time.deltaTime);
-
+    { 
         switch (m_currentState)
         {
             case eAIState.AwaitingDecision:
