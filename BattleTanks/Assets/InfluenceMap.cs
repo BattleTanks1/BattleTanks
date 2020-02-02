@@ -121,7 +121,7 @@ public class InfluenceMap : MonoBehaviour
                 if (distance <= maxDistance)
                 {
                     proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
-                    
+                    spawnCube(x, y, proximityMap[y, x].value);
                 }
             }
         }
@@ -138,16 +138,17 @@ public class InfluenceMap : MonoBehaviour
                 if (distance <= maxDistance)
                 {
                     m_threatMap[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
+                   
                 }
             }
         }
     }
 
-    private void spawnCube(int x, int y)
+    private void spawnCube(int x, int y, float value)
     { 
         GameObject clone;
         clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
-        clone.transform.localScale += new Vector3(0, m_threatMap[y, x].value, 0);
+        clone.transform.localScale += new Vector3(0, value, 0);
         m_boxes.Add(clone);
     }
 
@@ -174,7 +175,7 @@ public class InfluenceMap : MonoBehaviour
     {
         while(true)
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(1.0f);
             foreach (GameObject box in m_boxes)
             {
                 Destroy(box);
@@ -201,7 +202,6 @@ public class InfluenceMap : MonoBehaviour
                     }
 
                     Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-
                     createInfluence(tankPositionOnGrid, tank.m_proximityStrength, tank.m_proximityDistance);
                     createThreat(tankPositionOnGrid, tank.m_threatStrength, tank.m_threatDistance);
                 }

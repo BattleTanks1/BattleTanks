@@ -185,11 +185,10 @@ public class Tank : MonoBehaviour
                         clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
                         Vector3 vBetween = enemyPosition - transform.position;
                         clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
-                        print(enemyPosition.x);
-                        print(enemyPosition.z);
                     }
                     else if (!targetFound)
                     {
+                        print("Lost sight of Enemy");
                         m_targetID = Utilities.INVALID_ID;
                         m_currentState = eAIState.FindEnemy;
                     }
