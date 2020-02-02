@@ -146,13 +146,10 @@ public class InfluenceMap : MonoBehaviour
 
     private void spawnCube(int x, int y, float value)
     {
-        if (value > 0.0f)
-        {
-            GameObject clone;
-            clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
-            clone.transform.localScale += new Vector3(0, value, 0);
-            m_boxes.Add(clone);
-        }
+        GameObject clone;
+        clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
+        clone.transform.localScale += new Vector3(0, value, 0);
+        m_boxes.Add(clone);
     }
 
     public Point getPointOnProximityMap(Vector3 position)
