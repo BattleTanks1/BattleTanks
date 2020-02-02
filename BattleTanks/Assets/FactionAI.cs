@@ -8,12 +8,6 @@ public enum eAIBehaviour
     Passive
 }
 
-public enum eAIControllerState
-{
-    MakeInitialDecision = 0,
-    Maintain
-}
-
 public class MessageToAIUnit
 {
     public MessageToAIUnit(int targetID, int receiverID, eAIState messageType, Vector2Int lastTargetPosition)
@@ -30,8 +24,6 @@ public class MessageToAIUnit
     public Vector2Int m_lastTargetPosition { get; private set; }
 }
 
-//Handle existing targets positions - Target might of moved when Tank is moving there
-
 public class FactionAI : Faction
 {
     public FactionAI(eFactionName name) : 
@@ -42,7 +34,6 @@ public class FactionAI : Faction
         m_visibleTargets = new HashSet<int>();
     }
 
-    eAIBehaviour m_behaviour;
     Queue<MessageToAIController> m_receivedMessages;
     Queue<MessageToAIUnit> m_messagesToSend;
     HashSet<int> m_visibleTargets;
@@ -58,9 +49,46 @@ public class FactionAI : Faction
         {
             foreach(Tank tank in m_tanks)
             {
-                if(tank.m_currentState == eAIState.AwaitingDecision)
+                if(tank.m_currentState == eAIState.AwaitingDecision && 
+                    tank.m_targetID == Utilities.INVALID_ID &&
+                    m_visibleTargets.Count > 0)
                 {
                     assignTankToAppropriateEnemy(tank);
+                }
+                else if(tank.m_targetID != Utilities.INVALID_ID &&
+                    )
+            }
+        }
+
+        //Handle existing targets positions - Target might of moved when Tank is moving there
+        foreach (Tank tank in m_tanks)
+        {
+            if(tank.m_targetID == Utilities.INVALID_ID)
+            {
+                continue;
+            }
+
+            bool targetFound = false;
+            Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+            SearchRect searchableRect = new SearchRect(tankPositionOnGrid, tank.m_visibilityDistance);
+            for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+            {
+                for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                {
+                    float distance = Vector2Int.Distance(tankPositionOnGrid, new Vector2Int(x, y));
+                    if (distance <= tank.m_visibilityDistance &&
+                        fGameManager.Instance.getPointOnMap(y, x).tankID == tank.m_targetID)
+                    {
+                        targetFound = true;
+                        enemyPosition = new Vector3(x, 0, y);
+
+                        break;
+                    }
+                }
+
+                if (targetFound)
+                {
+                    break;
                 }
             }
         }
