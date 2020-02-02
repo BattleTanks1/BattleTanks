@@ -57,7 +57,10 @@ public class fGameManager : MonoBehaviour
 
     private void Update()
     {
-
+        foreach(Faction faction in m_factions)
+        {
+            faction.update();
+        }
     }
 
     public int addTank(Tank tank)

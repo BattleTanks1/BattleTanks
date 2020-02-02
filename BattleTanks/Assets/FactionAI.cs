@@ -33,7 +33,8 @@ public class FactionAI : Faction
     public FactionAI(eFactionName name) : 
         base(name, eFactionControllerType.eAI)
     {
-
+        m_receivedMessages = new Queue<MessageToAIController>();
+        m_messagesToSend = new Queue<MessageToAIUnit>();
     }
 
     eAIBehaviour m_behaviour;
@@ -47,23 +48,6 @@ public class FactionAI : Faction
 
         handleReceivedMessages();
         handleToSendMessages();
-
-        //Handle the flow of Battle
-        switch (m_currentState)
-        {
-            case eAIControllerState.MakeInitialDecision:
-                foreach (Tank tank in m_tanks)
-                {
-                    TankAI tankAI = tank as TankAI;
-
-                    tankAI.m_currentState = eAIState.FindEnemy;
-                }
-                m_currentState = eAIControllerState.Maintain;
-                break;
-            case eAIControllerState.Maintain:
-
-                break;
-        }
     }
 
     public void addMessage(MessageToAIController newMessage)
@@ -76,10 +60,10 @@ public class FactionAI : Faction
         while(m_messagesToSend.Count > 0)
         {
             MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
-            TankAI tank = getTank(messageToSend.m_receiverID);
+            Tank tank = getTank(messageToSend.m_receiverID);
             switch (messageToSend.m_messageType)
             {
-                case eAIState.TargetEnemy:
+                case eAIState.ShootAtEnemy:
                     {
                         tank.m_targetID = messageToSend.m_targetID;
                         tank.m_currentState = messageToSend.m_messageType;
@@ -100,17 +84,17 @@ public class FactionAI : Faction
                     if(isEnemyStillInSight(receivedMessage))
                     {
                         m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID, 
-                           eAIState.TargetEnemy));
+                           eAIState.ShootAtEnemy));
                     }
                     break;
             }
         }
     }
 
-    private TankAI getTank(int ID)
+    private Tank getTank(int ID)
     {
-        TankAI tank = null;
-        foreach(TankAI i in m_tanks)
+        Tank tank = null;
+        foreach(Tank i in m_tanks)
         {
             if(i.m_ID == ID)
             {
@@ -123,7 +107,7 @@ public class FactionAI : Faction
 
     private bool isEnemyStillInSight(MessageToAIController receivedMessage)
     {
-        TankAI messageSender = getTank(receivedMessage.m_senderID);
+        Tank messageSender = getTank(receivedMessage.m_senderID);
         if(!messageSender)
         {
             return false;

@@ -90,7 +90,7 @@ public class InfluenceMap : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
-    public bool isPositionInThreat(TankAI tank)
+    public bool isPositionInThreat(Tank tank)
     {
         if (tank.m_factionName == eFactionName.Red)
         {
@@ -197,8 +197,8 @@ public class InfluenceMap : MonoBehaviour
                 {
                     if (tank.m_factionName == eFactionName.Blue)
                     {
-                        tank.m_proximityStrength = -tank.m_proximityStrength;
-                        tank.m_threatStrength = -tank.m_threatStrength;
+                        //tank.m_proximityStrength = -tank.m_proximityStrength;
+                        //tank.m_threatStrength = -tank.m_threatStrength;
                     }
 
                     Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
