@@ -35,12 +35,13 @@ public class FactionAI : Faction
     {
         m_receivedMessages = new Queue<MessageToAIController>();
         m_messagesToSend = new Queue<MessageToAIUnit>();
+        m_visibleTargets = new HashSet<int>();
     }
 
     eAIBehaviour m_behaviour;
-    eAIControllerState m_currentState;
     Queue<MessageToAIController> m_receivedMessages;
     Queue<MessageToAIUnit> m_messagesToSend;
+    HashSet<int> m_visibleTargets;
 
     public override void update()
     {
@@ -48,6 +49,17 @@ public class FactionAI : Faction
 
         handleReceivedMessages();
         handleToSendMessages();
+
+        if (m_visibleTargets.Count > 0)
+        {
+            foreach(Tank tank in m_tanks)
+            {
+                if(tank.m_currentState == eAIState.AwaitingDecision)
+                {
+                    assignTankToAppropriateEnemy(tank);
+                }
+            }
+        }
     }
 
     public void addMessage(MessageToAIController newMessage)
@@ -67,6 +79,7 @@ public class FactionAI : Faction
                     {
                         tank.m_targetID = messageToSend.m_targetID;
                         tank.m_currentState = messageToSend.m_messageType;
+
                         Debug.Log("Shoot At Enemy");
                     }
                     break;
@@ -86,7 +99,12 @@ public class FactionAI : Faction
                     {
                         m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID, 
                            eAIState.ShootAtEnemy));
+
+                        m_visibleTargets.Add(receivedMessage.m_targetID);
                     }
+                    break;
+                case eAIUniMessageType.LostSightOfEnemy:
+                    m_visibleTargets.Remove(receivedMessage.m_targetID);
                     break;
             }
         }
@@ -125,6 +143,51 @@ public class FactionAI : Faction
                     fGameManager.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
                 {
                     return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void assignTankToAppropriateEnemy(Tank tank)
+    {
+        int targetID = Utilities.INVALID_ID;
+        float distance = float.MaxValue;
+        Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+
+        foreach(int visibleTargetID in m_visibleTargets)
+        {
+            Vector2Int targetPositionOnGrid = new Vector2Int();
+            if(isTargetInSight(visibleTargetID, targetPositionOnGrid))
+            {
+                float i = Vector2Int.Distance(targetPositionOnGrid, tankPositionOnGrid);
+                if(i < distance)
+                {
+                    distance = i;
+                    targetID = visibleTargetID;
+                }
+            }
+        }
+    }
+
+    private bool isTargetInSight(int targetID, Vector2Int targetGridPosition)
+    {
+        foreach (Tank tank in m_tanks)
+        {
+            Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+            SearchRect searchableRect = new SearchRect(positionOnGrid, tank.m_visibilityDistance);
+            for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+            {
+                for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                {
+                    float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                    if (distance <= tank.m_visibilityDistance &&
+                        fGameManager.Instance.getPointOnMap(y, x).tankID == targetID)
+                    {
+                        targetGridPosition = new Vector2Int(x, y);
+                        return true;
+                    }
                 }
             }
         }

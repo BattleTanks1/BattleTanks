@@ -15,20 +15,12 @@ public class Transition
 
 public enum eAIUniMessageType
 {
-    EnemySpottedAtPosition = 0
+    EnemySpottedAtPosition = 0,
+    LostSightOfEnemy    
 }
 
 public class MessageToAIController
 {
-    public MessageToAIController(Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
-    {
-        m_position = position;
-        m_messageType = messageType;
-        m_senderID = senderID;
-        m_senderFaction = senderFaction;
-        m_targetID = Utilities.INVALID_ID;
-    }
-
     public MessageToAIController(int targetID, Vector2Int position, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
     {
         m_targetID = targetID;
@@ -36,6 +28,12 @@ public class MessageToAIController
         m_messageType = messageType;
         m_senderID = senderID;
         m_senderFaction = senderFaction;
+    }
+
+    public MessageToAIController(int targetID, eAIUniMessageType messageType, eFactionName senderFaction)
+    {
+        m_targetID = targetID;
+        m_messageType = messageType;
     }
 
     public Vector2Int m_position { get; private set; }
@@ -181,6 +179,7 @@ public class Tank : MonoBehaviour
                     if(targetFound && m_elaspedTime >= m_timeBetweenShot)
                     {
                         m_elaspedTime = 0.0f;
+
                         Rigidbody clone;
                         clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
                         Vector3 vBetween = enemyPosition - transform.position;
@@ -189,6 +188,8 @@ public class Tank : MonoBehaviour
                     else if (!targetFound)
                     {
                         print("Lost sight of Enemy");
+
+                        fGameManager.Instance.sendAIControllerMessage(new MessageToAIController(m_targetID, eAIUniMessageType.LostSightOfEnemy, m_factionName));
                         m_targetID = Utilities.INVALID_ID;
                         m_currentState = eAIState.FindEnemy;
                     }

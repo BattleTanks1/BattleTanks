@@ -52,6 +52,7 @@ public static class Utilities
 
         return directions2D;
     }
+
     static public Vector2Int[] get2DDirections(int scalar)
     {
         Vector2Int[] directions2D = new Vector2Int[(int)eDirection2D.Total]
