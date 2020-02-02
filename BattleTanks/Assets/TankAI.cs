@@ -55,7 +55,7 @@ public enum eAIState
     SetDestinationToSafePosition,
 }
 
-public class AITank : Tank
+public class TankAI : Tank
 {
     [SerializeField]
     public eAIState m_currentState;
@@ -127,36 +127,36 @@ public class AITank : Tank
                 break;
             case eAIState.TargetEnemy:
                 {
-                    if(isTargetStillInSight(m_targetID))
+                    bool targetFound = false;
+
+                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+                    SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
+                    for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
                     {
-                        //Shoot
+                        for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                        {
+                            float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                            if (distance <= m_visibilityDistance &&
+                                fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                            {
+                                targetFound = true;
+
+                                //Shoot
+                                Rigidbody clone;
+                                clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
+                                Vector3 vBetween = new Vector3(x, 0, y) - transform.position;
+                                clone.velocity = transform.TransformDirection(vBetween.normalized * 10);
+                            }
+                        }
                     }
-                    else
+
+                    if (!targetFound)
                     {
+                        m_targetID = Utilities.INVALID_ID;
                         m_currentState = eAIState.AwaitingDecision;
                     }
                 }
                 break;
         }
-    }
-
-    private bool isTargetStillInSight(int targetID)
-    {
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
-        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
-        {
-            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
-            {
-                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-                if (distance <= m_visibilityDistance &&
-                    fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }

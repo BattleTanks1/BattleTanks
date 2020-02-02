@@ -54,7 +54,7 @@ public class FactionAI : Faction
             case eAIControllerState.MakeInitialDecision:
                 foreach (Tank tank in m_tanks)
                 {
-                    AITank tankAI = tank as AITank;
+                    TankAI tankAI = tank as TankAI;
 
                     tankAI.m_currentState = eAIState.FindEnemy;
                 }
@@ -76,7 +76,7 @@ public class FactionAI : Faction
         while(m_messagesToSend.Count > 0)
         {
             MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
-            AITank tank = getTank(messageToSend.m_receiverID);
+            TankAI tank = getTank(messageToSend.m_receiverID);
             switch (messageToSend.m_messageType)
             {
                 case eAIState.TargetEnemy:
@@ -107,10 +107,10 @@ public class FactionAI : Faction
         }
     }
 
-    private AITank getTank(int ID)
+    private TankAI getTank(int ID)
     {
-        AITank tank = null;
-        foreach(AITank i in m_tanks)
+        TankAI tank = null;
+        foreach(TankAI i in m_tanks)
         {
             if(i.m_ID == ID)
             {
@@ -123,7 +123,7 @@ public class FactionAI : Faction
 
     private bool isEnemyStillInSight(MessageToAIController receivedMessage)
     {
-        AITank messageSender = getTank(receivedMessage.m_senderID);
+        TankAI messageSender = getTank(receivedMessage.m_senderID);
         if(!messageSender)
         {
             return false;

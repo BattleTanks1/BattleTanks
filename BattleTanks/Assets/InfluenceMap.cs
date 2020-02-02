@@ -90,7 +90,7 @@ public class InfluenceMap : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
-    public bool isPositionInThreat(AITank tank)
+    public bool isPositionInThreat(TankAI tank)
     {
         if (tank.m_factionName == eFactionName.Red)
         {

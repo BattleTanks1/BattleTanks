@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Tank : MonoBehaviour
 {
-    public float m_safePositionValue;
     public float m_movementSpeed;
     public int m_visibilityDistance;
 
@@ -26,7 +25,7 @@ public class Tank : MonoBehaviour
     private Timer m_shotTimer;
 
     [SerializeField]
-    private Rigidbody m_projectile = null;
+    protected Rigidbody m_projectile = null;
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
 
