@@ -50,6 +50,8 @@ public enum eAIState
     TargetEnemy,
     MovingToNewPosition,
     SetDestinationToSafePosition,
+    
+    Idle
 }
 
 public class Tank : MonoBehaviour
@@ -89,7 +91,6 @@ public class Tank : MonoBehaviour
     public float m_maxValueAtPosition;
     public int m_targetID = Utilities.INVALID_ID;
 
-
     // Start is called before the first frame update
     protected virtual void Start()
     {
@@ -99,9 +100,31 @@ public class Tank : MonoBehaviour
         m_elaspedTime = m_timeBetweenShot;
     }
 
+    private void move()
+    {
+        //Moving to enemy position - 'm_positionToMoveTo
+        if (m_currentState == eAIState.TargetEnemy && 
+            Vector3.Distance(m_positionToMoveTo, transform.position) > m_shootRange)
+        {
+            float step = m_movementSpeed * Time.deltaTime;
+            Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
+            if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
+            {
+                m_oldPosition = transform.position;
+                transform.position = newPosition;
+                fGameManager.Instance.updatePositionOnMap(this);
+            }
+            else
+            {
+                print("Occupied");
+            }
+        }
+    }
+
     protected virtual void Update()
     {
         m_elaspedTime += Time.deltaTime;
+        move();
 
         switch (m_currentState)
         {
@@ -153,70 +176,35 @@ public class Tank : MonoBehaviour
                 break;
             case eAIState.TargetEnemy:
                 {
-                    //Moving to enemy position - 'm_positionToMoveTo
-                    if (Vector3.Distance(m_positionToMoveTo, transform.position) > m_shootRange)
+                    Vector3 enemyPosition = new Vector3();
+                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+                    SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
+
+                    for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
                     {
-                        float step = m_movementSpeed * Time.deltaTime;
-                        Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
-                        if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
+                        for (int x = searchableRect.left; x <= searchableRect.right; ++x)
                         {
-                            m_oldPosition = transform.position;
-                            transform.position = newPosition;
-                            fGameManager.Instance.updatePositionOnMap(this);
-                        }
-                    }
-                    //Close enough to shoot
-                    else
-                    {
-                        bool targetFound = false;
-                        Vector3 enemyPosition = new Vector3();
-                        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-                        SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
-
-                        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
-                        {
-                            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                            float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                            if (distance <= m_visibilityDistance &&
+                                fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
                             {
-                                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-                                if (distance <= m_visibilityDistance &&
-                                    fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
-                                {
-                                    targetFound = true;
-                                    enemyPosition = new Vector3(x, 0, y);
+                                enemyPosition = new Vector3(x, 0, y);
 
-                                    break;
-                                }
-                            }
-
-                            if (targetFound)
-                            {
                                 break;
                             }
                         }
-                        
-                        if (targetFound)
-                        {
-                            if (targetFound && m_elaspedTime >= m_timeBetweenShot)
-                            {
-                                m_elaspedTime = 0.0f;
-
-                                Rigidbody clone;
-                                clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
-                                Vector3 vBetween = enemyPosition - transform.position;
-                                clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
-                            }
-                        }
-                        //Target not found
-                        else 
-                        {
-                            print("Lost sight of Enemy");
-
-                            fGameManager.Instance.sendAIControllerMessage(new MessageToAIController(m_targetID, eAIUniMessageType.LostSightOfEnemy, m_factionName));
-                            m_targetID = Utilities.INVALID_ID;
-                            m_currentState = eAIState.FindEnemy;
-                        }
                     }
-                    
+
+                    if (m_elaspedTime >= m_timeBetweenShot &&
+                        Vector3.Distance(enemyPosition, transform.position) <= m_shootRange)
+                    {
+                        m_elaspedTime = 0.0f;
+
+                        Rigidbody clone;
+                        clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
+                        Vector3 vBetween = enemyPosition - transform.position;
+                        clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
+                    }
                 }
                 break;
         }

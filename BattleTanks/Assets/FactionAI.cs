@@ -45,51 +45,15 @@ public class FactionAI : Faction
         handleReceivedMessages();
         handleToSendMessages();
 
-        if (m_visibleTargets.Count > 0)
-        {
-            foreach(Tank tank in m_tanks)
-            {
-                if(tank.m_currentState == eAIState.AwaitingDecision && 
-                    tank.m_targetID == Utilities.INVALID_ID &&
-                    m_visibleTargets.Count > 0)
-                {
-                    assignTankToAppropriateEnemy(tank);
-                }
-                else if(tank.m_targetID != Utilities.INVALID_ID &&
-                    )
-            }
-        }
-
-        //Handle existing targets positions - Target might of moved when Tank is moving there
         foreach (Tank tank in m_tanks)
         {
-            if(tank.m_targetID == Utilities.INVALID_ID)
+            if (tank.m_currentState == eAIState.AwaitingDecision)
             {
-                continue;
+                assignTankToAppropriateEnemy(tank);
             }
-
-            bool targetFound = false;
-            Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-            SearchRect searchableRect = new SearchRect(tankPositionOnGrid, tank.m_visibilityDistance);
-            for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+            else if (tank.m_currentState == eAIState.TargetEnemy)
             {
-                for (int x = searchableRect.left; x <= searchableRect.right; ++x)
-                {
-                    float distance = Vector2Int.Distance(tankPositionOnGrid, new Vector2Int(x, y));
-                    if (distance <= tank.m_visibilityDistance &&
-                        fGameManager.Instance.getPointOnMap(y, x).tankID == tank.m_targetID)
-                    {
-                        targetFound = true;
-                        enemyPosition = new Vector3(x, 0, y);
-
-                        break;
-                    }
-                }
-
-                if (targetFound)
-                {
-                    break;
-                }
+                //updateTankPositionToMoveTo(tank);
             }
         }
     }
@@ -185,29 +149,34 @@ public class FactionAI : Faction
 
     private void assignTankToAppropriateEnemy(Tank tank)
     {
-        int targetID = Utilities.INVALID_ID;
-        float distance = float.MaxValue;
-        Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-        Vector2Int closestTargetPositionOnGrid = new Vector2Int();
-
-        foreach (int visibleTargetID in m_visibleTargets)
+        if(m_visibleTargets.Count > 0)
         {
-            Vector2Int targetPositionOnGrid = new Vector2Int();
-            if (isTargetInSight(visibleTargetID, out targetPositionOnGrid))
+            int targetID = Utilities.INVALID_ID;
+            float distance = float.MaxValue;
+            Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+            Vector2Int closestTargetPositionOnGrid = new Vector2Int();
+
+            foreach (int visibleTargetID in m_visibleTargets)
             {
-                float i = Vector2Int.Distance(targetPositionOnGrid, tankPositionOnGrid);
-                if(i < distance)
+                Vector2Int targetPositionOnGrid = new Vector2Int();
+                if (isTargetInSight(visibleTargetID, out targetPositionOnGrid))
                 {
-                    distance = i;
-                    targetID = visibleTargetID;
-                    closestTargetPositionOnGrid = targetPositionOnGrid;
+                    float i = Vector2Int.Distance(targetPositionOnGrid, tankPositionOnGrid);
+                    if (i < distance)
+                    {
+                        distance = i;
+                        targetID = visibleTargetID;
+                        closestTargetPositionOnGrid = targetPositionOnGrid;
+                    }
                 }
             }
-        }
 
-        tank.m_targetID = targetID;
-        tank.m_currentState = eAIState.TargetEnemy;
-        tank.m_positionToMoveTo = Utilities.convertToWorldPosition(closestTargetPositionOnGrid);
+            tank.m_targetID = targetID;
+            tank.m_currentState = eAIState.TargetEnemy;
+            tank.m_positionToMoveTo = Utilities.convertToWorldPosition(closestTargetPositionOnGrid);
+            Debug.Log(closestTargetPositionOnGrid.x);
+            Debug.Log(closestTargetPositionOnGrid.y);
+        }
     }
 
     private bool isTargetInSight(int targetID, out Vector2Int targetGridPosition)
@@ -237,5 +206,19 @@ public class FactionAI : Faction
     End:
         targetGridPosition = position;
         return targetFound;
+    }
+
+    private void updateTankPositionToMoveTo(Tank tank)
+    {
+        Vector2Int targetOnGridPosition = new Vector2Int();
+        if (isTargetInSight(tank.m_targetID, out targetOnGridPosition))
+        {
+            tank.m_positionToMoveTo = Utilities.convertToWorldPosition(targetOnGridPosition);
+        }
+        else
+        {
+            tank.m_targetID = Utilities.INVALID_ID;
+            tank.m_currentState = eAIState.AwaitingDecision;
+        }
     }
 }
