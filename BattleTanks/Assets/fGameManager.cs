@@ -16,6 +16,7 @@ public class GraphPoint
         tankID = Utilities.INVALID_ID;
     }
 
+    public bool scenery = false;
     public int tankID = Utilities.INVALID_ID;
     public eFactionName tankFactionName;
 }
@@ -51,6 +52,26 @@ public class fGameManager : MonoBehaviour
             for (int x = 0; x < m_mapSize.x; ++x)
             {
                 m_map[y, x] = new GraphPoint();
+            }
+        }
+    }
+
+    private void Start()
+    {
+        RaycastHit hit;
+        for(int y = 0; y < m_mapSize.y; ++y)
+        {
+            for(int x = 0; x < m_mapSize.x; ++x)
+            {
+                // Does the ray intersect any objects excluding the player layer
+                Vector3 startPosition = new Vector3(x, transform.position.y - 1, y);
+                if (Physics.Raycast(startPosition, transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity))
+                {
+                    if(hit.collider.gameObject.tag == "Scenery")
+                    {
+                        m_map[y, x].scenery = true;
+                    }
+                }
             }
         }
     }
@@ -137,6 +158,7 @@ public class fGameManager : MonoBehaviour
                 break;
         }
     }
+
 
     public GraphPoint getPointOnMap(Vector2Int position)
     {

@@ -101,13 +101,13 @@ public class PathFinding : MonoBehaviour
                 m_graph[adjacentPosition.y, adjacentPosition.x].visited = true;
                 frontier.Enqueue(adjacentPosition);
 
-                if (InfluenceMap.Instance.isPositionInThreat(f getPointOnThreatMap(adjacentPosition).value <= 0.0f &&
-                    Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), position) >= Mathf.Abs(minDistance))
-                {
-                    safePositionFound = true;
-                    safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
-                    break;
-                }
+                //if (InfluenceMap.Instance.isPositionInThreat(f getPointOnThreatMap(adjacentPosition).value <= 0.0f &&
+                //    Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), position) >= Mathf.Abs(minDistance))
+                //{
+                //    safePositionFound = true;
+                //    safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
+                //    break;
+                //}
             }
 
             m_adjacentPositions.Clear();

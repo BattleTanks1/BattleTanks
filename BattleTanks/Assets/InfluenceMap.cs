@@ -125,10 +125,16 @@ public class Map
 
 public class WorkingMap
 { 
-    WorkingMap()
+    public WorkingMap()
     {
         m_workingMap = new Point[40, 40];
-        for(int y = 0; y < )
+        for(int y = 0; y < 40; ++y)
+        {
+            for(int x = 0; x < 40; ++x)
+            {
+
+            }
+        }
     }
 
     public void reset(Vector2Int position, int distance)
@@ -136,14 +142,12 @@ public class WorkingMap
         m_searchableArea.reset(position, distance);
     }
 
-    SearchRect m_searchableArea;
+    private SearchRect m_searchableArea;
     public Point[,] m_workingMap { get; private set; }
 }
 
-
 //GameAIPro Notes
 //They updated their tactical influence map once per second
-
 
 //Special Functions
 //Normalize function - take a 1.4 to 0.7 and turn into 1.0 - 0.5
@@ -253,7 +257,7 @@ public class InfluenceMap : MonoBehaviour
 
     private void inverseWorkingMap(Vector2Int position)
     {
-        
+            
     }
 
     private IEnumerator resetBaseMaps()
