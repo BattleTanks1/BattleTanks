@@ -48,8 +48,10 @@ public class Point
 
 public class Map
 {
-    public Map()
+    public Map(eFactionName owner)
     {
+        ownerName = owner;
+
         Vector2Int mapSize = fGameManager.Instance.m_mapSize;
         map = new Point[mapSize.y, mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
@@ -60,9 +62,52 @@ public class Map
             }
         }
     }
+    
+    public void createInfluence(Vector2Int position, float strength, int maxDistance)
+    {
+        SearchRect searchableRect = new SearchRect(position, maxDistance);
+        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+        {
+            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+            {
+                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
+                if (distance <= maxDistance)
+                {
+                    map[y, x].value += strength - (strength * (distance / maxDistance));
+                }
+            }
+        }
+    }
 
-    public Point[,] map;
+    public void createThreat(Vector2Int position, float strength, int maxDistance)
+    {
+        SearchRect searchableRect = new SearchRect(position, maxDistance);
+        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+        {
+            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+            {
+                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
+                if (distance <= maxDistance)
+                {
+                    map[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
+                }
+            }
+        }
+    }
+
+    public Point getPoint(Vector3 position)
+    {
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+
+        return map[positionOnGrid.y, positionOnGrid.x];
+    }
+
+    public Point[,] map { get; private set; }
+    public eFactionName ownerName { get; private set; }
 }
+
+//GameAIPro Notes
+//They updated their tactical influence map once per second
 
 public class InfluenceMap : MonoBehaviour
 {
@@ -72,6 +117,7 @@ public class InfluenceMap : MonoBehaviour
     //Proximity Map
     private Map[] m_proximityMaps;
     private Map[] m_threatMaps;
+    private Point[,] m_workingMap;
 
     private static InfluenceMap _instance;
     public static InfluenceMap Instance { get { return _instance; } }
@@ -92,67 +138,33 @@ public class InfluenceMap : MonoBehaviour
     void Start()
     {
         m_boxes = new List<GameObject>();
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+
         m_proximityMaps = new Map[(int)eFactionName.Total];
+        m_proximityMaps[(int)eFactionName.Red] = new Map(eFactionName.Red);
+        m_proximityMaps[(int)eFactionName.Blue] = new Map(eFactionName.Blue);
 
         m_threatMaps = new Map[(int)eFactionName.Total];
+        m_threatMaps[(int)eFactionName.Red] = new Map(eFactionName.Red);
+        m_threatMaps[(int)eFactionName.Blue] = new Map(eFactionName.Blue);
 
-        IEnumerator coroutine = Propogate();
+        m_workingMap = new Point[20, 20];
+
+        IEnumerator coroutine = reset();
         StartCoroutine(coroutine);
     }
 
     public bool isPositionInThreat(Tank tank)
     {
-        if (tank.m_factionName == eFactionName.Red)
+        float value = 0.0f;
+        foreach(Map threatMap in m_threatMaps)
         {
-            if (getPointOnThreatMap(tank.transform.position).value <= -tank.m_scaredValue)
+            if(threatMap.ownerName != tank.m_factionName)
             {
-                return true;
-            }
-        }
-        else if (tank.m_factionName == eFactionName.Blue)
-        {
-            if (getPointOnThreatMap(tank.transform.position).value >= tank.m_scaredValue)
-            {
-                return true;
+                value += threatMap.getPoint(tank.transform.position).value;
             }
         }
 
-        return false;
-    }
-
-    private void createInfluence(Vector2Int position, float strength, int maxDistance)
-    {
-        SearchRect searchableRect = new SearchRect(position, maxDistance);
-        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
-        {
-            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
-            {
-                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
-                if (distance <= maxDistance)
-                {
-                    //proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
-                    spawnCube(x, y, proximityMap[y, x].value);
-                }
-            }
-        }
-    }
-
-    private void createThreat(Vector2Int position, float strength, int maxDistance)
-    {
-        SearchRect searchableRect = new SearchRect(position, maxDistance);
-        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
-        {
-            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
-            {
-                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
-                if (distance <= maxDistance)
-                {
-                    //m_threatMap[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
-                   
-                }
-            }
-        }
+        return tank.m_scaredValue >= value;
     }
 
     private void spawnCube(int x, int y, float value)
@@ -194,7 +206,7 @@ public class InfluenceMap : MonoBehaviour
         return m_threatMap[position.y, position.x];
     }
 
-    private IEnumerator Propogate()
+    private IEnumerator reset()
     {
         while(true)
         {
