@@ -46,15 +46,32 @@ public class Point
     public float value = 0.0f;
 }
 
+public class Map
+{
+    public Map()
+    {
+        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        map = new Point[mapSize.y, mapSize.x];
+        for (int y = 0; y < mapSize.y; ++y)
+        {
+            for (int x = 0; x < mapSize.x; ++x)
+            {
+                map[y, x] = new Point();
+            }
+        }
+    }
+
+    public Point[,] map;
+}
+
 public class InfluenceMap : MonoBehaviour
 {
     List<GameObject> m_boxes;
     public GameObject m_redBox;
     public GameObject m_blueBox;
     //Proximity Map
-    private Point[,] proximityMap;
-    //Threat Map
-    private Point[,] m_threatMap;
+    private Map[] m_proximityMaps;
+    private Map[] m_threatMaps;
 
     private static InfluenceMap _instance;
     public static InfluenceMap Instance { get { return _instance; } }
@@ -76,16 +93,9 @@ public class InfluenceMap : MonoBehaviour
     {
         m_boxes = new List<GameObject>();
         Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-        proximityMap = new Point[mapSize.y, mapSize.x];
-        m_threatMap = new Point[mapSize.y, mapSize.x];
-        for (int y = 0; y < mapSize.y; ++y)
-        {
-            for (int x = 0; x < mapSize.x; ++x)
-            {
-                proximityMap[y, x] = new Point();
-                m_threatMap[y, x] = new Point();
-            }
-        }
+        m_proximityMaps = new Map[(int)eFactionName.Total];
+
+        m_threatMaps = new Map[(int)eFactionName.Total];
 
         IEnumerator coroutine = Propogate();
         StartCoroutine(coroutine);
@@ -121,7 +131,7 @@ public class InfluenceMap : MonoBehaviour
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
-                    proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
+                    //proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
                     spawnCube(x, y, proximityMap[y, x].value);
                 }
             }
@@ -138,7 +148,7 @@ public class InfluenceMap : MonoBehaviour
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
-                    m_threatMap[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
+                    //m_threatMap[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
                    
                 }
             }
