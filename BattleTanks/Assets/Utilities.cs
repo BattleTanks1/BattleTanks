@@ -6,17 +6,22 @@ public class SearchRect
 {
     public SearchRect(Vector2Int position, int distance)
     {
+        reset(position, distance);
+    }
+
+    public void reset(Vector2Int position, int distance)
+    {
         Vector2Int mapSize = fGameManager.Instance.m_mapSize;
 
         left = Mathf.Max(position.x - distance, 0);
         right = Mathf.Min(position.x + distance, mapSize.x);
-        if(right == mapSize.x)
+        if (right == mapSize.x)
         {
             --right;
         }
         top = Mathf.Max(position.y - distance, 0);
         bottom = Mathf.Min(position.y + distance, mapSize.y);
-        if(bottom == mapSize.y)
+        if (bottom == mapSize.y)
         {
             --bottom;
         }

@@ -95,6 +95,18 @@ public class Map
         }
     }
 
+    public void reset()
+    {
+        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        for (int y = 0; y < mapSize.y; ++y)
+        {
+            for (int x = 0; x < mapSize.x; ++x)
+            {
+                map[y, x].value = 0.0f;
+            }
+        }
+    }
+
     public Point getPoint(Vector3 position)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
@@ -102,12 +114,50 @@ public class Map
         return map[positionOnGrid.y, positionOnGrid.x];
     }
 
+    public Point getPoint(Vector2Int position)
+    {
+        return map[position.y, position.x];
+    }
+
     public Point[,] map { get; private set; }
     public eFactionName ownerName { get; private set; }
 }
 
+public class WorkingMap
+{ 
+    WorkingMap()
+    {
+        m_workingMap = new Point[40, 40];
+        for(int y = 0; y < )
+    }
+
+    public void reset(Vector2Int position, int distance)
+    {
+        m_searchableArea.reset(position, distance);
+    }
+
+    SearchRect m_searchableArea;
+    public Point[,] m_workingMap { get; private set; }
+}
+
+
 //GameAIPro Notes
 //They updated their tactical influence map once per second
+
+
+//Special Functions
+//Normalize function - take a 1.4 to 0.7 and turn into 1.0 - 0.5
+//Inverse Function - Cells start from 1.0 and below 
+
+//Uses:
+//1.
+//might be how far we could attack in 1 s(our maximum threat range + our movement speed).
+
+//Often, it is good to prioritize information that is closer to the agent so that it doesn’t
+//make decisions that cause it to, perhaps, run past one threat to get to another.By multiplying the 
+//    resulting working map by our personal interest template, we adjust the data
+//so that closer cells are left relatively untouched, but cells on the periphery are reduced
+//artificially—ultimately dropping to zero
 
 public class InfluenceMap : MonoBehaviour
 {
@@ -117,7 +167,7 @@ public class InfluenceMap : MonoBehaviour
     //Proximity Map
     private Map[] m_proximityMaps;
     private Map[] m_threatMaps;
-    private Point[,] m_workingMap;
+   
 
     private static InfluenceMap _instance;
     public static InfluenceMap Instance { get { return _instance; } }
@@ -147,9 +197,9 @@ public class InfluenceMap : MonoBehaviour
         m_threatMaps[(int)eFactionName.Red] = new Map(eFactionName.Red);
         m_threatMaps[(int)eFactionName.Blue] = new Map(eFactionName.Blue);
 
-        m_workingMap = new Point[20, 20];
+        
 
-        IEnumerator coroutine = reset();
+        IEnumerator coroutine = resetBaseMaps();
         StartCoroutine(coroutine);
     }
 
@@ -165,6 +215,20 @@ public class InfluenceMap : MonoBehaviour
         }
 
         return tank.m_scaredValue >= value;
+    }
+
+    public bool isPositionInThreat(Vector2Int position, eFactionName factionName)
+    {
+        float value = 0.0f;
+        foreach (Map threatMap in m_threatMaps)
+        {
+            if (threatMap.ownerName != factionName)
+            {
+                value += threatMap.getPoint(position).value;
+            }
+        }
+
+        return value >= 0;
     }
 
     private void spawnCube(int x, int y, float value)
@@ -187,26 +251,12 @@ public class InfluenceMap : MonoBehaviour
         }
     }
 
-    public Point getPointOnProximityMap(Vector3 position)
+    private void inverseWorkingMap(Vector2Int position)
     {
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-
-        return proximityMap[positionOnGrid.y, positionOnGrid.x];
+        
     }
 
-    public Point getPointOnThreatMap(Vector3 position)
-    {
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-
-        return m_threatMap[positionOnGrid.y, positionOnGrid.x];
-    }
-
-    public Point getPointOnThreatMap(Vector2Int position)
-    {
-        return m_threatMap[position.y, position.x];
-    }
-
-    private IEnumerator reset()
+    private IEnumerator resetBaseMaps()
     {
         while(true)
         {
@@ -215,15 +265,11 @@ public class InfluenceMap : MonoBehaviour
             {
                 Destroy(box);
             }
-
-            Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-            for (int y = 0; y < mapSize.y; ++y)
+    
+            for(int i = 0; i < (int)(eFactionName.Total); ++i)
             {
-                for (int x = 0; x < mapSize.x; ++x)
-                {
-                    proximityMap[y, x].value = 0.0f;
-                    m_threatMap[y, x].value = 0.0f;
-                }
+                m_threatMaps[i].reset();
+                m_proximityMaps[i].reset();
             }
             
             foreach(Faction faction in fGameManager.Instance.m_factions)
@@ -231,8 +277,8 @@ public class InfluenceMap : MonoBehaviour
                 foreach(Tank tank in faction.m_tanks)
                 {
                     Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-                    createInfluence(tankPositionOnGrid, tank.m_proximityStrength, tank.m_proximityDistance);
-                    createThreat(tankPositionOnGrid, tank.m_threatStrength, tank.m_threatDistance);
+                    m_proximityMaps[(int)tank.m_factionName].createInfluence(tankPositionOnGrid, tank.m_proximityStrength, tank.m_proximityDistance);
+                    m_threatMaps[(int)tank.m_factionName].createThreat(tankPositionOnGrid, tank.m_threatStrength, tank.m_threatDistance);
                 }
             }
         }

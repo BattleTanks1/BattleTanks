@@ -78,7 +78,7 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    public Vector3 getClosestSafePosition(Vector3 position, int minDistance)
+    public Vector3 getClosestSafePosition(Vector3 position, int minDistance, eFactionName factionName)
     {
         reset();
         Queue<Vector2Int> frontier = new Queue<Vector2Int>();
@@ -101,7 +101,7 @@ public class PathFinding : MonoBehaviour
                 m_graph[adjacentPosition.y, adjacentPosition.x].visited = true;
                 frontier.Enqueue(adjacentPosition);
 
-                if (InfluenceMap.Instance.getPointOnThreatMap(adjacentPosition).value <= 0.0f &&
+                if (InfluenceMap.Instance.isPositionInThreat(f getPointOnThreatMap(adjacentPosition).value <= 0.0f &&
                     Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), position) >= Mathf.Abs(minDistance))
                 {
                     safePositionFound = true;
