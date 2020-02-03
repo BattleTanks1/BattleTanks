@@ -93,6 +93,7 @@ public class Tank : MonoBehaviour
     public float m_maxValueAtPosition;
     public int m_targetID = Utilities.INVALID_ID;
     public Vector3 velocity;
+    public float m_proximityCap;
 
     // Start is called before the first frame update
     protected virtual void Start()

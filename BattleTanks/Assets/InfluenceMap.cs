@@ -49,7 +49,8 @@ public class Point
 public class InfluenceMap : MonoBehaviour
 {
     List<GameObject> m_boxes;
-    public GameObject m_box;
+    public GameObject m_redBox;
+    public GameObject m_blueBox;
     //Proximity Map
     private Point[,] proximityMap;
     //Threat Map
@@ -121,7 +122,7 @@ public class InfluenceMap : MonoBehaviour
                 if (distance <= maxDistance)
                 {
                     proximityMap[y, x].value += strength - (strength * (distance / maxDistance));
-                    //spawnCube(x, y, proximityMap[y, x].value);
+                    spawnCube(x, y, proximityMap[y, x].value);
                 }
             }
         }
@@ -146,10 +147,22 @@ public class InfluenceMap : MonoBehaviour
 
     private void spawnCube(int x, int y, float value)
     {
-        GameObject clone;
-        clone = Instantiate(m_box, new Vector3(x, 0, y), Quaternion.identity);
-        clone.transform.localScale += new Vector3(0, value, 0);
-        m_boxes.Add(clone);
+        //Red Faction
+        if(value > 0)
+        {
+            GameObject clone;
+            clone = Instantiate(m_redBox, new Vector3(x, 0, y), Quaternion.identity);
+            clone.transform.localScale += new Vector3(0, Mathf.Abs(value), 0);
+            m_boxes.Add(clone);
+        }
+        //Blue Faction
+        else if(value < 0)
+        {
+            GameObject clone;
+            clone = Instantiate(m_blueBox, new Vector3(x, 0, y), Quaternion.identity);
+            clone.transform.localScale += new Vector3(0, Mathf.Abs(value), 0);
+            m_boxes.Add(clone);
+        }
     }
 
     public Point getPointOnProximityMap(Vector3 position)
@@ -195,12 +208,6 @@ public class InfluenceMap : MonoBehaviour
             {
                 foreach(Tank tank in faction.m_tanks)
                 {
-                    if (tank.m_factionName == eFactionName.Blue)
-                    {
-                        //tank.m_proximityStrength = -tank.m_proximityStrength;
-                        //tank.m_threatStrength = -tank.m_threatStrength;
-                    }
-
                     Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
                     createInfluence(tankPositionOnGrid, tank.m_proximityStrength, tank.m_proximityDistance);
                     createThreat(tankPositionOnGrid, tank.m_threatStrength, tank.m_threatDistance);
