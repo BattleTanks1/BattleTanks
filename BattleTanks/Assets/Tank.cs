@@ -51,7 +51,9 @@ public enum eAIState
     MovingToNewPosition,
     SetDestinationToSafePosition,
     
-    Idle
+    //Test States
+    Idle,
+    Flee
 }
 
 public class Tank : MonoBehaviour
@@ -90,6 +92,7 @@ public class Tank : MonoBehaviour
     public float m_scaredValue;
     public float m_maxValueAtPosition;
     public int m_targetID = Utilities.INVALID_ID;
+    public Vector3 velocity;
 
     // Start is called before the first frame update
     protected virtual void Start()
@@ -117,6 +120,16 @@ public class Tank : MonoBehaviour
             else
             {
                 print("Occupied");
+            }
+        }
+        else if(m_currentState == eAIState.Flee)
+        {
+            Vector3 newPosition = transform.position + velocity * Time.deltaTime;
+            if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
+            {
+                m_oldPosition = transform.position;
+                transform.position = newPosition;
+                fGameManager.Instance.updatePositionOnMap(this);
             }
         }
     }

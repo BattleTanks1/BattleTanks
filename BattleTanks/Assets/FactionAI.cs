@@ -53,7 +53,7 @@ public class FactionAI : Faction
             }
             else if (tank.m_currentState == eAIState.TargetEnemy)
             {
-                //updateTankPositionToMoveTo(tank);
+                updateTankPositionToMoveTo(tank);
             }
         }
     }
