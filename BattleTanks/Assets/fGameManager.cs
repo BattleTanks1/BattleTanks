@@ -163,6 +163,10 @@ public class fGameManager : MonoBehaviour
         }
     }
 
+    public bool isPointOnScenery(Vector2Int position)
+    {
+        return m_map[position.y, position.x].scenery;
+    }
 
     public GraphPoint getPointOnMap(Vector2Int position)
     {

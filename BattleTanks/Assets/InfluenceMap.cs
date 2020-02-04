@@ -41,6 +41,18 @@ you can figure out where an enemy would go and how his influence would extend in
 //Red Positive
 //Blue Negative
 
+public class FrontierNode
+{
+    public FrontierNode(Vector2Int p, int d)
+    {
+        position = p;
+        depth = d;
+    }
+
+    public Vector2Int position;
+    public int depth = 0;
+}
+
 public class Point
 {
     public float value = 0.0f;
@@ -82,36 +94,49 @@ public class Map
 
     public void createInfluenceBFS(Vector2Int position, float strength, int maxDistance)
     {
-        Vector2Int lastPosition = new Vector2Int();
-        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
-        Queue<Vector2Int> newFrontier = new Queue<Vector2Int>();
-        frontier.Enqueue(lastPosition);
-        List<Vector2Int> adjacentPositions = new List<Vector2Int>();
         int depthCounter = 0;
+        
+        Queue<FrontierNode> frontier = new Queue<FrontierNode>();
+        Queue<FrontierNode> newFrontier = new Queue<FrontierNode>();
+        List<Vector2Int> adjacentPositions = new List<Vector2Int>();
+
+        FrontierNode lastPosition = new FrontierNode(position, depthCounter);
+        frontier.Enqueue(lastPosition);
+        m_map[lastPosition.position.y, lastPosition.position.x].value += strength - (strength * (lastPosition.depth / maxDistance));
 
         while (depthCounter <= maxDistance)
         {
-            if (frontier.Count == 0)
+            ++depthCounter;
+
+            while(frontier.Count > 0)
             {
-                ++depthCounter;
-                if (depthCounter < maxDistance)
+                lastPosition = frontier.Dequeue();
+
+                PathFinding.Instance.getAdjacentPositions(adjacentPositions, lastPosition.position, m_map);
+                foreach (Vector2Int adjacentPosition in adjacentPositions)
                 {
-                    frontier = newFrontier;
-                    foreach (Vector2Int i in frontier)
-                    {
-                        m_map[i.y, i.x].value += strength - (strength * (depthCounter / maxDistance));
-                    }
+                    m_map[adjacentPosition.y, adjacentPosition.x].visited = true;
+
+                    newFrontier.Enqueue(new FrontierNode(adjacentPosition, depthCounter));
+                }
+
+                adjacentPositions.Clear();
+
+                PathFinding.Instance.getDiagonalAdjacentPositions(adjacentPositions, lastPosition.position, m_map);
+                foreach(Vector2Int diagonalAdjacentPosition in adjacentPositions)
+                {
+                    m_map[diagonalAdjacentPosition.y, diagonalAdjacentPosition.x].visited = true;
+                    newFrontier.Enqueue(new FrontierNode(diagonalAdjacentPosition, depthCounter + 1));
                 }
             }
 
-            lastPosition = frontier.Dequeue();
-            
-            PathFinding.Instance.getAdjacentPositions(adjacentPositions, lastPosition, m_map);
-            foreach (Vector2Int adjacentPosition in adjacentPositions)
+            if (depthCounter < maxDistance)
             {
-                m_map[adjacentPosition.y, adjacentPosition.x].visited = true;
-
-                newFrontier.Enqueue(adjacentPosition);
+                frontier = newFrontier;
+                foreach (FrontierNode i in frontier)
+                {
+                    m_map[i.position.y, i.position.x].value += strength - (strength * (i.depth / maxDistance));
+                }
             }
         }
     }

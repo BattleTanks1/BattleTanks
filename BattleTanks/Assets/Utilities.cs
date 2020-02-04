@@ -45,7 +45,7 @@ public enum eDirection2D
 public static class Utilities
 {
     public const int INVALID_ID = -1;
-    static public Vector2Int[] get2DDirections()
+    static public Vector2Int[] getDirections2D()
     {
         Vector2Int[] directions2D = new Vector2Int[(int)eDirection2D.Total]
         {
@@ -58,30 +58,17 @@ public static class Utilities
         return directions2D;
     }
 
-    static public Vector2Int[] get2DDirections(int scalar)
+    static public Vector2Int[] getDiagonalDirections2D()
     {
-        Vector2Int[] directions2D = new Vector2Int[(int)eDirection2D.Total]
+        Vector2Int[] diagonaldirections2D = new Vector2Int[(int)eDirection2D.Total]
         {
-            new Vector2Int(-scalar, 0),
-            new Vector2Int(scalar, 0),
-            new Vector2Int(0, scalar),
-            new Vector2Int(0, -scalar)
+            new Vector2Int(-1, 1),
+            new Vector2Int(1, 1),
+            new Vector2Int(-1, 1),
+            new Vector2Int(-1, -1)
         };
 
-        return directions2D;
-    }
-
-    static public Vector2Int[] get()
-    {
-        Vector2Int[] directions2D = new Vector2Int[(int)eDirection2D.Total]
-        {
-            new Vector2Int(-1, 0),
-            new Vector2Int(1, 0),
-            new Vector2Int(0, 1),
-            new Vector2Int(0, -1)
-        };
-
-        return directions2D;
+        return diagonaldirections2D;
     }
 
     static public Vector2Int convertToGridPosition(Vector3 position)
