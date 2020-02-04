@@ -65,10 +65,7 @@ public class PlayerTank : MonoBehaviour
             //Shoot
         }
 
-        //Find the mouse position relative to the tank position
-            //Get mouse position on screen frame
-            //Get tank position on screen frame
-            //Get vector between them
-            //Set as new target angle for turret
+        Vector3 turretDir = mousePosToPlanePos(transform.position, new Vector3(0, 1, 0), new Vector3(0, 0, 0));
+        GetComponent<Turret>().worldSpaceTarget = turretDir.normalized;
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Turret : MonoBehaviour
 {
-    Vector3 worldSpaceTarget;
+    public GameObject turret;
+    public Vector3 worldSpaceTarget;
     Vector3 currentFacing;
     float turretTurnSpeed;
 
@@ -18,6 +19,9 @@ public class Turret : MonoBehaviour
     void Update()
     {
         //Convert world space target to local space
-        //Rotate some amount toward target based on turret turn speed
+        Vector3 rotateTo = transform.worldToLocalMatrix.MultiplyVector(worldSpaceTarget);
+        rotateTo.z = 0;
+        Quaternion q = Quaternion.LookRotation(rotateTo);
+        turret.transform.rotation = q;
     }
 }
