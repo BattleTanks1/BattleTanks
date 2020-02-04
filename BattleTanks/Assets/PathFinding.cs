@@ -64,7 +64,23 @@ public class PathFinding : MonoBehaviour
         m_adjacentPositions.Clear();
     }
 
-    private void getAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position)
+
+    public void getAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position, Point[,] map)
+    {
+        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        foreach (Vector2Int direction in m_directions2D)
+        {
+            Vector2Int positionOnGrid = position + direction;
+            if (positionOnGrid.x >= 0 && positionOnGrid.x < mapSize.x &&
+                positionOnGrid.y >= 0 && positionOnGrid.y < mapSize.y &&
+                !map[positionOnGrid.y, positionOnGrid.x].visited)
+            {
+                adjacentPositions.Add(positionOnGrid);
+            }
+        }
+    }
+        
+    public void getAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position)
     {
         Vector2Int mapSize = fGameManager.Instance.m_mapSize;
         foreach(Vector2Int direction in m_directions2D)

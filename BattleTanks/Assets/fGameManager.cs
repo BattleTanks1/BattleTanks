@@ -115,8 +115,12 @@ public class fGameManager : MonoBehaviour
     }
 
     public bool isPositionOccupied(Vector3 newPosition, int tankID)
-    {
+    { 
         Vector2Int newPositionOnGrid = Utilities.convertToGridPosition(newPosition);
+        if(m_map[newPositionOnGrid.y, newPositionOnGrid.x].scenery)
+        {
+            return true;
+        }
 
         //Tank moving in same grid
         if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID == tankID)

@@ -44,21 +44,22 @@ you can figure out where an enemy would go and how his influence would extend in
 public class Point
 {
     public float value = 0.0f;
+    public bool visited = false;
 }
 
 public class Map
 {
     public Map(eFactionName owner)
     {
-        ownerName = owner;
+        m_ownerName = owner;
 
         Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-        map = new Point[mapSize.y, mapSize.x];
+        m_map = new Point[mapSize.y, mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
         {
             for (int x = 0; x < mapSize.x; ++x)
             {
-                map[y, x] = new Point();
+                m_map[y, x] = new Point();
             }
         }
     }
@@ -73,8 +74,44 @@ public class Map
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
-                    map[y, x].value += strength - (strength * (distance / maxDistance));
+                    m_map[y, x].value += strength - (strength * (distance / maxDistance));
                 }
+            }
+        }
+    }
+
+    public void createInfluenceBFS(Vector2Int position, float strength, int maxDistance)
+    {
+        Vector2Int lastPosition = new Vector2Int();
+        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
+        Queue<Vector2Int> newFrontier = new Queue<Vector2Int>();
+        frontier.Enqueue(lastPosition);
+        List<Vector2Int> adjacentPositions = new List<Vector2Int>();
+        int depthCounter = 0;
+
+        while (depthCounter <= maxDistance)
+        {
+            if (frontier.Count == 0)
+            {
+                ++depthCounter;
+                if (depthCounter < maxDistance)
+                {
+                    frontier = newFrontier;
+                    foreach (Vector2Int i in frontier)
+                    {
+                        m_map[i.y, i.x].value += strength - (strength * (depthCounter / maxDistance));
+                    }
+                }
+            }
+
+            lastPosition = frontier.Dequeue();
+            
+            PathFinding.Instance.getAdjacentPositions(adjacentPositions, lastPosition, m_map);
+            foreach (Vector2Int adjacentPosition in adjacentPositions)
+            {
+                m_map[adjacentPosition.y, adjacentPosition.x].visited = true;
+
+                newFrontier.Enqueue(adjacentPosition);
             }
         }
     }
@@ -89,7 +126,7 @@ public class Map
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
-                    map[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
+                    m_map[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
                 }
             }
         }
@@ -102,7 +139,7 @@ public class Map
         {
             for (int x = 0; x < mapSize.x; ++x)
             {
-                map[y, x].value = 0.0f;
+                m_map[y, x].value = 0.0f;
             }
         }
     }
@@ -111,16 +148,16 @@ public class Map
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
 
-        return map[positionOnGrid.y, positionOnGrid.x];
+        return m_map[positionOnGrid.y, positionOnGrid.x];
     }
 
     public Point getPoint(Vector2Int position)
     {
-        return map[position.y, position.x];
+        return m_map[position.y, position.x];
     }
 
-    public Point[,] map { get; private set; }
-    public eFactionName ownerName { get; private set; }
+    public Point[,] m_map { get; private set; }
+    public eFactionName m_ownerName { get; private set; }
 }
 
 public class WorkingMap
@@ -212,7 +249,7 @@ public class InfluenceMap : MonoBehaviour
         float value = 0.0f;
         foreach(Map threatMap in m_threatMaps)
         {
-            if(threatMap.ownerName != tank.m_factionName)
+            if(threatMap.m_ownerName != tank.m_factionName)
             {
                 value += threatMap.getPoint(tank.transform.position).value;
             }
@@ -226,7 +263,7 @@ public class InfluenceMap : MonoBehaviour
         float value = 0.0f;
         foreach (Map threatMap in m_threatMaps)
         {
-            if (threatMap.ownerName != factionName)
+            if (threatMap.m_ownerName != factionName)
             {
                 value += threatMap.getPoint(position).value;
             }
@@ -257,7 +294,7 @@ public class InfluenceMap : MonoBehaviour
 
     private void inverseWorkingMap(Vector2Int position)
     {
-            
+      
     }
 
     private IEnumerator resetBaseMaps()
