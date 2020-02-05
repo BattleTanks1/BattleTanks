@@ -136,9 +136,6 @@ public class Map
         }
     }
 
-    //public float m_threatFallOffStrength;
-    //public int m_threatFallOffDistance;
-
     public void createThreat(Vector2Int position, float strength, int maxDistance, float fallOfStrength, int fallOfDistance)
     {
         int totalDistance = maxDistance + fallOfDistance;
