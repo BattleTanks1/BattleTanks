@@ -22,7 +22,6 @@ public class GraphPoint
     public eFactionName tankFactionName;
 }
 
-
 public class fGameManager : MonoBehaviour
 {
     public Faction[] m_factions;
@@ -56,10 +55,6 @@ public class fGameManager : MonoBehaviour
                 m_map[y, x] = new GraphPoint();
             }
         }
-    }
-
-    private void Start()
-    {
     }
 
     private void Update()
@@ -164,13 +159,13 @@ public class fGameManager : MonoBehaviour
         return m_map[y, x];
     }
     
-    public void addScenery(Rectangle size)
+    public void addScenery(Rectangle rect)
     {
-        for(int y = size.m_top; y <= size.m_bottom; ++y)
+        for(int y = rect.m_top; y <= rect.m_bottom; ++y)
         {
-            for(int x = size.m_left; x <= size.m_right; ++x)
+            for(int x = rect.m_left; x <= rect.m_right; ++x)
             {
-                Assert.IsTrue(!m_map[y, x].scenery);
+               // Assert.IsTrue(!m_map[y, x].scenery);
                 m_map[y, x].scenery = true;
             }
         }
