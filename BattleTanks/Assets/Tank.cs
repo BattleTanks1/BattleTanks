@@ -63,6 +63,8 @@ public class Tank : MonoBehaviour
 
     public float m_threatStrength;
     public int m_threatDistance;
+    public float m_threatFallOffStrength;
+    public int m_threatFallOffDistance;
 
     public float m_proximityStrength;
     public int m_proximityDistance;
@@ -86,22 +88,22 @@ public class Tank : MonoBehaviour
     //AI Stuff
     [SerializeField]
     public eAIState m_currentState;
-    public eAIBehaviour m_behaviour;
 
     public Vector3 m_positionToMoveTo;
     public float m_scaredValue;
     public float m_maxValueAtPosition;
     public int m_targetID = Utilities.INVALID_ID;
     public Vector3 velocity;
-    public float m_proximityCap;
 
     // Start is called before the first frame update
-    protected virtual void Start()
+    private void Start()
     {
         m_oldPosition = transform.position;
         m_ID = fGameManager.Instance.addTank(this);
         fGameManager.Instance.updatePositionOnMap(this);
         m_elaspedTime = m_timeBetweenShot;
+
+
     }
 
     private void move()
@@ -135,7 +137,7 @@ public class Tank : MonoBehaviour
         }
     }
 
-    protected virtual void Update()
+    private void Update()
     {
         m_elaspedTime += Time.deltaTime;
         move();

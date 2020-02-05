@@ -37,6 +37,7 @@ public class FactionAI : Faction
     Queue<MessageToAIController> m_receivedMessages;
     Queue<MessageToAIUnit> m_messagesToSend;
     HashSet<int> m_visibleTargets;
+    public float m_proximityCap = 1.4f;
 
     public override void update()
     {
@@ -151,6 +152,7 @@ public class FactionAI : Faction
     {
         if(m_visibleTargets.Count > 0)
         {
+
             int targetID = Utilities.INVALID_ID;
             float distance = float.MaxValue;
             Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);

@@ -136,9 +136,13 @@ public class Map
         }
     }
 
-    public void createThreat(Vector2Int position, float strength, int maxDistance)
+    //public float m_threatFallOffStrength;
+    //public int m_threatFallOffDistance;
+
+    public void createThreat(Vector2Int position, float strength, int maxDistance, float fallOfStrength, int fallOfDistance)
     {
-        Rectangle searchableRect = new Rectangle(position, maxDistance);
+        int totalDistance = maxDistance + fallOfDistance;
+        Rectangle searchableRect = new Rectangle(position, totalDistance);
         for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
@@ -146,7 +150,13 @@ public class Map
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
-                    m_map[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
+                    m_map[y, x].value += strength;
+                    //m_map[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
+                }
+                else if(distance <= maxDistance + fallOfDistance)
+                {
+                    //m_map[y, x].value += strength - (strength * (distance / maxDistance));
+                    m_map[y, x].value += fallOfStrength - (fallOfStrength * (distance / totalDistance));
                 }
             }
         }
@@ -298,7 +308,8 @@ public class InfluenceMap : MonoBehaviour
                 {
                     Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
                     m_proximityMaps[(int)tank.m_factionName].createInfluence(tankPositionOnGrid, tank.m_proximityStrength, tank.m_proximityDistance);
-                    m_threatMaps[(int)tank.m_factionName].createThreat(tankPositionOnGrid, tank.m_threatStrength, tank.m_threatDistance);
+                    m_threatMaps[(int)tank.m_factionName].createThreat(tankPositionOnGrid, tank.m_threatStrength, tank.m_threatDistance, 
+                        tank.m_threatFallOffStrength, tank.m_threatFallOffDistance);
                 }
             }
 
@@ -307,8 +318,8 @@ public class InfluenceMap : MonoBehaviour
             {
                 for (int x = 0; x < mapSize.x; ++x)
                 {
-                    spawnCube(x, y, m_proximityMaps[(int)eFactionName.Red]);
-                    spawnCube(x, y, m_proximityMaps[(int)eFactionName.Blue]);
+                    spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
+                    //spawnCube(x, y, m_proximityMaps[(int)eFactionName.Blue]);
                 }
             }
         }
