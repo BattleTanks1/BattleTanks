@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+
+
 public class GraphPoint
 {
     public void assign(int ID, eFactionName factionName)
@@ -16,7 +18,7 @@ public class GraphPoint
         tankID = Utilities.INVALID_ID;
     }
 
-    public bool scenery = false;
+    public eSceneryType sceneryType;
     public int tankID = Utilities.INVALID_ID;
     public eFactionName tankFactionName;
 }
@@ -97,7 +99,7 @@ public class fGameManager : MonoBehaviour
     public bool isPositionOccupied(Vector3 newPosition, int tankID)
     { 
         Vector2Int newPositionOnGrid = Utilities.convertToGridPosition(newPosition);
-        if(m_map[newPositionOnGrid.y, newPositionOnGrid.x].scenery)
+        if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].sceneryType != eSceneryType.None)
         {
             return true;
         }
@@ -145,7 +147,7 @@ public class fGameManager : MonoBehaviour
 
     public bool isPointOnScenery(Vector2Int position)
     {
-        return m_map[position.y, position.x].scenery;
+        return m_map[position.y, position.x].sceneryType != eSceneryType.None;
     }
 
     public GraphPoint getPointOnMap(Vector2Int position)
@@ -158,14 +160,19 @@ public class fGameManager : MonoBehaviour
         return m_map[y, x];
     }
     
-    public void addScenery(Rectangle rect)
+    public void addScenery(Rectangle rect, eSceneryType type)
     {
         for(int y = rect.m_top; y <= rect.m_bottom; ++y)
         {
             for(int x = rect.m_left; x <= rect.m_right; ++x)
             {
-                m_map[y, x].scenery = true;
+                m_map[y, x].sceneryType = type;
             }
         }
+    }
+
+    public bool isPositionScenery(int x, int y)
+    {
+        return m_map[y, x].sceneryType != eSceneryType.None;
     }
 }

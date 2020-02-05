@@ -127,6 +127,11 @@ public class Map
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
+                if(fGameManager.Instance.isPositionScenery(x, y))
+                {
+                    continue;
+                }
+
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
@@ -144,6 +149,11 @@ public class Map
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
+                if (fGameManager.Instance.isPositionScenery(x, y))
+                {
+                    continue;
+                }
+
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
                 {
