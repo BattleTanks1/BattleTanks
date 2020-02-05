@@ -7,6 +7,7 @@ public class GraphNode
     public bool visited = false;
 }
 
+
 public class PathFinding : MonoBehaviour
 {
     private Vector2Int[] m_directions2D = new Vector2Int[4]
@@ -113,16 +114,16 @@ public class PathFinding : MonoBehaviour
     public Vector3 getClosestSafePosition(Vector3 position, int minDistance, eFactionName factionName)
     {
         reset();
-        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
+        Queue<FrontierNode> frontier = new Queue<FrontierNode>();
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        frontier.Enqueue(positionOnGrid);
+        frontier.Enqueue(new FrontierNode(positionOnGrid, 1));
 
         Vector3 safePosition = new Vector3();
         bool safePositionFound = false;
         while (!safePositionFound && frontier.Count > 0)
         {
-            Vector2Int lastPosition = frontier.Dequeue();
-            getAdjacentPositions(m_adjacentPositions, lastPosition);
+            FrontierNode lastPosition = frontier.Dequeue();
+            getAdjacentPositions(m_adjacentPositions, lastPosition.position);
             foreach (Vector2Int adjacentPosition in m_adjacentPositions)
             {
                 if (m_graph[adjacentPosition.y, adjacentPosition.x].visited)
@@ -131,16 +132,17 @@ public class PathFinding : MonoBehaviour
                 }
 
                 m_graph[adjacentPosition.y, adjacentPosition.x].visited = true;
-                frontier.Enqueue(adjacentPosition);
+                frontier.Enqueue(new FrontierNode(adjacentPosition, lastPosition.depth + 1));
 
-                //if (InfluenceMap.Instance.isPositionInThreat(f getPointOnThreatMap(adjacentPosition).value <= 0.0f &&
-                //    Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), position) >= Mathf.Abs(minDistance))
-                //{
-                //    safePositionFound = true;
-                //    safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
-                //    break;
-                //}
+                if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), position) >= Mathf.Abs(minDistance))
+                {
+                    safePositionFound = true;
+                    safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
+                    break;
+                }
             }
+
+
 
             m_adjacentPositions.Clear();
         }

@@ -21,6 +21,15 @@ public class GraphPoint
     public eFactionName tankFactionName;
 }
 
+public class Scenery
+{
+    void Start()
+    {
+        //transform position add to map
+        //local scale add to map
+    }
+}
+
 public class fGameManager : MonoBehaviour
 {
     public Faction[] m_factions;
