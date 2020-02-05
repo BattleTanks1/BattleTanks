@@ -26,7 +26,7 @@ public class MessageToAIUnit
 
 public class FactionAI : Faction
 {
-    public FactionAI(eFactionName name) : 
+    public FactionAI(eFactionName name) :
         base(name, eFactionControllerType.eAI)
     {
         m_receivedMessages = new Queue<MessageToAIController>();
@@ -37,7 +37,6 @@ public class FactionAI : Faction
     Queue<MessageToAIController> m_receivedMessages;
     Queue<MessageToAIUnit> m_messagesToSend;
     HashSet<int> m_visibleTargets;
-    public float m_proximityCap = 1.4f;
 
     public override void update()
     {
@@ -52,6 +51,7 @@ public class FactionAI : Faction
             {
                 assignTankToAppropriateEnemy(tank);
             }
+            
             else if (tank.m_currentState == eAIState.TargetEnemy)
             {
                 updateTankPositionToMoveTo(tank);
@@ -66,7 +66,7 @@ public class FactionAI : Faction
 
     private void handleToSendMessages()
     {
-        while(m_messagesToSend.Count > 0)
+        while (m_messagesToSend.Count > 0)
         {
             MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
             Tank tank = getTank(messageToSend.m_receiverID);
@@ -77,7 +77,7 @@ public class FactionAI : Faction
                         tank.m_targetID = messageToSend.m_targetID;
                         tank.m_currentState = messageToSend.m_messageType;
                         tank.m_positionToMoveTo = Utilities.convertToWorldPosition(messageToSend.m_lastTargetPosition);
-                        
+
                         Debug.Log("Shoot At Enemy");
                     }
                     break;
@@ -87,15 +87,15 @@ public class FactionAI : Faction
 
     private void handleReceivedMessages()
     {
-        while(m_receivedMessages.Count > 0)
+        while (m_receivedMessages.Count > 0)
         {
             MessageToAIController receivedMessage = m_receivedMessages.Dequeue();
             switch (receivedMessage.m_messageType)
             {
                 case eAIUniMessageType.EnemySpottedAtPosition:
-                    if(isEnemyStillInSight(receivedMessage))
+                    if (isEnemyStillInSight(receivedMessage))
                     {
-                        m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID, 
+                        m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID,
                            eAIState.TargetEnemy, receivedMessage.m_lastTargetPosition));
 
                         m_visibleTargets.Add(receivedMessage.m_targetID);
@@ -111,9 +111,9 @@ public class FactionAI : Faction
     private Tank getTank(int ID)
     {
         Tank tank = null;
-        foreach(Tank i in m_tanks)
+        foreach (Tank i in m_tanks)
         {
-            if(i.m_ID == ID)
+            if (i.m_ID == ID)
             {
                 tank = i;
             }
@@ -125,19 +125,19 @@ public class FactionAI : Faction
     private bool isEnemyStillInSight(MessageToAIController receivedMessage)
     {
         Tank messageSender = getTank(receivedMessage.m_senderID);
-        if(!messageSender)
+        if (!messageSender)
         {
             return false;
         }
 
         Vector2Int senderPositionOnGrid = Utilities.convertToGridPosition(messageSender.transform.position);
         Rectangle searchableRect = new Rectangle(senderPositionOnGrid, messageSender.m_visibilityDistance);
-        for(int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
-            for(int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 float distance = Vector2Int.Distance(senderPositionOnGrid, new Vector2Int(x, y));
-                if(distance <= messageSender.m_visibilityDistance &&
+                if (distance <= messageSender.m_visibilityDistance &&
                     fGameManager.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
                 {
                     return true;
@@ -150,9 +150,8 @@ public class FactionAI : Faction
 
     private void assignTankToAppropriateEnemy(Tank tank)
     {
-        if(m_visibleTargets.Count > 0)
+        if (m_visibleTargets.Count > 0)
         {
-
             int targetID = Utilities.INVALID_ID;
             float distance = float.MaxValue;
             Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
@@ -222,5 +221,12 @@ public class FactionAI : Faction
             tank.m_targetID = Utilities.INVALID_ID;
             tank.m_currentState = eAIState.AwaitingDecision;
         }
+    }
+
+    private bool isSupported(Tank tank)
+    {
+
+
+        return false;
     }
 }

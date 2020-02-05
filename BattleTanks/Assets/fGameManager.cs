@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-
-
 public class GraphPoint
 {
     public void assign(int ID, eFactionName factionName)

@@ -273,20 +273,10 @@ public class InfluenceMap : MonoBehaviour
         return tank.m_scaredValue >= value;
     }
 
-    public bool isPositionInThreat(Vector2Int position, eFactionName factionName)
+    public Point getPointOnProximityMap(Vector2Int position, eFactionName factionName)
     {
-        float value = 0.0f;
-        foreach (Map threatMap in m_threatMaps)
-        {
-            if (threatMap.m_ownerName != factionName)
-            {
-                value += threatMap.getPoint(position).value;
-            }
-        }
-
-        return value >= 0;
+        return m_proximityMaps[(int)factionName].getPoint(position);
     }
-
 
     private void inverseWorkingMap(Vector2Int position)
     {
@@ -325,7 +315,7 @@ public class InfluenceMap : MonoBehaviour
             {
                 for (int x = 0; x < mapSize.x; ++x)
                 {
-                    spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
+                    //spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
                     //spawnCube(x, y, m_proximityMaps[(int)eFactionName.Blue]);
                 }
             }

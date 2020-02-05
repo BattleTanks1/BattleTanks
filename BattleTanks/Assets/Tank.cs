@@ -50,6 +50,8 @@ public enum eAIState
     TargetEnemy,
     MovingToNewPosition,
     SetDestinationToSafePosition,
+    FleeToSafeLocation,
+    FleeToClosestSafeAlly,
     
     //Test States
     Idle,
@@ -102,8 +104,6 @@ public class Tank : MonoBehaviour
         m_ID = fGameManager.Instance.addTank(this);
         fGameManager.Instance.updatePositionOnMap(this);
         m_elaspedTime = m_timeBetweenShot;
-
-
     }
 
     private void move()
@@ -119,10 +119,6 @@ public class Tank : MonoBehaviour
                 m_oldPosition = transform.position;
                 transform.position = newPosition;
                 fGameManager.Instance.updatePositionOnMap(this);
-            }
-            else
-            {
-                print("Occupied");
             }
         }
         else if(m_currentState == eAIState.Flee)
