@@ -90,7 +90,7 @@ public class Tank : MonoBehaviour
     //AI Stuff
     [SerializeField]
     public eAIState m_currentState;
-
+    public eAIBehaviour m_behaviour;
     public Vector3 m_positionToMoveTo;
     public float m_scaredValue;
     public float m_maxValueAtPosition;

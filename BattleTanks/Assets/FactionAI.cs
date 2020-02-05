@@ -47,6 +47,13 @@ public class FactionAI : Faction
 
         foreach (Tank tank in m_tanks)
         {
+            if (tank.m_behaviour == eAIBehaviour.Passive &&
+                InfluenceMap.Instance.isPositionInThreat(tank) &&
+                )
+            {
+
+            }
+
             if (tank.m_currentState == eAIState.AwaitingDecision)
             {
                 assignTankToAppropriateEnemy(tank);
@@ -228,5 +235,14 @@ public class FactionAI : Faction
 
 
         return false;
+    }
+
+    private int closestTankNotInThreat()
+    {
+        float distance = float.MaxValue;
+
+
+
+        return Utilities.INVALID_ID;
     }
 }
