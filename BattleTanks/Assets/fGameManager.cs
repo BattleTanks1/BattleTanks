@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 
 using UnityEngine;
-using UnityEngine.Assertions;
 
 public class GraphPoint
 {
@@ -165,7 +164,6 @@ public class fGameManager : MonoBehaviour
         {
             for(int x = rect.m_left; x <= rect.m_right; ++x)
             {
-               // Assert.IsTrue(!m_map[y, x].scenery);
                 m_map[y, x].scenery = true;
             }
         }
