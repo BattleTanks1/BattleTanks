@@ -130,10 +130,10 @@ public class FactionAI : Faction
         }
 
         Vector2Int senderPositionOnGrid = Utilities.convertToGridPosition(messageSender.transform.position);
-        SearchRect searchableRect = new SearchRect(senderPositionOnGrid, messageSender.m_visibilityDistance);
-        for(int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+        Rectangle searchableRect = new Rectangle(senderPositionOnGrid, messageSender.m_visibilityDistance);
+        for(int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
-            for(int x = searchableRect.left; x <= searchableRect.right; ++x)
+            for(int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 float distance = Vector2Int.Distance(senderPositionOnGrid, new Vector2Int(x, y));
                 if(distance <= messageSender.m_visibilityDistance &&
@@ -186,10 +186,10 @@ public class FactionAI : Faction
         foreach (Tank tank in m_tanks)
         {
             Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-            SearchRect searchableRect = new SearchRect(positionOnGrid, tank.m_visibilityDistance);
-            for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+            Rectangle searchableRect = new Rectangle(positionOnGrid, tank.m_visibilityDistance);
+            for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
             {
-                for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
                 {
                     float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
                     if (distance <= tank.m_visibilityDistance &&

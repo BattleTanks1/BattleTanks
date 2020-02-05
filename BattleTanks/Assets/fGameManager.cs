@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
+using UnityEngine;
+using UnityEngine.Assertions;
 
 public class GraphPoint
 {
@@ -21,14 +22,6 @@ public class GraphPoint
     public eFactionName tankFactionName;
 }
 
-public class Scenery
-{
-    void Start()
-    {
-        //transform position add to map
-        //local scale add to map
-    }
-}
 
 public class fGameManager : MonoBehaviour
 {
@@ -67,22 +60,6 @@ public class fGameManager : MonoBehaviour
 
     private void Start()
     {
-        RaycastHit hit;
-        for(int y = 0; y < m_mapSize.y; ++y)
-        {
-            for(int x = 0; x < m_mapSize.x; ++x)
-            {
-                // Does the ray intersect any objects excluding the player layer
-                Vector3 startPosition = new Vector3(x, transform.position.y - 1, y);
-                if (Physics.Raycast(startPosition, transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity))
-                {
-                    if(hit.collider.gameObject.tag == "Scenery")
-                    {
-                        m_map[y, x].scenery = true;
-                    }
-                }
-            }
-        }
     }
 
     private void Update()
@@ -185,5 +162,17 @@ public class fGameManager : MonoBehaviour
     public GraphPoint getPointOnMap(int y, int x)
     {
         return m_map[y, x];
+    }
+    
+    public void addScenery(Rectangle size)
+    {
+        for(int y = size.m_top; y <= size.m_bottom; ++y)
+        {
+            for(int x = size.m_left; x <= size.m_right; ++x)
+            {
+                Assert.IsTrue(!m_map[y, x].scenery);
+                m_map[y, x].scenery = true;
+            }
+        }
     }
 }

@@ -146,10 +146,10 @@ public class Tank : MonoBehaviour
 
                 break;
             case eAIState.FindEnemy:
-                SearchRect searchRect = new SearchRect(Utilities.convertToGridPosition(transform.position), m_visibilityDistance);
-                for (int y = searchRect.top; y <= searchRect.bottom; ++y)
+                Rectangle searchRect = new Rectangle(Utilities.convertToGridPosition(transform.position), m_visibilityDistance);
+                for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
                 {
-                    for (int x = searchRect.left; x <= searchRect.right; ++x)
+                    for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
                     {
                         if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), new Vector2Int(x, y)) <= m_visibilityDistance &&
                             fGameManager.Instance.isEnemyOnPosition(new Vector2Int(x, y), m_factionName))
@@ -192,11 +192,11 @@ public class Tank : MonoBehaviour
                 {
                     Vector3 enemyPosition = new Vector3();
                     Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-                    SearchRect searchableRect = new SearchRect(positionOnGrid, m_visibilityDistance);
+                    Rectangle searchableRect = new Rectangle(positionOnGrid, m_visibilityDistance);
 
-                    for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+                    for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
                     {
-                        for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+                        for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
                         {
                             float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
                             if (distance <= m_visibilityDistance &&

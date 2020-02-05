@@ -2,9 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SearchRect
+public class Rectangle
 {
-    public SearchRect(Vector2Int position, int distance)
+    public Rectangle(int left, int right, int top, int bottom)
+    {
+        m_left = left;
+        m_right = right;
+        m_top = top;
+        m_bottom = bottom;
+    }
+
+    public Rectangle(Vector2Int position, int distance)
     {
         reset(position, distance);
     }
@@ -13,24 +21,24 @@ public class SearchRect
     {
         Vector2Int mapSize = fGameManager.Instance.m_mapSize;
 
-        left = Mathf.Max(position.x - distance, 0);
-        right = Mathf.Min(position.x + distance, mapSize.x);
-        if (right == mapSize.x)
+        m_left = Mathf.Max(position.x - distance, 0);
+        m_right = Mathf.Min(position.x + distance, mapSize.x);
+        if (m_right == mapSize.x)
         {
-            --right;
+            --m_right;
         }
-        top = Mathf.Max(position.y - distance, 0);
-        bottom = Mathf.Min(position.y + distance, mapSize.y);
-        if (bottom == mapSize.y)
+        m_top = Mathf.Max(position.y - distance, 0);
+        m_bottom = Mathf.Min(position.y + distance, mapSize.y);
+        if (m_bottom == mapSize.y)
         {
-            --bottom;
+            --m_bottom;
         }
     }
 
-    public int left { get; private set; }
-    public int right { get; private set; }
-    public int top { get; private set; }
-    public int bottom { get; private set; }
+    public int m_left { get; private set; }
+    public int m_right { get; private set; }
+    public int m_top { get; private set; }
+    public int m_bottom { get; private set; }
 }
 
 public enum eDirection2D

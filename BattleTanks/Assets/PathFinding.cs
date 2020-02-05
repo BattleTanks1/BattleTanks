@@ -7,7 +7,6 @@ public class GraphNode
     public bool visited = false;
 }
 
-
 public class PathFinding : MonoBehaviour
 {
     private Vector2Int[] m_directions2D = new Vector2Int[4]

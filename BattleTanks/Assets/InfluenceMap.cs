@@ -78,10 +78,10 @@ public class Map
     
     public void createInfluence(Vector2Int position, float strength, int maxDistance)
     {
-        SearchRect searchableRect = new SearchRect(position, maxDistance);
-        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+        Rectangle searchableRect = new Rectangle(position, maxDistance);
+        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
-            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
@@ -143,10 +143,10 @@ public class Map
 
     public void createThreat(Vector2Int position, float strength, int maxDistance)
     {
-        SearchRect searchableRect = new SearchRect(position, maxDistance);
-        for (int y = searchableRect.top; y <= searchableRect.bottom; ++y)
+        Rectangle searchableRect = new Rectangle(position, maxDistance);
+        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
-            for (int x = searchableRect.left; x <= searchableRect.right; ++x)
+            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
                 if (distance <= maxDistance)
@@ -204,7 +204,7 @@ public class WorkingMap
         m_searchableArea.reset(position, distance);
     }
 
-    private SearchRect m_searchableArea;
+    private Rectangle m_searchableArea;
     public Point[,] m_workingMap { get; private set; }
 }
 
