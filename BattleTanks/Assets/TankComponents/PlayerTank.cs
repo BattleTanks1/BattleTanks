@@ -44,20 +44,20 @@ public class PlayerTank : MonoBehaviour
         //Rotation
         if (Input.GetKey(KeyCode.D))
         {
-            move.rightTurn(Time.deltaTime);
+            move.leftTurn();
         }
         if(Input.GetKey(KeyCode.A))
         {
-            move.leftTurn(Time.deltaTime);
+             move.rightTurn();
         }
         //Movement
         if(Input.GetKey(KeyCode.W))
         {
-            move.forward(Time.deltaTime);
+            move.forward();
         }
         if(Input.GetKey(KeyCode.S))
         {
-            move.backward(Time.deltaTime);
+            move.backward();
         }
 
         if(Input.GetKeyDown(KeyCode.Space))

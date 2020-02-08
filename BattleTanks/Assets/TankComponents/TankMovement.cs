@@ -4,36 +4,37 @@ using UnityEngine;
 
 public class TankMovement : MonoBehaviour
 {
-    [SerializeField]
-    protected float m_movementSpeed;
+    public Rigidbody m_rigidbody;
 
-    [SerializeField]
-    protected float m_maxSpeed = 20;
+    float m_movementSpeed;
+    public float m_maxSpeed = 20;
+    
+    float m_rotationSpeed;
+    public float m_maxRotation = 50;
 
-    [SerializeField]
-    protected float m_rotationSpeed;
-
-    [SerializeField]
-    protected float m_maxRotation = 50;
-
-    public void forward(float dTime)
+    public void forward()
     {
         m_movementSpeed += m_maxSpeed;
     }
 
-    public void backward(float dTime)
+    public void backward()
     {
-        m_movementSpeed += -m_maxSpeed;
+        m_movementSpeed -= m_maxSpeed;
     }
 
-    public void leftTurn(float dTime)
+    public void leftTurn()
     {
         m_rotationSpeed += m_maxRotation;
     }
 
-    public void rightTurn(float dTime)
+    public void rightTurn()
     {
         m_rotationSpeed += -m_maxRotation;
+    }
+
+    void Awake()
+    {
+        m_rigidbody = GetComponent<Rigidbody>();
     }
 
     // Start is called before the first frame update
@@ -45,8 +46,15 @@ public class TankMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(new Vector3(0, m_rotationSpeed * Time.deltaTime, 0));
-        transform.Translate(transform.forward * m_movementSpeed * Time.deltaTime);
+        //Rotation
+        float turn = m_rotationSpeed * Time.deltaTime;
+        Quaternion turnRotation = Quaternion.Euler(0f, turn, 0f);
+        m_rigidbody.MoveRotation(m_rigidbody.rotation * turnRotation);
+
+        //Movement
+        Vector3 movement = transform.forward * m_movementSpeed * Time.deltaTime;
+        m_rigidbody.MovePosition(m_rigidbody.position + movement);
+
         m_movementSpeed = 0;
         m_rotationSpeed = 0;
     }
