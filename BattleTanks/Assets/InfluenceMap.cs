@@ -265,7 +265,8 @@ public class InfluenceMap : MonoBehaviour
             {
                 value += threatMap.getPoint(tank.transform.position).value;
             }
-        
+        }
+
         return value >= tank.m_scaredValue;
     }
 
@@ -311,8 +312,8 @@ public class InfluenceMap : MonoBehaviour
             {
                 for (int x = 0; x < mapSize.x; ++x)
                 {
-                    spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
-                    spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
+                   //spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
+                   //spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
                 }
             }
         }
