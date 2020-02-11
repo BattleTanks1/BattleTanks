@@ -165,7 +165,7 @@ public class Tank : MonoBehaviour
                 }
                 break;
             case eAIState.SetDestinationToSafePosition:
-                //m_positionToMoveTo = PathFinding.Instance.getClosestSafePosition(transform.position, 8);
+                m_positionToMoveTo = PathFinding.Instance.getClosestSafePosition(8, this);
                 m_currentState = eAIState.MovingToNewPosition;
 
                 break;

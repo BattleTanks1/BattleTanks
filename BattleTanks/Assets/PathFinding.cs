@@ -110,12 +110,12 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    public Vector3 getClosestSafePosition(Vector3 position, int minDistance, eFactionName factionName)
+    public Vector3 getClosestSafePosition(int minDistance, Tank tank)
     {
         reset();
         Queue<FrontierNode> frontier = new Queue<FrontierNode>();
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        frontier.Enqueue(new FrontierNode(positionOnGrid, 1));
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+        frontier.Enqueue(new FrontierNode(positionOnGrid));
 
         Vector3 safePosition = new Vector3();
         bool safePositionFound = false;
@@ -131,17 +131,16 @@ public class PathFinding : MonoBehaviour
                 }
 
                 m_graph[adjacentPosition.y, adjacentPosition.x].visited = true;
-                frontier.Enqueue(new FrontierNode(adjacentPosition, lastPosition.depth + 1));
+                frontier.Enqueue(new FrontierNode(adjacentPosition));
 
-                if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), position) >= Mathf.Abs(minDistance))
+                if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), tank.transform.position) >= Mathf.Abs(minDistance) &&
+                    InfluenceMap.Instance.isPositionInThreat(tank))
                 {
                     safePositionFound = true;
                     safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
                     break;
                 }
             }
-
-
 
             m_adjacentPositions.Clear();
         }

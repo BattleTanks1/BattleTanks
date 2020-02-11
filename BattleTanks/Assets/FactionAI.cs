@@ -47,21 +47,29 @@ public class FactionAI : Faction
 
         foreach (Tank tank in m_tanks)
         {
-            if (tank.m_behaviour == eAIBehaviour.Passive &&
-                InfluenceMap.Instance.isPositionInThreat(tank) &&
-                )
-            {
-
-            }
-
             if (tank.m_currentState == eAIState.AwaitingDecision)
             {
-                assignTankToAppropriateEnemy(tank);
+                if (tank.m_scaredValue > 0 &&
+                    InfluenceMap.Instance.isPositionInThreat(tank))
+                {
+                    tank.m_currentState = eAIState.SetDestinationToSafePosition;
+                }
+                else
+                {
+                    assignTankToAppropriateEnemy(tank);
+                }
             }
-            
             else if (tank.m_currentState == eAIState.TargetEnemy)
             {
-                updateTankPositionToMoveTo(tank);
+                if (tank.m_scaredValue > 0 &&
+                    InfluenceMap.Instance.isPositionInThreat(tank))
+                {
+                    tank.m_currentState = eAIState.SetDestinationToSafePosition;
+                }
+                else
+                {
+                    updateTankPositionToMoveTo(tank);
+                }
             }
         }
     }
@@ -231,9 +239,7 @@ public class FactionAI : Faction
     }
 
     private bool isSupported(Tank tank)
-    {
-
-
+    { 
         return false;
     }
 
