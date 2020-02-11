@@ -60,14 +60,12 @@ you can figure out where an enemy would go and how his influence would extend in
 
 public class FrontierNode
 {
-    public FrontierNode(Vector2Int p, int d)
+    public FrontierNode(Vector2Int p)
     {
         position = p;
-        depth = d;
     }
 
     public Vector2Int position;
-    public int depth = 0;
 }
 
 public class Point
@@ -254,7 +252,6 @@ public class InfluenceMap : MonoBehaviour
                 clone = Instantiate(m_blueBox, new Vector3(x, 0, y), Quaternion.identity);
                 clone.transform.localScale += new Vector3(0, Mathf.Abs(map.m_map[y, x].value), 0);
                 m_boxes.Add(clone);
-
             }
         }
     }
@@ -268,9 +265,8 @@ public class InfluenceMap : MonoBehaviour
             {
                 value += threatMap.getPoint(tank.transform.position).value;
             }
-        }
-
-        return tank.m_scaredValue >= value;
+        
+        return value >= tank.m_scaredValue;
     }
 
     public Point getPointOnProximityMap(Vector2Int position, eFactionName factionName)
@@ -315,8 +311,8 @@ public class InfluenceMap : MonoBehaviour
             {
                 for (int x = 0; x < mapSize.x; ++x)
                 {
-                    //spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
-                    //spawnCube(x, y, m_proximityMaps[(int)eFactionName.Blue]);
+                    spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
+                    spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
                 }
             }
         }
