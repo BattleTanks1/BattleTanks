@@ -65,7 +65,7 @@ public class PlayerTank : MonoBehaviour
             //Shoot
         }
 
-        Vector3 turretDir = mousePosToPlanePos(transform.position, new Vector3(0, 1, 0), new Vector3(0, 0, 0));
-        GetComponent<Turret>().worldSpaceTarget = turretDir.normalized;
+        //Vector3 turretDir = mousePosToPlanePos(transform.position, new Vector3(0, 1, 0), new Vector3(0, 0, 0));
+        //GetComponent<Turret>().worldSpaceTarget = turretDir.normalized;
     }
 }
