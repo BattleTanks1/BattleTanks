@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerTank : MonoBehaviour
 {
+    public GameObject target;
+
     Vector3 linePlaneIntersection(Vector3 linePos, Vector3 lineDir, Vector3 planePos, Vector3 planeNormal)
     {
         float lineDotNormal = Vector3.Dot(lineDir, planeNormal);
@@ -66,6 +68,6 @@ public class PlayerTank : MonoBehaviour
         }
 
         //Vector3 turretDir = mousePosToPlanePos(transform.position, new Vector3(0, 1, 0), new Vector3(0, 0, 0));
-        //GetComponent<Turret>().worldSpaceTarget = turretDir.normalized;
+        GetComponent<Turret>().worldSpaceTarget = target.transform.position;
     }
 }
