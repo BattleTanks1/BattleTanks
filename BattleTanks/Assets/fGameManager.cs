@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class GraphPoint
 {
@@ -62,6 +63,21 @@ public class fGameManager : MonoBehaviour
         {
             faction.update();
         }
+    }
+
+    private Faction getPlayerFaction()
+    {
+        Faction playerFaction = null;
+        foreach(Faction faction in m_factions)
+        {
+            if(faction.m_controllerType == eFactionControllerType.eHuman)
+            {
+                playerFaction = faction;
+            }
+        }
+
+        Assert.IsNotNull(playerFaction);
+        return playerFaction;
     }
 
     public int addTank(Tank tank)
@@ -172,5 +188,17 @@ public class fGameManager : MonoBehaviour
     public bool isPositionScenery(int x, int y)
     {
         return m_map[y, x].sceneryType != eSceneryType.None;
+    }
+
+    public void selectPlayerUnits(Rectangle selectionBox)
+    {
+        Faction playerFaction = getPlayerFaction();
+        if(playerFaction != null)
+        {
+            foreach(Tank tank in playerFaction.m_tanks)
+            {
+                
+            }
+        }
     }
 }
