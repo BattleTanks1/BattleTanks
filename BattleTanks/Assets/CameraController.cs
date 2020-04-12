@@ -7,6 +7,8 @@ public class CameraController : MonoBehaviour
     private GameObject m_selectionBoxClone = null;
 
     [SerializeField]
+    private float m_selectionBoxHeight = 0.5f;
+    [SerializeField]
     private float m_speed = 30.0f;
     [SerializeField]
     private float m_borderOffset = 20.0f;
@@ -101,7 +103,7 @@ public class CameraController : MonoBehaviour
             }
 
             m_leftButtonHeld = true;
-            //m_selectionBoxClone = Instantiate(m_selectionBox, hit.point, Quaternion.identity);
+            m_selectionBoxClone = Instantiate(m_selectionBox, hit.point, Quaternion.identity);
         }
 
         else if (m_leftButtonHeld)
@@ -113,7 +115,8 @@ public class CameraController : MonoBehaviour
                 Assert.IsNotNull(m_selectionBoxClone);
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
-                m_selectionBoxClone.transform.localScale = new Vector3(m_selectionBoxClone.transform.localScale.x, 1, m_selectionBoxClone.transform.localScale.z);
+                m_selectionBoxClone.transform.localScale = 
+                    new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
 
                 Rectangle selectionBox = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBox.transform.localScale);
                 fGameManager.Instance.selectPlayerUnits(selectionBox);
