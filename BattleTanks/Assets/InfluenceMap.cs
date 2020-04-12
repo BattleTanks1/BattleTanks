@@ -197,7 +197,11 @@ public class InfluenceMap : MonoBehaviour
     List<GameObject> m_boxes;
     public GameObject m_redBox;
     public GameObject m_blueBox;
+
+
     //Proximity Map
+    [SerializeField]
+    private bool m_renderCubes = false;
     [SerializeField]
     private Map[] m_proximityMaps = new Map[(int)eFactionName.Total];
     [SerializeField]
@@ -307,13 +311,16 @@ public class InfluenceMap : MonoBehaviour
                 }
             }
 
-            Vector2Int mapSize = fGameManager.Instance.m_mapSize;
-            for (int y = 0; y < mapSize.y; ++y)
+            if(m_renderCubes)
             {
-                for (int x = 0; x < mapSize.x; ++x)
+                Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+                for (int y = 0; y < mapSize.y; ++y)
                 {
-                   //spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
-                   //spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
+                    for (int x = 0; x < mapSize.x; ++x)
+                    {
+                        spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
+                        spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
+                    }
                 }
             }
         }
