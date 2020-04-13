@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 //http://lecturer.ukdw.ac.id/~mahas/dossier/gameng_AIFG.pdf
 //https://www.reddit.com/r/gamedev/comments/9onssu/where_can_i_learn_more_about_rts_ai/
@@ -66,128 +67,105 @@ public class AITank : MonoBehaviour
     public eAIBehaviour m_behaviour;
     public int m_targetID = Utilities.INVALID_ID;
 
-    // Start is called before the first frame update
+    private Tank m_tank = null;
+    private TankMovement m_tankMovement = null;
+    private TankShooting m_tankShooting = null;
+
     private void Start()
     {
-        //m_oldPosition = transform.position;
-        //m_ID = fGameManager.Instance.addTank(this);
-        //fGameManager.Instance.updatePositionOnMap(this);
-        //m_elaspedTime = m_timeBetweenShot;
-    }
-
-    private void move()
-    {
-        ////Moving to enemy position - 'm_positionToMoveTo
-        //if (m_currentState == eAIState.TargetEnemy &&
-        //    Vector3.Distance(m_positionToMoveTo, transform.position) > m_shootRange)
-        //{
-        //    float step = m_movementSpeed * Time.deltaTime;
-        //    Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
-        //    if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
-        //    {
-        //        m_oldPosition = transform.position;
-        //        transform.position = newPosition;
-        //        fGameManager.Instance.updatePositionOnMap(this);
-        //    }
-        //}
-        //else if (m_currentState == eAIState.Flee)
-        //{
-        //    Vector3 newPosition = transform.position + velocity * Time.deltaTime;
-        //    if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
-        //    {
-        //        m_oldPosition = transform.position;
-        //        transform.position = newPosition;
-        //        fGameManager.Instance.updatePositionOnMap(this);
-        //    }
-        //}
+        m_tank = GetComponent<Tank>();
+        Assert.IsNotNull(m_tank);
+        
+        m_tankMovement = GetComponent<TankMovement>();
+        Assert.IsNotNull(m_tankMovement);
+        
+        m_tankShooting = GetComponent<TankShooting>();
+        Assert.IsNotNull(m_tankShooting);
     }
 
     private void Update()
     {
-        //m_elaspedTime += Time.deltaTime;
-        //move();
+        switch (m_currentState)
+        {
+            case eAIState.AwaitingDecision:
+                break;
+            case eAIState.FindEnemy:
+                {
+                    Rectangle searchRect = new Rectangle(Utilities.convertToGridPosition(transform.position), m_tank.m_visibilityDistance);
+                    for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
+                    {
+                        for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
+                        {
+                            Vector2Int positionOnGrid = new Vector2Int(x, y);
+                            if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), positionOnGrid) <= m_tank.m_visibilityDistance &&
+                                GameManager.Instance.isEnemyOnPosition(positionOnGrid, m_tank.m_factionName))
+                            {
+                                print("Spotted Enemy");
+                                m_currentState = eAIState.AwaitingDecision;
 
-        //switch (m_currentState)
-        //{
-        //    case eAIState.AwaitingDecision:
+                                SendMessageToCommander(positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition);
+                            }
+                        }
+                    }
+                }
+              
+                break;
+            case eAIState.SetDestinationToSafePosition:
+                {
+                    m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_tank));
+                    m_currentState = eAIState.MovingToNewPosition;                    
+                }
+                break;
+            case eAIState.MovingToNewPosition:
+                {
+                    if(m_tankMovement.reachedDestination())
+                    {
+                        m_currentState = eAIState.AwaitingDecision;
+                    }
+                }
+                break;
+            case eAIState.TargetEnemy:
+                {
+                    bool targetSpotted = false;
+                    Vector3 enemyPosition = new Vector3();
+                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+                    Rectangle searchableRect = new Rectangle(positionOnGrid, m_tank.m_visibilityDistance);
 
-        //        break;
-        //    case eAIState.FindEnemy:
-        //        Rectangle searchRect = new Rectangle(Utilities.convertToGridPosition(transform.position), m_visibilityDistance);
-        //        for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
-        //        {
-        //            for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
-        //            {
-        //                if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), new Vector2Int(x, y)) <= m_visibilityDistance &&
-        //                    fGameManager.Instance.isEnemyOnPosition(new Vector2Int(x, y), m_factionName))
-        //                {
-        //                    print("Spotted Enemy");
-        //                    m_currentState = eAIState.AwaitingDecision;
+                    for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+                    {
+                        for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+                        {
+                            float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                            if (distance <= m_tank.m_visibilityDistance &&
+                                GameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                            {
+                                enemyPosition = new Vector3(x, 0, y);
+                                targetSpotted = true;
+                                break;
+                            }
+                        }
+                    }
 
-        //                    //Send message to commander
-        //                    GraphPoint pointOnEnemy = fGameManager.Instance.getPointOnMap(new Vector2Int(x, y));
-        //                    MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, new Vector2Int(x, y), eAIUniMessageType.EnemySpottedAtPosition,
-        //                        m_ID, m_factionName);
-        //                    fGameManager.Instance.sendAIControllerMessage(message);
-        //                }
-        //            }
-        //        }
-        //        break;
-        //    case eAIState.SetDestinationToSafePosition:
-        //        m_positionToMoveTo = PathFinding.Instance.getClosestSafePosition(8, this);
-        //        m_currentState = eAIState.MovingToNewPosition;
+                    if (targetSpotted)
+                    {
+                        TankShooting tankShooting = GetComponent<TankShooting>();
+                        Assert.IsNotNull(tankShooting);
+                        if (tankShooting)
+                        {
+                            tankShooting.FireAtPosition(enemyPosition);
+                        }
+                    }
+                }
+                break;
+        }
+    }
 
-        //        break;
-
-        //    case eAIState.MovingToNewPosition:
-        //        {
-        //            float step = m_movementSpeed * Time.deltaTime;
-        //            Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
-        //            if (!fGameManager.Instance.isPositionOccupied(newPosition, m_ID))
-        //            {
-        //                m_oldPosition = transform.position;
-        //                transform.position = newPosition;
-        //                fGameManager.Instance.updatePositionOnMap(this);
-        //                if (transform.position == m_positionToMoveTo)
-        //                {
-        //                    m_currentState = eAIState.AwaitingDecision;
-        //                }
-        //            }
-        //        }
-        //        break;
-        //    case eAIState.TargetEnemy:
-        //        {
-        //            Vector3 enemyPosition = new Vector3();
-        //            Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        //            Rectangle searchableRect = new Rectangle(positionOnGrid, m_visibilityDistance);
-
-        //            for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
-        //            {
-        //                for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
-        //                {
-        //                    float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-        //                    if (distance <= m_visibilityDistance &&
-        //                        fGameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
-        //                    {
-        //                        enemyPosition = new Vector3(x, 0, y);
-
-        //                        break;
-        //                    }
-        //                }
-        //            }
-
-        //            if (m_elaspedTime >= m_timeBetweenShot &&
-        //                Vector3.Distance(enemyPosition, transform.position) <= m_shootRange)
-        //            {
-        //                m_elaspedTime = 0.0f;
-
-        //                Rigidbody clone;
-        //                clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
-        //                Vector3 vBetween = enemyPosition - transform.position;
-        //                clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
-        //            }
-        //        }
-        //        break;
-        //}
+    private void SendMessageToCommander(Vector2Int positionOnGrid, eAIUniMessageType messageType)
+    {
+        GraphPoint pointOnEnemy = GameManager.Instance.getPointOnMap(positionOnGrid);
+        MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
+            m_tank.m_ID, m_tank.m_factionName);
+        
+        GameManager.Instance.sendAIControllerMessage(message);
     }
 }
