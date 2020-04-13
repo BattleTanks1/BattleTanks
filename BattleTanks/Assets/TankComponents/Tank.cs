@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Tank : MonoBehaviour
 {
     public int m_visibilityDistance;
@@ -18,15 +17,13 @@ public class Tank : MonoBehaviour
     [SerializeField]
     public eFactionName m_factionName;
 
-    public float m_shootRange;
-    [SerializeField]
-    protected Rigidbody m_projectile = null;
-    [SerializeField]
-    private float m_projectileSpeed = 0.0f;
 
-    public float m_timeBetweenShot;
-    private float m_elaspedTime = 0.0f;
 
     public float m_scaredValue;
     public float m_maxValueAtPosition;
+
+    private void Start()
+    {
+        m_ID = GameManager.Instance.addTank(this);
+    }
 }
