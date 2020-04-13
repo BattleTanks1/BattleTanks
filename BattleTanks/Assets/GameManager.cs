@@ -97,17 +97,17 @@ public class GameManager : MonoBehaviour
         return ID;
     }
 
-    public void updatePositionOnMap(Tank tank)
+    public void updatePositionOnMap(Tank tank, TankMovement tankMovement)
     {
-        //Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(tank.m_oldPosition);
-        //Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+        Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(tankMovement.m_oldPosition);
+        Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
 
-        //if (oldPositionOnGrid != currentPositionOnGrid)
-        //{
-        //    m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
-        //}
+        if (oldPositionOnGrid != currentPositionOnGrid)
+        {
+            m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
+        }
 
-        //m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(tank.m_ID, tank.m_factionName);
+        m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(tank.m_ID, tank.m_factionName);
     }
 
     public bool isPositionOccupied(Vector3 newPosition, int tankID)
