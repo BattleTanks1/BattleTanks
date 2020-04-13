@@ -125,10 +125,6 @@ public class CameraController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
         {
-            Debug.Log(m_selectionBoxClone.transform.localScale.x);
-            Debug.Log(m_selectionBoxClone.transform.localScale.y);
-            Debug.Log(m_selectionBoxClone.transform.localScale.z);
-        
             m_leftButtonHeld = false;
             Assert.IsNotNull(m_selectionBoxClone);
             Destroy(m_selectionBoxClone);

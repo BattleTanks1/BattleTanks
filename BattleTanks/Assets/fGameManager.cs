@@ -99,15 +99,15 @@ public class fGameManager : MonoBehaviour
 
     public void updatePositionOnMap(Tank tank)
     {
-        Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(tank.m_oldPosition);
-        Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+        //Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(tank.m_oldPosition);
+        //Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
 
-        if (oldPositionOnGrid != currentPositionOnGrid)
-        {
-            m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
-        }
+        //if (oldPositionOnGrid != currentPositionOnGrid)
+        //{
+        //    m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
+        //}
 
-        m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(tank.m_ID, tank.m_factionName);
+        //m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(tank.m_ID, tank.m_factionName);
     }
 
     public bool isPositionOccupied(Vector3 newPosition, int tankID)

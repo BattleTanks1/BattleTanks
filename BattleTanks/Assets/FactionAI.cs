@@ -47,30 +47,30 @@ public class FactionAI : Faction
 
         foreach (Tank tank in m_tanks)
         {
-            if (tank.m_currentState == eAIState.AwaitingDecision)
-            {
-                if (tank.m_scaredValue > 0 &&
-                    InfluenceMap.Instance.isPositionInThreat(tank))
-                {
-                    tank.m_currentState = eAIState.SetDestinationToSafePosition;
-                }
-                else
-                {
-                    assignTankToAppropriateEnemy(tank);
-                }
-            }
-            else if (tank.m_currentState == eAIState.TargetEnemy)
-            {
-                if (tank.m_scaredValue > 0 &&
-                    InfluenceMap.Instance.isPositionInThreat(tank))
-                {
-                    tank.m_currentState = eAIState.SetDestinationToSafePosition;
-                }
-                else
-                {
-                    updateTankPositionToMoveTo(tank);
-                }
-            }
+            //if (tank.m_currentState == eAIState.AwaitingDecision)
+            //{
+            //    if (tank.m_scaredValue > 0 &&
+            //        InfluenceMap.Instance.isPositionInThreat(tank))
+            //    {
+            //        tank.m_currentState = eAIState.SetDestinationToSafePosition;
+            //    }
+            //    else
+            //    {
+            //        assignTankToAppropriateEnemy(tank);
+            //    }
+            //}
+            //else if (tank.m_currentState == eAIState.TargetEnemy)
+            //{
+            //    if (tank.m_scaredValue > 0 &&
+            //        InfluenceMap.Instance.isPositionInThreat(tank))
+            //    {
+            //        tank.m_currentState = eAIState.SetDestinationToSafePosition;
+            //    }
+            //    else
+            //    {
+            //        updateTankPositionToMoveTo(tank);
+            //    }
+            //}
         }
     }
 
@@ -83,20 +83,20 @@ public class FactionAI : Faction
     {
         while (m_messagesToSend.Count > 0)
         {
-            MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
-            Tank tank = getTank(messageToSend.m_receiverID);
-            switch (messageToSend.m_messageType)
-            {
-                case eAIState.TargetEnemy:
-                    {
-                        tank.m_targetID = messageToSend.m_targetID;
-                        tank.m_currentState = messageToSend.m_messageType;
-                        tank.m_positionToMoveTo = Utilities.convertToWorldPosition(messageToSend.m_lastTargetPosition);
+            //MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
+            //Tank tank = getTank(messageToSend.m_receiverID);
+            //switch (messageToSend.m_messageType)
+            //{
+            //    case eAIState.TargetEnemy:
+            //        {
+            //            tank.m_targetID = messageToSend.m_targetID;
+            //            tank.m_currentState = messageToSend.m_messageType;
+            //            tank.m_positionToMoveTo = Utilities.convertToWorldPosition(messageToSend.m_lastTargetPosition);
 
-                        Debug.Log("Shoot At Enemy");
-                    }
-                    break;
-            }
+            //            Debug.Log("Shoot At Enemy");
+            //        }
+            //        break;
+            //}
         }
     }
 
@@ -187,11 +187,11 @@ public class FactionAI : Faction
                 }
             }
 
-            tank.m_targetID = targetID;
-            tank.m_currentState = eAIState.TargetEnemy;
-            tank.m_positionToMoveTo = Utilities.convertToWorldPosition(closestTargetPositionOnGrid);
-            Debug.Log(closestTargetPositionOnGrid.x);
-            Debug.Log(closestTargetPositionOnGrid.y);
+            //tank.m_targetID = targetID;
+            //tank.m_currentState = eAIState.TargetEnemy;
+            //tank.m_positionToMoveTo = Utilities.convertToWorldPosition(closestTargetPositionOnGrid);
+            //Debug.Log(closestTargetPositionOnGrid.x);
+            //Debug.Log(closestTargetPositionOnGrid.y);
         }
     }
 
@@ -226,16 +226,16 @@ public class FactionAI : Faction
 
     private void updateTankPositionToMoveTo(Tank tank)
     {
-        Vector2Int targetOnGridPosition = new Vector2Int();
-        if (isTargetInSight(tank.m_targetID, out targetOnGridPosition))
-        {
-            tank.m_positionToMoveTo = Utilities.convertToWorldPosition(targetOnGridPosition);
-        }
-        else
-        {
-            tank.m_targetID = Utilities.INVALID_ID;
-            tank.m_currentState = eAIState.AwaitingDecision;
-        }
+        //Vector2Int targetOnGridPosition = new Vector2Int();
+        //if (isTargetInSight(tank.m_targetID, out targetOnGridPosition))
+        //{
+        //    tank.m_positionToMoveTo = Utilities.convertToWorldPosition(targetOnGridPosition);
+        //}
+        //else
+        //{
+        //    tank.m_targetID = Utilities.INVALID_ID;
+        //    tank.m_currentState = eAIState.AwaitingDecision;
+        //}
     }
 
     private bool isSupported(Tank tank)
