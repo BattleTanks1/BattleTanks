@@ -22,14 +22,14 @@ public class GraphPoint
     public eFactionName tankFactionName;
 }
 
-public class fGameManager : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     public Faction[] m_factions;
     public Vector2Int m_mapSize { get; private set; }
     private int m_ID = 0; //Unique ID per ship
     private GraphPoint[,] m_map;
-    private static fGameManager _instance;
-    public static fGameManager Instance { get { return _instance; } }
+    private static GameManager _instance;
+    public static GameManager Instance { get { return _instance; } }
 
     private void Awake()
     {

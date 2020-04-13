@@ -39,7 +39,7 @@ public class PathFinding : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        Vector2Int mapSize = GameManager.Instance.m_mapSize;
         m_graph = new GraphNode[mapSize.y, mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
         {
@@ -52,7 +52,7 @@ public class PathFinding : MonoBehaviour
 
     private void reset()
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        Vector2Int mapSize = GameManager.Instance.m_mapSize;
         for (int y = 0; y < mapSize.y; ++y)
         {
             for (int x = 0; x < mapSize.x; ++x)
@@ -66,14 +66,14 @@ public class PathFinding : MonoBehaviour
 
     public void getDiagonalAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position, Point[,] map)
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        Vector2Int mapSize = GameManager.Instance.m_mapSize;
         foreach(Vector2Int direction in Utilities.getDiagonalDirections2D())
         {
             Vector2Int positionOnGrid = position + direction;
             if (positionOnGrid.x >= 0 && positionOnGrid.x < mapSize.x &&
                 positionOnGrid.y >= 0 && positionOnGrid.y < mapSize.y &&
                 !map[positionOnGrid.y, positionOnGrid.x].visited &&
-                fGameManager.Instance.isPointOnScenery(positionOnGrid))
+                GameManager.Instance.isPointOnScenery(positionOnGrid))
             {
                 adjacentPositions.Add(positionOnGrid);
             }
@@ -82,14 +82,14 @@ public class PathFinding : MonoBehaviour
 
     public void getAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position, Point[,] map)
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        Vector2Int mapSize = GameManager.Instance.m_mapSize;
         foreach (Vector2Int direction in m_directions2D)
         {
             Vector2Int positionOnGrid = position + direction;
             if (positionOnGrid.x >= 0 && positionOnGrid.x < mapSize.x &&
                 positionOnGrid.y >= 0 && positionOnGrid.y < mapSize.y &&
                 !map[positionOnGrid.y, positionOnGrid.x].visited &&
-                fGameManager.Instance.isPointOnScenery(positionOnGrid))
+                GameManager.Instance.isPointOnScenery(positionOnGrid))
             {
                 adjacentPositions.Add(positionOnGrid);
             }
@@ -98,7 +98,7 @@ public class PathFinding : MonoBehaviour
         
     public void getAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position)
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        Vector2Int mapSize = GameManager.Instance.m_mapSize;
         foreach(Vector2Int direction in m_directions2D)
         {
             Vector2Int positionOnGrid = position + direction;

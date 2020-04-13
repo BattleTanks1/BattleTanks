@@ -119,7 +119,7 @@ public class CameraController : MonoBehaviour
                     new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
 
                 Rectangle selectionBox = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBox.transform.localScale);
-                fGameManager.Instance.selectPlayerUnits(selectionBox);
+                //fGameManager.Instance.selectPlayerUnits(selectionBox);
             }
         }
 

@@ -107,7 +107,7 @@ public class Map
     public Map(eFactionName ownerName)
     {
         m_ownerName = ownerName;
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        Vector2Int mapSize = GameManager.Instance.m_mapSize;
         m_map = new Point[mapSize.y, mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
         {
@@ -125,7 +125,7 @@ public class Map
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
-                if(fGameManager.Instance.isPositionScenery(x, y))
+                if(GameManager.Instance.isPositionScenery(x, y))
                 {
                     continue;
                 }
@@ -147,7 +147,7 @@ public class Map
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
-                if (fGameManager.Instance.isPositionScenery(x, y))
+                if (GameManager.Instance.isPositionScenery(x, y))
                 {
                     continue;
                 }
@@ -169,7 +169,7 @@ public class Map
 
     public void reset()
     {
-        Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+        Vector2Int mapSize = GameManager.Instance.m_mapSize;
         for (int y = 0; y < mapSize.y; ++y)
         {
             for (int x = 0; x < mapSize.x; ++x)
@@ -300,7 +300,7 @@ public class InfluenceMap : MonoBehaviour
                 m_proximityMaps[i].reset();
             }
             
-            foreach(Faction faction in fGameManager.Instance.m_factions)
+            foreach(Faction faction in GameManager.Instance.m_factions)
             {
                 foreach(Tank tank in faction.m_tanks)
                 {
@@ -313,7 +313,7 @@ public class InfluenceMap : MonoBehaviour
 
             if(m_renderCubes)
             {
-                Vector2Int mapSize = fGameManager.Instance.m_mapSize;
+                Vector2Int mapSize = GameManager.Instance.m_mapSize;
                 for (int y = 0; y < mapSize.y; ++y)
                 {
                     for (int x = 0; x < mapSize.x; ++x)

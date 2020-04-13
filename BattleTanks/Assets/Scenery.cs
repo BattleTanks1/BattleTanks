@@ -21,6 +21,6 @@ public class Scenery : MonoBehaviour
             (int)transform.position.z - (int)(transform.localScale.z / 2.0f),
             (int)transform.position.z + (int)(transform.localScale.z / 2.0f));
 
-        fGameManager.Instance.addScenery(rect, m_sceneryType);
+        GameManager.Instance.addScenery(rect, m_sceneryType);
     }
 }

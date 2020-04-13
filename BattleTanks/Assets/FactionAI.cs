@@ -153,7 +153,7 @@ public class FactionAI : Faction
             {
                 float distance = Vector2Int.Distance(senderPositionOnGrid, new Vector2Int(x, y));
                 if (distance <= messageSender.m_visibilityDistance &&
-                    fGameManager.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
+                    GameManager.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
                 {
                     return true;
                 }
@@ -209,7 +209,7 @@ public class FactionAI : Faction
                 {
                     float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
                     if (distance <= tank.m_visibilityDistance &&
-                        fGameManager.Instance.getPointOnMap(y, x).tankID == targetID)
+                        GameManager.Instance.getPointOnMap(y, x).tankID == targetID)
                     {
                         position = new Vector2Int(x, y);
                         targetFound = true;
