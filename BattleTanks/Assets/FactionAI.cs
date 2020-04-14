@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public enum eAIBehaviour
 {
@@ -10,6 +11,14 @@ public enum eAIBehaviour
 
 public class MessageToAIUnit
 {
+    public MessageToAIUnit(int targetID, eAIState messageType, Vector2Int position)
+    {
+        m_targetID = targetID;
+        m_receiverID = Utilities.INVALID_ID;
+        m_messageType = messageType;
+        m_lastTargetPosition = position;
+    }
+
     public MessageToAIUnit(int targetID, int receiverID, eAIState messageType, Vector2Int lastTargetPosition)
     {
         m_targetID = targetID;
@@ -45,32 +54,35 @@ public class FactionAI : Faction
         handleReceivedMessages();
         handleToSendMessages();
 
+        //FIND ENEMY - THIS ACTS AS A HSM
+        //            case eAIState.FindEnemy:
+        //        {
+        //    iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(transform.position), m_tank.m_visibilityDistance);
+        //    for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
+        //    {
+        //        for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
+        //        {
+        //            Vector2Int positionOnGrid = new Vector2Int(x, y);
+        //            if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), positionOnGrid) <= m_tank.m_visibilityDistance &&
+        //                GameManager.Instance.isEnemyOnPosition(positionOnGrid, m_tank.m_factionName))
+        //            {
+        //                print("Spotted Enemy");
+        //                m_currentState = eAIState.AwaitingDecision;
+        //                SendMessageToCommander(positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition);
+        //            }
+        //        }
+        //    }
+        //}
+
         foreach (Tank tank in m_tanks)
         {
-            //if (tank.m_currentState == eAIState.AwaitingDecision)
-            //{
-            //    if (tank.m_scaredValue > 0 &&
-            //        InfluenceMap.Instance.isPositionInThreat(tank))
-            //    {
-            //        tank.m_currentState = eAIState.SetDestinationToSafePosition;
-            //    }
-            //    else
-            //    {
-            //        assignTankToAppropriateEnemy(tank);
-            //    }
-            //}
-            //else if (tank.m_currentState == eAIState.TargetEnemy)
-            //{
-            //    if (tank.m_scaredValue > 0 &&
-            //        InfluenceMap.Instance.isPositionInThreat(tank))
-            //    {
-            //        tank.m_currentState = eAIState.SetDestinationToSafePosition;
-            //    }
-            //    else
-            //    {
-            //        updateTankPositionToMoveTo(tank);
-            //    }
-            //}
+            AITank aiComponent = tank.gameObject.GetComponent<AITank>();
+            Assert.IsNotNull(aiComponent);
+
+            if (InfluenceMap.Instance.isPositionInThreat(tank))
+            {
+                aiComponent.m_currentState = eAIState.SetDestinationToSafePosition;
+            }
         }
     }
 
@@ -83,20 +95,21 @@ public class FactionAI : Faction
     {
         while (m_messagesToSend.Count > 0)
         {
-            //MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
-            //Tank tank = getTank(messageToSend.m_receiverID);
-            //switch (messageToSend.m_messageType)
-            //{
-            //    case eAIState.TargetEnemy:
-            //        {
-            //            tank.m_targetID = messageToSend.m_targetID;
-            //            tank.m_currentState = messageToSend.m_messageType;
-            //            tank.m_positionToMoveTo = Utilities.convertToWorldPosition(messageToSend.m_lastTargetPosition);
+            MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
+            AITank aiComponent = getTank(messageToSend.m_receiverID).gameObject.GetComponent<AITank>();
+            Assert.IsNotNull(aiComponent);
+            if(aiComponent)
+            {
+                aiComponent.receiveMessage(messageToSend);
+            }
+            switch (messageToSend.m_messageType)
+            {
+                case eAIState.ShootingAtEnemy:
+                {
 
-            //            Debug.Log("Shoot At Enemy");
-            //        }
-            //        break;
-            //}
+                }
+                break;
+            }
         }
     }
 
@@ -111,7 +124,7 @@ public class FactionAI : Faction
                     if (isEnemyStillInSight(receivedMessage))
                     {
                         m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID,
-                           eAIState.TargetEnemy, receivedMessage.m_lastTargetPosition));
+                           eAIState.ShootingAtEnemy, receivedMessage.m_lastTargetPosition));
 
                         m_visibleTargets.Add(receivedMessage.m_targetID);
                     }
@@ -175,7 +188,7 @@ public class FactionAI : Faction
             foreach (int visibleTargetID in m_visibleTargets)
             {
                 Vector2Int targetPositionOnGrid = new Vector2Int();
-                if (isTargetInSight(visibleTargetID, out targetPositionOnGrid))
+                if (isTargetInSightAllTanks(visibleTargetID, out targetPositionOnGrid))
                 {
                     float i = Vector2Int.Distance(targetPositionOnGrid, tankPositionOnGrid);
                     if (i < distance)
@@ -187,15 +200,16 @@ public class FactionAI : Faction
                 }
             }
 
-            //tank.m_targetID = targetID;
-            //tank.m_currentState = eAIState.TargetEnemy;
-            //tank.m_positionToMoveTo = Utilities.convertToWorldPosition(closestTargetPositionOnGrid);
-            //Debug.Log(closestTargetPositionOnGrid.x);
-            //Debug.Log(closestTargetPositionOnGrid.y);
+            AITank aiComponent = tank.gameObject.GetComponent<AITank>();
+            Assert.IsNotNull(aiComponent);
+            if(aiComponent)
+            {
+                aiComponent.receiveMessage(new MessageToAIUnit(targetID, eAIState.ShootingAtEnemy, closestTargetPositionOnGrid));
+            }
         }
     }
 
-    private bool isTargetInSight(int targetID, out Vector2Int targetGridPosition)
+    private bool isTargetInSightAllTanks(int targetID, out Vector2Int targetGridPosition)
     {
         Vector2Int position = new Vector2Int();
         bool targetFound = false;
@@ -220,35 +234,7 @@ public class FactionAI : Faction
         }
 
     End:
-        targetGridPosition = position;
+        targetGridPosition = position;  
         return targetFound;
-    }
-
-    private void updateTankPositionToMoveTo(Tank tank)
-    {
-        //Vector2Int targetOnGridPosition = new Vector2Int();
-        //if (isTargetInSight(tank.m_targetID, out targetOnGridPosition))
-        //{
-        //    tank.m_positionToMoveTo = Utilities.convertToWorldPosition(targetOnGridPosition);
-        //}
-        //else
-        //{
-        //    tank.m_targetID = Utilities.INVALID_ID;
-        //    tank.m_currentState = eAIState.AwaitingDecision;
-        //}
-    }
-
-    private bool isSupported(Tank tank)
-    { 
-        return false;
-    }
-
-    private int closestTankNotInThreat()
-    {
-        float distance = float.MaxValue;
-
-
-
-        return Utilities.INVALID_ID;
     }
 }

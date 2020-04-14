@@ -262,16 +262,16 @@ public class InfluenceMap : MonoBehaviour
 
     public bool isPositionInThreat(Tank tank)
     {
-        float value = 0.0f;
+        float threatValue = -1.0f;
         foreach(Map threatMap in m_threatMaps)
         {
             if(threatMap.m_ownerName != tank.m_factionName)
             {
-                value += threatMap.getPoint(tank.transform.position).value;
+                threatValue += threatMap.getPoint(tank.transform.position).value;
             }
         }
 
-        return value >= tank.m_scaredValue;
+        return threatValue >= tank.m_scaredValue;
     }
 
     public Point getPointOnProximityMap(Vector2Int position, eFactionName factionName)

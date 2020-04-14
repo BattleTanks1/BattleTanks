@@ -139,7 +139,7 @@ public class CameraController : MonoBehaviour
     private void clearSelectionBox()
     {
         m_leftButtonHeld = false;
-        
+
         if(m_selectionBoxClone)
         {
             Destroy(m_selectionBoxClone);

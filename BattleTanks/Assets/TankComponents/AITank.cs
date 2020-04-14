@@ -48,7 +48,7 @@ public enum eAIState
 {
     AwaitingDecision = 0,
     FindEnemy,
-    TargetEnemy,
+    ShootingAtEnemy,
     MovingToNewPosition,
     SetDestinationToSafePosition,
     FleeToSafeLocation,
@@ -87,29 +87,6 @@ public class AITank : MonoBehaviour
     {
         switch (m_currentState)
         {
-            case eAIState.AwaitingDecision:
-                break;
-            case eAIState.FindEnemy:
-                {
-                    iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(transform.position), m_tank.m_visibilityDistance);
-                    for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
-                    {
-                        for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
-                        {
-                            Vector2Int positionOnGrid = new Vector2Int(x, y);
-                            if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), positionOnGrid) <= m_tank.m_visibilityDistance &&
-                                GameManager.Instance.isEnemyOnPosition(positionOnGrid, m_tank.m_factionName))
-                            {
-                                print("Spotted Enemy");
-                                m_currentState = eAIState.AwaitingDecision;
-
-                                SendMessageToCommander(positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition);
-                            }
-                        }
-                    }
-                }
-              
-                break;
             case eAIState.SetDestinationToSafePosition:
                 {
                     m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_tank));
@@ -118,45 +95,47 @@ public class AITank : MonoBehaviour
                 break;
             case eAIState.MovingToNewPosition:
                 {
-                    if(m_tankMovement.reachedDestination())
+                    if(m_targetID != Utilities.INVALID_ID && m_tankMovement.reachedDestination() &&
+                        isTargetInSight())
+                    {
+                        m_currentState = eAIState.ShootingAtEnemy;
+                    }
+                    else
+                    {
+                        if (m_tankMovement.reachedDestination())
+                        {
+                            m_currentState = eAIState.AwaitingDecision;
+                        }
+                    }
+                }
+                break;
+            case eAIState.ShootingAtEnemy:
+                {
+                    Vector3 enemyPosition = new Vector3();
+                    if(isTargetInSight(out enemyPosition))
+                    {
+                        m_tankShooting.FireAtPosition(enemyPosition);
+                    }
+                    else
                     {
                         m_currentState = eAIState.AwaitingDecision;
                     }
                 }
                 break;
-            case eAIState.TargetEnemy:
-                {
-                    bool targetSpotted = false;
-                    Vector3 enemyPosition = new Vector3();
-                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-                    iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
+        }
+    }
 
-                    for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
-                    {
-                        for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
-                        {
-                            float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-                            if (distance <= m_tank.m_visibilityDistance &&
-                                GameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
-                            {
-                                enemyPosition = new Vector3(x, 0, y);
-                                targetSpotted = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (targetSpotted)
-                    {
-                        TankShooting tankShooting = GetComponent<TankShooting>();
-                        Assert.IsNotNull(tankShooting);
-                        if (tankShooting)
-                        {
-                            tankShooting.FireAtPosition(enemyPosition);
-                        }
-                    }
-                }
-                break;
+    public void receiveMessage(MessageToAIUnit message)
+    {
+        switch(message.m_messageType)
+        {
+            case eAIState.ShootingAtEnemy:
+            {
+                m_targetID = message.m_targetID;
+                m_currentState = message.m_messageType;
+                m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_lastTargetPosition));
+            }
+            break;
         }
     }
 
@@ -167,5 +146,51 @@ public class AITank : MonoBehaviour
             m_tank.m_ID, m_tank.m_factionName);
         
         GameManager.Instance.sendAIControllerMessage(message);
+    }
+    
+    private bool isTargetInSight(out Vector3 enemyPosition)
+    {
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
+
+        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        {
+            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            {
+                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                if (distance <= m_tank.m_visibilityDistance &&
+                    GameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                {
+                    enemyPosition = new Vector3(x, 0, y);
+                    return true;
+                }
+            }
+        }
+
+        enemyPosition = new Vector3();
+        return false;
+    }
+
+    private bool isTargetInSight()
+    {
+        Assert.IsTrue(m_targetID != Utilities.INVALID_ID);
+
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
+
+        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        {
+            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            {
+                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
+                if (distance <= m_tank.m_visibilityDistance &&
+                    GameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

@@ -17,8 +17,6 @@ public class Tank : MonoBehaviour
     [SerializeField]
     public eFactionName m_factionName;
 
-
-
     public float m_scaredValue;
     public float m_maxValueAtPosition;
 
