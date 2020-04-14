@@ -6,11 +6,12 @@ using UnityEngine.Assertions;
 public class TankMovement : MonoBehaviour
 {
     public Vector3 m_oldPosition { get; private set; }
-    public Vector3 m_velocity;
-    public Vector3 m_positionToMoveTo;
-    public float m_movementSpeed;
 
+    [SerializeField]
+    private float m_movementSpeed = 0.0f;
+    private Vector3 m_positionToMoveTo;
     private Tank m_tank = null;
+    private bool m_reachedDestination = true;
 
     // Start is called before the first frame update
     private void Start()
@@ -25,7 +26,17 @@ public class TankMovement : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        
+        if(!m_reachedDestination)
+        {
+            Vector3 newPosition =
+                Vector3.MoveTowards(transform.position, m_positionToMoveTo, m_movementSpeed * Time.deltaTime);
+            transform.position = newPosition;
+            
+            if(transform.position == m_positionToMoveTo)
+            {
+                m_reachedDestination = true;
+            }
+        }
     } 
 
     private void Move()
@@ -40,9 +51,10 @@ public class TankMovement : MonoBehaviour
         }
     }
 
-    public void moveTo(Vector3 newPosition)
+    public void moveTo(Vector3 position)
     {
-
+        m_positionToMoveTo = position;
+        m_reachedDestination = false;
     }
 
     public bool reachedDestination()
