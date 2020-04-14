@@ -146,7 +146,7 @@ public class FactionAI : Faction
         }
 
         Vector2Int senderPositionOnGrid = Utilities.convertToGridPosition(messageSender.transform.position);
-        Rectangle searchableRect = new Rectangle(senderPositionOnGrid, messageSender.m_visibilityDistance);
+        iRectangle searchableRect = new iRectangle(senderPositionOnGrid, messageSender.m_visibilityDistance);
         for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
@@ -202,7 +202,7 @@ public class FactionAI : Faction
         foreach (Tank tank in m_tanks)
         {
             Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-            Rectangle searchableRect = new Rectangle(positionOnGrid, tank.m_visibilityDistance);
+            iRectangle searchableRect = new iRectangle(positionOnGrid, tank.m_visibilityDistance);
             for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
             {
                 for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)

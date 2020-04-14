@@ -173,7 +173,7 @@ public class GameManager : MonoBehaviour
         return m_map[y, x];
     }
     
-    public void addScenery(Rectangle rect, eSceneryType type)
+    public void addScenery(iRectangle rect, eSceneryType type)
     {
         for(int y = rect.m_top; y <= rect.m_bottom; ++y)
         {
@@ -189,7 +189,7 @@ public class GameManager : MonoBehaviour
         return m_map[y, x].sceneryType != eSceneryType.None;
     }
 
-    public void selectPlayerUnits(Rectangle selectionBox)
+    public void selectPlayerUnits(fRectangle selectionBox)
     {
         Faction playerFaction = getPlayerFaction();
         Assert.IsNotNull(playerFaction);

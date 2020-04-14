@@ -16,7 +16,7 @@ public class Scenery : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Rectangle rect = new Rectangle((int)transform.position.x - (int)(transform.localScale.x / 2.0f), 
+        iRectangle rect = new iRectangle((int)transform.position.x - (int)(transform.localScale.x / 2.0f), 
             (int)transform.position.x + (int)(transform.localScale.x / 2.0f), 
             (int)transform.position.z - (int)(transform.localScale.z / 2.0f),
             (int)transform.position.z + (int)(transform.localScale.z / 2.0f));

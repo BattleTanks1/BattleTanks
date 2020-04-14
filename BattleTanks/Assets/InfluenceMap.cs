@@ -93,7 +93,7 @@ public class WorkingMap
         m_searchableArea.reset(position, distance);
     }
 
-    private Rectangle m_searchableArea;
+    private iRectangle m_searchableArea;
     [SerializeField]
     public Point[,] m_workingMap { get; private set; }
 }
@@ -120,7 +120,7 @@ public class Map
 
     public void createInfluence(Vector2Int position, float strength, int maxDistance)
     {
-        Rectangle searchableRect = new Rectangle(position, maxDistance);
+        iRectangle searchableRect = new iRectangle(position, maxDistance);
         for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
@@ -142,7 +142,7 @@ public class Map
     public void createThreat(Vector2Int position, float strength, int maxDistance, float fallOfStrength, int fallOfDistance)
     {
         int totalDistance = maxDistance + fallOfDistance;
-        Rectangle searchableRect = new Rectangle(position, totalDistance);
+        iRectangle searchableRect = new iRectangle(position, totalDistance);
         for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)

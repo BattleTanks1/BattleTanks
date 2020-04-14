@@ -34,14 +34,14 @@ public class CameraController : MonoBehaviour
         handleSelectionBox();
     }
 
-    private Rectangle getSelectionBox(Vector3 position, Vector3 localScale)
+    private fRectangle getSelectionBox(Vector3 position, Vector3 localScale)
     {
         Vector3 scale = new Vector3(localScale.x / 2.0f, 0, localScale.z / 2.0f);
 
-        return new Rectangle((int)Mathf.Min(position.x - scale.x, position.x + scale.x),
-                (int)Mathf.Max(position.x - scale.x, position.x + scale.x),
-                (int)Mathf.Min(position.z - scale.z, position.z + scale.z),
-                (int)Mathf.Max(position.z - scale.z, position.z + scale.z));
+        return new fRectangle(Mathf.Min(position.x - scale.x, position.x + scale.x),
+                Mathf.Max(position.x - scale.x, position.x + scale.x),
+                Mathf.Min(position.z - scale.z, position.z + scale.z),
+                Mathf.Max(position.z - scale.z, position.z + scale.z));
     }
 
     private void Move()
@@ -120,25 +120,17 @@ public class CameraController : MonoBehaviour
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
-            { 
-                Vector3 difference = hit.point - m_mousePressedPosition;
-                if(difference.sqrMagnitude > m_minSelectionBoxSize * m_minSelectionBoxSize)
-                {
-                    m_renderSelectionBox = true;
-                }
-            }
-
-            if(m_renderSelectionBox)
             {
                 Assert.IsNotNull(m_selectionBoxClone);
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
 
-                Rectangle selectionBoxAABB = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
+                fRectangle selectionBoxAABB = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
                 m_selectionBoxClone.transform.localScale =
                     new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
 
                 GameManager.Instance.selectPlayerUnits(selectionBoxAABB);
+                
             }
 
 

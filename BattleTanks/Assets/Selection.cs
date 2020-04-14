@@ -6,18 +6,18 @@ using UnityEngine.Assertions;
 public class Selection : MonoBehaviour
 {
     public GameObject m_selectionBox;
-    public Rectangle m_AABB { get; private set; } = null;
+    public fRectangle m_AABB { get; private set; } = null;
 
     private void Start()
     {
         Assert.IsNotNull(m_selectionBox);
         m_selectionBox.SetActive(false);
 
-        m_AABB = new Rectangle
-            ((int)transform.position.x - (int)transform.localScale.x / 2,
-            (int)transform.position.x + (int)transform.localScale.x / 2,
-            (int)transform.position.z - (int)transform.localScale.z / 2,
-            (int)transform.position.z + (int)transform.localScale.z / 2);
+        m_AABB = new fRectangle
+            (transform.position.x - transform.localScale.x / 2.0f,
+            transform.position.x + transform.localScale.x / 2.0f,
+            transform.position.z - transform.localScale.z / 2.0f,
+            transform.position.z + transform.localScale.z / 2.0f);
     }
 
     // Update is called once per frame
@@ -26,11 +26,15 @@ public class Selection : MonoBehaviour
         m_selectionBox.transform.position = m_selectionBox.transform.position;
     }
 
-    public void Select(Rectangle selectionBox)
+    public void Select(fRectangle selectionBox)
     {
         if(selectionBox.contains(m_AABB))
         {
             m_selectionBox.SetActive(true);
+        }
+        else
+        {
+            m_selectionBox.SetActive(false);
         }
     }
 

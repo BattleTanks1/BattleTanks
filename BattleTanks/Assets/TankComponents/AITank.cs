@@ -91,7 +91,7 @@ public class AITank : MonoBehaviour
                 break;
             case eAIState.FindEnemy:
                 {
-                    Rectangle searchRect = new Rectangle(Utilities.convertToGridPosition(transform.position), m_tank.m_visibilityDistance);
+                    iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(transform.position), m_tank.m_visibilityDistance);
                     for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
                     {
                         for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
@@ -129,7 +129,7 @@ public class AITank : MonoBehaviour
                     bool targetSpotted = false;
                     Vector3 enemyPosition = new Vector3();
                     Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-                    Rectangle searchableRect = new Rectangle(positionOnGrid, m_tank.m_visibilityDistance);
+                    iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
 
                     for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
                     {
