@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
         }
 
         m_factions = new Faction[(int)eFactionName.Total];
-        m_factions[(int)eFactionName.Red] = new FactionAI(eFactionName.Red);
+        m_factions[(int)eFactionName.Red] = new FactionHuman(eFactionName.Red);
         m_factions[(int)eFactionName.Blue] = new FactionAI(eFactionName.Blue);
 
         m_mapSize = new Vector2Int(128, 128);
@@ -76,7 +76,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Assert.IsNotNull(playerFaction);
         return playerFaction;
     }
 
@@ -193,11 +192,19 @@ public class GameManager : MonoBehaviour
     public void selectPlayerUnits(Rectangle selectionBox)
     {
         Faction playerFaction = getPlayerFaction();
-        if(playerFaction != null)
+        Assert.IsNotNull(playerFaction);
+        if(playerFaction == null)
         {
-            foreach(Tank tank in playerFaction.m_tanks)
+            return;
+        }
+
+        foreach (Tank tank in playerFaction.m_tanks)
+        {
+            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
+            Assert.IsNotNull(tankSelection);
+            if(tankSelection)
             {
-                
+                tankSelection.Select(selectionBox);
             }
         }
     }

@@ -32,10 +32,11 @@ public class CameraController : MonoBehaviour
 
     private Rectangle getSelectionBox(Vector3 position, Vector3 localScale)
     {
-        return new Rectangle((int)Mathf.Min(position.x, position.x + localScale.x),
-                (int)Mathf.Max(position.x, position.x + localScale.x),
-                (int)Mathf.Min(position.z, position.z + localScale.z),
-                (int)Mathf.Max(position.z, position.z + localScale.z));
+        // public Rectangle(int left, int right, int bottom, int top)
+        return new Rectangle((int)Mathf.Min(position.x - localScale.x / 2.0f, position.x + localScale.x / 2.0f),
+                (int)Mathf.Max(position.x - localScale.x / 2.0f, position.x + localScale.x / 2.0f),
+                (int)Mathf.Min(position.z - localScale.z / 2.0f, position.z + localScale.z / 2.0f),
+                (int)Mathf.Max(position.z - localScale.z / 2.0f, position.z + localScale.z / 2.0f));
     }
 
     private void Move()
@@ -104,6 +105,7 @@ public class CameraController : MonoBehaviour
 
             m_leftButtonHeld = true;
             m_selectionBoxClone = Instantiate(m_selectionBox, hit.point, Quaternion.identity);
+            m_selectionBoxClone.transform.position = m_mousePressedPosition;
         }
 
         else if (m_leftButtonHeld)
@@ -115,11 +117,10 @@ public class CameraController : MonoBehaviour
                 Assert.IsNotNull(m_selectionBoxClone);
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
-                m_selectionBoxClone.transform.localScale = 
-                    new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
 
-                Rectangle selectionBox = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBox.transform.localScale);
-                //fGameManager.Instance.selectPlayerUnits(selectionBox);
+                Rectangle selectionBoxAABB = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
+                m_selectionBoxClone.transform.localScale = new Vector3(m_selectionBoxClone.transform.localScale.x, 0.1f, m_selectionBoxClone.transform.localScale.z);
+                GameManager.Instance.selectPlayerUnits(selectionBoxAABB);
             }
         }
 

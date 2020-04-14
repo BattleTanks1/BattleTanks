@@ -7,7 +7,7 @@ public class Rectangle
 
     }
 
-    public Rectangle(int left, int right, int top, int bottom)
+    public Rectangle(int left, int right, int bottom, int top)
     {
         m_left = left;
         m_right = right;
@@ -15,11 +15,14 @@ public class Rectangle
         m_bottom = bottom;
     }
 
-    bool contains(Rectangle other)
+    public bool contains(Rectangle other)
     {
+        return m_left <= other.m_right &&
+            m_right >= other.m_left &&
+            m_top >= other.m_bottom &&
+            m_bottom <= other.m_top;
 
-
-        return false;
+        //return false;
     }
 
     //-- Working map integration - forgot
