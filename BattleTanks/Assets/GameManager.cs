@@ -245,10 +245,9 @@ public class GameManager : MonoBehaviour
             TankMovement tankMovement = tank.gameObject.GetComponent<TankMovement>();
             Assert.IsNotNull(tankMovement);
 
-            if(tankMovement && tankSelection && tankSelection.isSelected()) 
+            if(tankSelection.isSelected())
             {
                 tankMovement.moveTo(position);
-                tankSelection.Deselect();
             }
         }
     }

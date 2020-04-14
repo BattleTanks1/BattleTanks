@@ -36,7 +36,6 @@ public class CameraController : MonoBehaviour
             if(Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
             {
                 GameManager.Instance.moveSelectedPlayerUnitsToPosition(hit.point);
-                GameManager.Instance.deselectPlayerUnits();
                 clearSelectionBox();
             }
         }
