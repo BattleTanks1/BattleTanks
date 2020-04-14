@@ -1,21 +1,10 @@
 ﻿using UnityEngine;
 
-//public class FactionHuman : Faction
-//{
-//    public FactionHuman(eFactionName name) :
-//        base(name, eFactionControllerType.eHuman)
-//    { }
-//}
-
 public class iRectangle : Rectangle<int>
 {
-
-    //-- Working map integration - forgot
     public iRectangle(int left, int right, int bottom, int top)
     : base(left, right, bottom, top)
-    {
-
-    }
+    {}
 
     public iRectangle(Vector2Int position, int distance)
         : base()
@@ -55,8 +44,7 @@ public class fRectangle : Rectangle<float>
             m_right >= other.m_left &&
             m_top >= other.m_bottom &&
             m_bottom <= other.m_top;
-    }
-    
+    }    
 }
 
 abstract public class Rectangle<T>
@@ -77,32 +65,3 @@ abstract public class Rectangle<T>
     public T m_top { get; set; }
     public T m_bottom { get; set; }
 }
-
-//public class Rectangle : MonoBehaviour
-//{
-//    public float left { get; private set; }
-//    public float right { get; private set; }
-//    public float top { get; private set; }
-//    public float bottom { get; private set; }
-
-
-//    public bool intersects(Rectangle other)
-//    {
-//        return (left <= other.right &&
-//                right >= other.left &&
-//                top >= other.bottom &&
-//                bottom <= other.top);
-//    }
-
-//    // Start is called before the first frame update
-//    void Start()
-//    {
-
-//    }
-
-//    // Update is called once per frame
-//    void Update()
-//    {
-
-//    }
-//}
