@@ -52,26 +52,26 @@ public class CameraController : MonoBehaviour
         if (Input.mousePosition.y >= Screen.height - m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x >= Screen.width - m_borderOffset * m_diagonalOffSetMultipler)
         {
-            position.x += (m_speed / 2.0f) * Time.deltaTime;
-            position.z += (m_speed / 2.0f) * Time.deltaTime;
+            Vector3 move = new Vector3(position.x + m_speed, 0, position.z + m_speed);
+            position += move.normalized * m_speed * Time.deltaTime;
         }
         else if (Input.mousePosition.y <= m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x >= Screen.width - m_borderOffset * m_diagonalOffSetMultipler)
         {
-            position.x += (m_speed / 2.0f) * Time.deltaTime;
-            position.z -= (m_speed / 2.0f) * Time.deltaTime;
+            Vector3 move = new Vector3(position.x + m_speed, 0, position.z - m_speed);
+            position += move.normalized * m_speed * Time.deltaTime;
         }
         else if (Input.mousePosition.y <= m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x <= m_borderOffset * m_diagonalOffSetMultipler)
         {
-            position.x -= (m_speed / 2.0f) * Time.deltaTime;
-            position.z -= (m_speed / 2.0f) * Time.deltaTime;
+            Vector3 move = new Vector3(position.x - m_speed, 0, position.z - m_speed);
+            position += move.normalized * m_speed * Time.deltaTime;
         }
         else if (Input.mousePosition.y >= Screen.height - m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x <= m_borderOffset * m_diagonalOffSetMultipler)
         {
-            position.x -= (m_speed / 2.0f) * Time.deltaTime;
-            position.z += (m_speed / 2.0f) * Time.deltaTime;
+            Vector3 move = new Vector3(position.x - m_speed, 0, position.z + m_speed);
+            position += move.normalized * m_speed * Time.deltaTime;
         }
 
         //Vertical
@@ -130,9 +130,7 @@ public class CameraController : MonoBehaviour
                     new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
 
                 GameManager.Instance.selectPlayerUnits(selectionBoxAABB);
-                
             }
-
 
             if (Input.GetMouseButtonUp(0))
             {
