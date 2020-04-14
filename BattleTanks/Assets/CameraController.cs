@@ -46,16 +46,6 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    private fRectangle getSelectionBox(Vector3 position, Vector3 localScale)
-    {
-        Vector3 scale = new Vector3(localScale.x / 2.0f, 0, localScale.z / 2.0f);
-
-        return new fRectangle(Mathf.Min(position.x - scale.x, position.x + scale.x),
-                Mathf.Max(position.x - scale.x, position.x + scale.x),
-                Mathf.Min(position.z - scale.z, position.z + scale.z),
-                Mathf.Max(position.z - scale.z, position.z + scale.z));
-    }
-
     private void Move()
     {
         Vector3 position = new Vector3();
@@ -121,7 +111,7 @@ public class CameraController : MonoBehaviour
             {
                 m_mousePressedPosition = hit.point;
             }
-
+            
             m_leftButtonHeld = true;
             m_selectionBoxClone = Instantiate(m_selectionBoxPrefab, hit.point, Quaternion.identity);
             m_selectionBoxClone.transform.position = m_mousePressedPosition;
@@ -137,7 +127,7 @@ public class CameraController : MonoBehaviour
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
 
-                fRectangle selectionBoxAABB = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
+                fRectangle selectionBoxAABB = new fRectangle(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
                 m_selectionBoxClone.transform.localScale =
                     new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
 

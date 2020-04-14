@@ -14,17 +14,16 @@ public class Selection : MonoBehaviour
         Assert.IsNotNull(m_selectionBox);
         m_selectionBox.SetActive(false);
 
-        m_AABB = new fRectangle
-            (transform.position.x - transform.localScale.x / 2.0f,
-            transform.position.x + transform.localScale.x / 2.0f,
-            transform.position.z - transform.localScale.z / 2.0f,
-            transform.position.z + transform.localScale.z / 2.0f);
+        m_AABB = new fRectangle(transform.position, transform.localScale);
     }
 
     // Update is called once per frame
     private void Update()
     {
-        m_selectionBox.transform.position = m_selectionBox.transform.position;
+        m_selectionBox.transform.position = 
+            new Vector3( transform.position.x, m_selectionBox.transform.position.y, transform.position.z);
+
+        m_AABB.reset(transform.position, transform.localScale);
     }
 
     public bool isSelected()

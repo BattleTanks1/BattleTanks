@@ -34,6 +34,11 @@ public class iRectangle : Rectangle<int>
 
 public class fRectangle : Rectangle<float>
 {
+    public fRectangle(Vector3 position, Vector3 localScale)
+    {
+        reset(position, localScale);
+    }
+
     public fRectangle(float left, float right, float bottom, float top)
         : base(left, right, bottom, top)
     {}
@@ -45,6 +50,16 @@ public class fRectangle : Rectangle<float>
             m_top >= other.m_bottom &&
             m_bottom <= other.m_top;
     }    
+
+    public void reset(Vector3 position, Vector3 localScale)
+    {
+        Vector3 scale = new Vector3(localScale.x / 2.0f, 0, localScale.z / 2.0f);
+
+        m_left = Mathf.Min(position.x - scale.x, position.x + scale.x);
+        m_right = Mathf.Max(position.x - scale.x, position.x + scale.x);
+        m_bottom = Mathf.Min(position.z - scale.z, position.z + scale.z);
+        m_top = Mathf.Max(position.z - scale.z, position.z + scale.z);
+    }
 }
 
 abstract public class Rectangle<T>
