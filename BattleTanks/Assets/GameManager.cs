@@ -208,4 +208,24 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    public void deselectPlayerUnits()
+    {
+        Faction playerFaction = getPlayerFaction();
+        Assert.IsNotNull(playerFaction);
+        if (playerFaction == null)
+        {
+            return;
+        }
+
+        foreach (Tank tank in playerFaction.m_tanks)
+        {
+            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
+            Assert.IsNotNull(tankSelection);
+            if (tankSelection)
+            {
+                tankSelection.Deselect();
+            }
+        }
+    }
 }

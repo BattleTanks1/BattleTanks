@@ -3,7 +3,7 @@ using UnityEngine.Assertions;
 
 public class CameraController : MonoBehaviour
 {
-    public GameObject m_selectionBox;
+    public GameObject m_selectionBoxPrefab = null;
     private GameObject m_selectionBoxClone = null;
 
     [SerializeField]
@@ -14,10 +14,14 @@ public class CameraController : MonoBehaviour
     private float m_borderOffset = 20.0f;
     [SerializeField]
     private float m_diagonalOffSetMultipler = 15.0f;
+    [SerializeField]
+    private float m_minSelectionBoxSize = 0.0f;
 
     private Vector3 m_mousePressedPosition;
     private bool m_leftButtonHeld = false;
-    private Camera m_camera;
+    private bool m_unitsSelected = false;
+    private bool m_renderSelectionBox = false;
+    private Camera m_camera = null;
 
     private void Awake()
     {
@@ -32,11 +36,12 @@ public class CameraController : MonoBehaviour
 
     private Rectangle getSelectionBox(Vector3 position, Vector3 localScale)
     {
-        // public Rectangle(int left, int right, int bottom, int top)
-        return new Rectangle((int)Mathf.Min(position.x - localScale.x / 2.0f, position.x + localScale.x / 2.0f),
-                (int)Mathf.Max(position.x - localScale.x / 2.0f, position.x + localScale.x / 2.0f),
-                (int)Mathf.Min(position.z - localScale.z / 2.0f, position.z + localScale.z / 2.0f),
-                (int)Mathf.Max(position.z - localScale.z / 2.0f, position.z + localScale.z / 2.0f));
+        Vector3 scale = new Vector3(localScale.x / 2.0f, 0, localScale.z / 2.0f);
+
+        return new Rectangle((int)Mathf.Min(position.x - scale.x, position.x + scale.x),
+                (int)Mathf.Max(position.x - scale.x, position.x + scale.x),
+                (int)Mathf.Min(position.z - scale.z, position.z + scale.z),
+                (int)Mathf.Max(position.z - scale.z, position.z + scale.z));
     }
 
     private void Move()
@@ -96,6 +101,8 @@ public class CameraController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !m_leftButtonHeld)
         {
+            GameManager.Instance.deselectPlayerUnits();
+
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
@@ -104,7 +111,7 @@ public class CameraController : MonoBehaviour
             }
 
             m_leftButtonHeld = true;
-            m_selectionBoxClone = Instantiate(m_selectionBox, hit.point, Quaternion.identity);
+            m_selectionBoxClone = Instantiate(m_selectionBoxPrefab, hit.point, Quaternion.identity);
             m_selectionBoxClone.transform.position = m_mousePressedPosition;
         }
 
@@ -113,22 +120,35 @@ public class CameraController : MonoBehaviour
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
+            { 
+                Vector3 difference = hit.point - m_mousePressedPosition;
+                if(difference.sqrMagnitude > m_minSelectionBoxSize * m_minSelectionBoxSize)
+                {
+                    m_renderSelectionBox = true;
+                }
+            }
+
+            if(m_renderSelectionBox)
             {
                 Assert.IsNotNull(m_selectionBoxClone);
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
 
                 Rectangle selectionBoxAABB = getSelectionBox(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
-                m_selectionBoxClone.transform.localScale = new Vector3(m_selectionBoxClone.transform.localScale.x, 0.1f, m_selectionBoxClone.transform.localScale.z);
+                m_selectionBoxClone.transform.localScale =
+                    new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
+
                 GameManager.Instance.selectPlayerUnits(selectionBoxAABB);
             }
-        }
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            m_leftButtonHeld = false;
-            Assert.IsNotNull(m_selectionBoxClone);
-            Destroy(m_selectionBoxClone);
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                m_renderSelectionBox = false;
+                m_leftButtonHeld = false;
+                Assert.IsNotNull(m_selectionBoxClone);
+                Destroy(m_selectionBoxClone);
+            }
         }
     }
 }
