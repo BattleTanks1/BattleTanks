@@ -6,8 +6,6 @@ using UnityEngine.Assertions;
 public class Selection : MonoBehaviour
 {
     public GameObject m_selectionBox;
-    public GameObject m_selectionBoxLeft;
-    public GameObject m_selectionBoxBottom;
     public Rectangle m_AABB { get; private set; } = null;
 
     private void Start()
@@ -25,7 +23,7 @@ public class Selection : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        m_selectionBox.transform.position = transform.position;
+        m_selectionBox.transform.position = m_selectionBox.transform.position;
     }
 
     public void Select(Rectangle selectionBox)
