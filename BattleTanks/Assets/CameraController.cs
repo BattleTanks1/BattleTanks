@@ -14,13 +14,9 @@ public class CameraController : MonoBehaviour
     private float m_borderOffset = 20.0f;
     [SerializeField]
     private float m_diagonalOffSetMultipler = 15.0f;
-    [SerializeField]
-    private float m_minSelectionBoxSize = 0.0f;
 
     private Vector3 m_mousePressedPosition;
     private bool m_leftButtonHeld = false;
-    private bool m_unitsSelected = false;
-    private bool m_renderSelectionBox = false;
     private Camera m_camera = null;
 
     private void Awake()
@@ -125,12 +121,11 @@ public class CameraController : MonoBehaviour
             {
                 Assert.IsNotNull(m_selectionBoxClone);
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
+                m_selectionBoxClone.transform.localScale =
+                    new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
 
                 fRectangle selectionBoxAABB = new fRectangle(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
-                m_selectionBoxClone.transform.localScale =
-                    new Vector3(m_selectionBoxClone.transform.localScale.x, m_selectionBoxHeight, m_selectionBoxClone.transform.localScale.z);
-
                 GameManager.Instance.selectPlayerUnits(selectionBoxAABB);
             }
 
@@ -143,7 +138,6 @@ public class CameraController : MonoBehaviour
 
     private void clearSelectionBox()
     {
-        m_renderSelectionBox = false;
         m_leftButtonHeld = false;
         
         if(m_selectionBoxClone)
