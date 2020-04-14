@@ -7,7 +7,7 @@ public class Selection : MonoBehaviour
 {
     [SerializeField]
     private GameObject m_selectionBox;
-    public fRectangle m_AABB { get; private set; } = null;
+    private fRectangle m_AABB = null;
 
     private void Start()
     {
