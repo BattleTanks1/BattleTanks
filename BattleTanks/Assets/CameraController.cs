@@ -32,6 +32,18 @@ public class CameraController : MonoBehaviour
     {
         Move();
         handleSelectionBox();
+
+        if(Input.GetMouseButtonDown(1))
+        {
+            Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if(Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
+            {
+                GameManager.Instance.moveSelectedPlayerUnitsToPosition(hit.point);
+                GameManager.Instance.deselectPlayerUnits();
+                clearSelectionBox();
+            }
+        }
     }
 
     private fRectangle getSelectionBox(Vector3 position, Vector3 localScale)
@@ -134,11 +146,19 @@ public class CameraController : MonoBehaviour
 
             if (Input.GetMouseButtonUp(0))
             {
-                m_renderSelectionBox = false;
-                m_leftButtonHeld = false;
-                Assert.IsNotNull(m_selectionBoxClone);
-                Destroy(m_selectionBoxClone);
+                clearSelectionBox();
             }
+        }
+    }
+
+    private void clearSelectionBox()
+    {
+        m_renderSelectionBox = false;
+        m_leftButtonHeld = false;
+        
+        if(m_selectionBoxClone)
+        {
+            Destroy(m_selectionBoxClone);
         }
     }
 }

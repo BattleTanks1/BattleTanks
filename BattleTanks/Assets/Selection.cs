@@ -5,7 +5,8 @@ using UnityEngine.Assertions;
 
 public class Selection : MonoBehaviour
 {
-    public GameObject m_selectionBox;
+    [SerializeField]
+    private GameObject m_selectionBox;
     public fRectangle m_AABB { get; private set; } = null;
 
     private void Start()
@@ -24,6 +25,11 @@ public class Selection : MonoBehaviour
     private void Update()
     {
         m_selectionBox.transform.position = m_selectionBox.transform.position;
+    }
+
+    public bool isSelected()
+    {
+        return m_selectionBox.activeSelf;
     }
 
     public void Select(fRectangle selectionBox)

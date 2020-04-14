@@ -228,4 +228,28 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    public void moveSelectedPlayerUnitsToPosition(Vector3 position)
+    {
+        Faction playerFaction = getPlayerFaction();
+        Assert.IsNotNull(playerFaction);
+        if (playerFaction == null)
+        {
+            return;
+        }
+
+        foreach(Tank tank in playerFaction.m_tanks)
+        {
+            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
+            Assert.IsNotNull(tankSelection);
+            TankMovement tankMovement = tank.gameObject.GetComponent<TankMovement>();
+            Assert.IsNotNull(tankMovement);
+
+            if(tankMovement && tankSelection && tankSelection.isSelected()) 
+            {
+                tankMovement.moveTo(position);
+                tankSelection.Deselect();
+            }
+        }
+    }
 }
