@@ -18,6 +18,7 @@ public class Weapon : MonoBehaviour
 
     private void Awake()
     {
+
     }
 
     // Start is called before the first frame update
@@ -29,6 +30,7 @@ public class Weapon : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
     }
 
     protected bool isInRange(Vector3 position) //TODO I don't think this does what it says it does
