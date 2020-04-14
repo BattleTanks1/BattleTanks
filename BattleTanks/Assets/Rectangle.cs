@@ -2,6 +2,12 @@
 
 public class iRectangle : Rectangle<int>
 {
+    public iRectangle(Vector3 position, Vector3 localScale)
+        : base()
+    {
+        reset(position, localScale);
+    }
+
     public iRectangle(int left, int right, int bottom, int top)
     : base(left, right, bottom, top)
     {}
@@ -10,6 +16,16 @@ public class iRectangle : Rectangle<int>
         : base()
     {
         reset(position, distance);
+    }
+
+    public void reset(Vector3 position, Vector3 localScale)
+    {
+        Vector3 scale = new Vector3(localScale.x / 2.0f, 0, localScale.z / 2.0f);
+
+        m_left = (int)Mathf.Min(position.x - scale.x, position.x + scale.x);
+        m_right = (int)Mathf.Max(position.x - scale.x, position.x + scale.x);
+        m_bottom = (int)Mathf.Min(position.z - scale.z, position.z + scale.z);
+        m_top = (int)Mathf.Max(position.z - scale.z, position.z + scale.z);
     }
 
     public void reset(Vector2Int position, int distance)
