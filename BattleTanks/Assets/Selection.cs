@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 public class Selection : MonoBehaviour
 {
     [SerializeField]
-    private GameObject m_selectionBox;
+    private GameObject m_selectionBox = null;
     private fRectangle m_AABB = null;
 
     private void Start()
