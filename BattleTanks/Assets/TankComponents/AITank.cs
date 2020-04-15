@@ -176,8 +176,8 @@ public class AITank : MonoBehaviour
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
-                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-                if (distance <= m_tank.m_visibilityDistance &&
+                Vector2Int result = positionOnGrid - new Vector2Int(x, y);
+                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
                     GameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
                 {
                     enemyPosition = new Vector3(x, 0, y);

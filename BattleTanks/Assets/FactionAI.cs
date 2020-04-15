@@ -144,8 +144,12 @@ public class FactionAI : Faction
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
-                float distance = Vector2Int.Distance(senderPositionOnGrid, new Vector2Int(x, y));
-                if (distance <= messageSender.m_visibilityDistance &&
+                Vector2Int vBetween = senderPositionOnGrid - new Vector2Int(x, y);
+
+                //if(new Vector2Int(senderPositionOnGrid - new Vector2Int(x, y)).
+                //Vector2Int result = new Vector2Int(senderPositionOnGri - new Vector2Int(x, y));
+                //float distance = Vector2Int.Distance(senderPositionOnGrid, new Vector2Int(x, y));
+                if (vBetween.sqrMagnitude <= messageSender.m_visibilityDistance * messageSender.m_visibilityDistance &&
                     GameManager.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
                 {
                     return true;
@@ -154,68 +158,6 @@ public class FactionAI : Faction
         }
 
         return false;
-    }
-
-    private void assignTankToAppropriateEnemy(Tank tank)
-    {
-        if (m_visibleTargets.Count > 0)
-        {
-            int targetID = Utilities.INVALID_ID;
-            float distance = float.MaxValue;
-            Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-            Vector2Int closestTargetPositionOnGrid = new Vector2Int();
-
-            foreach (int visibleTargetID in m_visibleTargets)
-            {
-                Vector2Int targetPositionOnGrid = new Vector2Int();
-                if (isTargetInSightAllTanks(visibleTargetID, out targetPositionOnGrid))
-                {
-                    float i = Vector2Int.Distance(targetPositionOnGrid, tankPositionOnGrid);
-                    if (i < distance)
-                    {
-                        distance = i;
-                        targetID = visibleTargetID;
-                        closestTargetPositionOnGrid = targetPositionOnGrid;
-                    }
-                }
-            }
-
-            AITank aiComponent = tank.gameObject.GetComponent<AITank>();
-            Assert.IsNotNull(aiComponent);
-            if(aiComponent)
-            {
-                aiComponent.receiveMessage(new MessageToAIUnit(targetID, eAIState.ShootingAtEnemy, closestTargetPositionOnGrid));
-            }
-        }
-    }
-
-    private bool isTargetInSightAllTanks(int targetID, out Vector2Int targetGridPosition)
-    {
-        Vector2Int position = new Vector2Int();
-        bool targetFound = false;
-        foreach (Tank tank in m_tanks)
-        {
-            Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-            iRectangle searchableRect = new iRectangle(positionOnGrid, tank.m_visibilityDistance);
-            for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
-            {
-                for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
-                {
-                    float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-                    if (distance <= tank.m_visibilityDistance &&
-                        GameManager.Instance.getPointOnMap(y, x).tankID == targetID)
-                    {
-                        position = new Vector2Int(x, y);
-                        targetFound = true;
-                        goto End;
-                    }
-                }
-            }
-        }
-
-    End:
-        targetGridPosition = position;  
-        return targetFound;
     }
 
     private void assignTankToEnemyInRange(Tank tank)
@@ -227,7 +169,8 @@ public class FactionAI : Faction
             {
                 Vector2Int positionOnGrid = new Vector2Int(x, y);
                 int targetID = Utilities.INVALID_ID;
-                if (Vector2Int.Distance(Utilities.convertToGridPosition(tank.transform.position), positionOnGrid) <= tank.m_visibilityDistance &&
+                Vector2Int vBetween = Utilities.convertToGridPosition(tank.transform.position) - positionOnGrid;
+                if (vBetween.sqrMagnitude <= tank.m_visibilityDistance * tank.m_visibilityDistance &&
                     GameManager.Instance.isEnemyOnPosition(positionOnGrid, tank.m_factionName, out targetID))
                 {
                     Debug.Log("Enemy Spotted");

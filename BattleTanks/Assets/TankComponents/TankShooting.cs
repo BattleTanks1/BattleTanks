@@ -30,8 +30,9 @@ public class TankShooting : MonoBehaviour
     public void FireAtPosition(Vector3 position)
     {
         //If enemy in range
+        Vector3 result = position - transform.position;
         if (m_elaspedTime >= m_timeBetweenShot &&
-            Vector3.Distance(position, transform.position) <= m_shootRange)
+            result.sqrMagnitude <= m_shootRange * m_shootRange)
         {
             m_elaspedTime = 0.0f;
 
