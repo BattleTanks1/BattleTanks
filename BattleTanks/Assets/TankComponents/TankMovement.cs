@@ -65,4 +65,9 @@ public class TankMovement : MonoBehaviour
     {
         return m_positionToMoveTo == transform.position;
     }
+
+    public void stop()
+    {
+        m_reachedDestination = true;
+    }
 }

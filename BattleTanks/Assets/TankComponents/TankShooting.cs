@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class TankShooting : MonoBehaviour
 {
-    public float m_shootRange;
     [SerializeField]
-    protected Rigidbody m_projectile = null;
+    private float m_shootRange;
+    [SerializeField]
+    private Rigidbody m_projectile = null;
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
-
-    public float m_timeBetweenShot;
+    [SerializeField]
+    private float m_timeBetweenShot;
+    
     private float m_elaspedTime = 0.0f;
-
 
     // Start is called before the first frame update
     void Start()
@@ -23,7 +24,7 @@ public class TankShooting : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        m_elaspedTime += Time.deltaTime;
     }
 
     public void FireAtPosition(Vector3 position)
@@ -39,5 +40,11 @@ public class TankShooting : MonoBehaviour
             Vector3 vBetween = position - transform.position;
             clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
         }
+    }
+
+    public bool isTargetInAttackRange(Vector3 targetPosition)
+    {
+        Vector3 result = targetPosition - transform.position;
+        return result.sqrMagnitude <= m_shootRange * m_shootRange;
     }
 }

@@ -93,8 +93,11 @@ public class AITank : MonoBehaviour
                 break;
             case eAIState.MovingToNewPosition:
                 {
-                    if(m_targetID != Utilities.INVALID_ID && isTargetInSight())
+                    Vector3 enemyPosition = new Vector3();
+                    if(m_targetID != Utilities.INVALID_ID && isTargetInSight(out enemyPosition) &&
+                        m_tankShooting.isTargetInAttackRange(enemyPosition))
                     {
+                        m_tankMovement.stop();
                         m_currentState = eAIState.ShootingAtEnemy;
                     }
                     else
