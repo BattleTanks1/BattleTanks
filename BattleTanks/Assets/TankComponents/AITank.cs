@@ -177,27 +177,4 @@ public class AITank : MonoBehaviour
         enemyPosition = new Vector3();
         return false;
     }
-
-    private bool isTargetInSight()
-    {
-        Assert.IsTrue(m_targetID != Utilities.INVALID_ID);
-
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
-
-        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
-        {
-            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
-            {
-                float distance = Vector2Int.Distance(positionOnGrid, new Vector2Int(x, y));
-                if (distance <= m_tank.m_visibilityDistance &&
-                    GameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
 }
