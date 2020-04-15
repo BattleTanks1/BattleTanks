@@ -98,13 +98,13 @@ public class WorkingMap
     public Point[,] m_workingMap { get; private set; }
 }
 
-public class Map
+public class FactionInfluenceMap
 {
     public Point[,] m_map { get; private set; }
 
     public eFactionName m_ownerName { get; private set; }
 
-    public Map(eFactionName ownerName)
+    public FactionInfluenceMap(eFactionName ownerName)
     {
         m_ownerName = ownerName;
         Vector2Int mapSize = GameManager.Instance.m_mapSize;
@@ -203,9 +203,9 @@ public class InfluenceMap : MonoBehaviour
     [SerializeField]
     private bool m_renderCubes = false;
     [SerializeField]
-    private Map[] m_proximityMaps = new Map[(int)eFactionName.Total];
+    private FactionInfluenceMap[] m_proximityMaps = new FactionInfluenceMap[(int)eFactionName.Total];
     [SerializeField]
-    private Map[] m_threatMaps = new Map[(int)eFactionName.Total];
+    private FactionInfluenceMap[] m_threatMaps = new FactionInfluenceMap[(int)eFactionName.Total];
    
     private static InfluenceMap _instance;
     public static InfluenceMap Instance { get { return _instance; } }
@@ -227,19 +227,19 @@ public class InfluenceMap : MonoBehaviour
     {
         m_boxes = new List<GameObject>();
 
-        m_proximityMaps = new Map[(int)eFactionName.Total];
-        m_proximityMaps[(int)eFactionName.Red] = new Map(eFactionName.Red);
-        m_proximityMaps[(int)eFactionName.Blue] = new Map(eFactionName.Blue);
+        m_proximityMaps = new FactionInfluenceMap[(int)eFactionName.Total];
+        m_proximityMaps[(int)eFactionName.Red] = new FactionInfluenceMap(eFactionName.Red);
+        m_proximityMaps[(int)eFactionName.Blue] = new FactionInfluenceMap(eFactionName.Blue);
 
-        m_threatMaps = new Map[(int)eFactionName.Total];
-        m_threatMaps[(int)eFactionName.Red] = new Map(eFactionName.Red);
-        m_threatMaps[(int)eFactionName.Blue] = new Map(eFactionName.Blue);
+        m_threatMaps = new FactionInfluenceMap[(int)eFactionName.Total];
+        m_threatMaps[(int)eFactionName.Red] = new FactionInfluenceMap(eFactionName.Red);
+        m_threatMaps[(int)eFactionName.Blue] = new FactionInfluenceMap(eFactionName.Blue);
 
         IEnumerator coroutine = resetBaseMaps();
         StartCoroutine(coroutine);
     }
 
-    private void spawnCube(int x, int y, Map map)
+    private void spawnCube(int x, int y, FactionInfluenceMap map)
     {
         if(map.m_map[y, x].value > 0)
         {
@@ -263,7 +263,7 @@ public class InfluenceMap : MonoBehaviour
     public bool isPositionInThreat(Tank tank)
     {
         float threatValue = -1.0f;
-        foreach(Map threatMap in m_threatMaps)
+        foreach(FactionInfluenceMap threatMap in m_threatMaps)
         {
             if(threatMap.m_ownerName != tank.m_factionName)
             {
