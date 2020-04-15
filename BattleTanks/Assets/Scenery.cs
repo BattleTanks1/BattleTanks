@@ -16,6 +16,6 @@ public class Scenery : MonoBehaviour
 
     void Start()
     {
-        GameManager.Instance.addScenery(new iRectangle(transform.position, transform.localScale), m_sceneryType);
+        Map.Instance.addScenery(new iRectangle(transform.position, transform.localScale), m_sceneryType);
     }
 }

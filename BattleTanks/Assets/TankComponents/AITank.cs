@@ -160,7 +160,7 @@ public class AITank : MonoBehaviour
 
     private void SendMessageToCommander(Vector2Int positionOnGrid, eAIUniMessageType messageType)
     {
-        GraphPoint pointOnEnemy = GameManager.Instance.getPointOnMap(positionOnGrid);
+        GraphPoint pointOnEnemy = Map.Instance.getPointOnMap(positionOnGrid);
         MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
             m_tank.m_ID, m_tank.m_factionName);
         
@@ -178,7 +178,7 @@ public class AITank : MonoBehaviour
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
                 if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
-                    GameManager.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                    Map.Instance.getPointOnMap(y, x).tankID == m_targetID)
                 {
                     enemyPosition = new Vector3(x, 0, y);
                     return true;

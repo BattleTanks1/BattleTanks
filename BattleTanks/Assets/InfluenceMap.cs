@@ -107,7 +107,7 @@ public class FactionInfluenceMap
     public FactionInfluenceMap(eFactionName ownerName)
     {
         m_ownerName = ownerName;
-        Vector2Int mapSize = GameManager.Instance.m_mapSize;
+        Vector2Int mapSize = Map.Instance.m_mapSize;
         m_map = new Point[mapSize.y, mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
         {
@@ -125,7 +125,7 @@ public class FactionInfluenceMap
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
-                if(GameManager.Instance.isPositionScenery(x, y))
+                if(Map.Instance.isPositionScenery(x, y))
                 {
                     continue;
                 }
@@ -147,7 +147,7 @@ public class FactionInfluenceMap
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
-                if (GameManager.Instance.isPositionScenery(x, y))
+                if (Map.Instance.isPositionScenery(x, y))
                 {
                     continue;
                 }
@@ -169,7 +169,7 @@ public class FactionInfluenceMap
 
     public void reset()
     {
-        Vector2Int mapSize = GameManager.Instance.m_mapSize;
+        Vector2Int mapSize = Map.Instance.m_mapSize;
         for (int y = 0; y < mapSize.y; ++y)
         {
             for (int x = 0; x < mapSize.x; ++x)
@@ -313,7 +313,7 @@ public class InfluenceMap : MonoBehaviour
 
             if(m_renderCubes)
             {
-                Vector2Int mapSize = GameManager.Instance.m_mapSize;
+                Vector2Int mapSize = Map.Instance.m_mapSize;
                 for (int y = 0; y < mapSize.y; ++y)
                 {
                     for (int x = 0; x < mapSize.x; ++x)

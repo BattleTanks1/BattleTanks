@@ -20,7 +20,7 @@ public class TankMovement : MonoBehaviour
         Assert.IsNotNull(m_tank);
         m_oldPosition = transform.position;
 
-        GameManager.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
+        Map.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
     }
 
     // Update is called once per frame
@@ -29,11 +29,11 @@ public class TankMovement : MonoBehaviour
         if(!m_reachedDestination)
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, m_movementSpeed * Time.deltaTime);
-            if(!GameManager.Instance.isPositionOccupied(newPosition, m_tank.m_ID))
+            if(!Map.Instance.isPositionOccupied(newPosition, m_tank.m_ID))
             {
                 m_oldPosition = transform.position;
                 transform.position = newPosition;
-                GameManager.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
+                Map.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
 
                 if (transform.position == m_positionToMoveTo)
                 {
@@ -47,11 +47,11 @@ public class TankMovement : MonoBehaviour
     {
         float step = m_movementSpeed * Time.deltaTime;
         Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, step);
-        if (!GameManager.Instance.isPositionOccupied(newPosition, m_tank.m_ID))
+        if (!Map.Instance.isPositionOccupied(newPosition, m_tank.m_ID))
         {
             m_oldPosition = transform.position;
             transform.position = newPosition;
-            GameManager.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
+            Map.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
         }
     }
 

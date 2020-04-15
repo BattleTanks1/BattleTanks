@@ -150,7 +150,7 @@ public class FactionAI : Faction
                 //Vector2Int result = new Vector2Int(senderPositionOnGri - new Vector2Int(x, y));
                 //float distance = Vector2Int.Distance(senderPositionOnGrid, new Vector2Int(x, y));
                 if (vBetween.sqrMagnitude <= messageSender.m_visibilityDistance * messageSender.m_visibilityDistance &&
-                    GameManager.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
+                    Map.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
                 {
                     return true;
                 }
@@ -171,7 +171,7 @@ public class FactionAI : Faction
                 int targetID = Utilities.INVALID_ID;
                 Vector2Int vBetween = Utilities.convertToGridPosition(tank.transform.position) - positionOnGrid;
                 if (vBetween.sqrMagnitude <= tank.m_visibilityDistance * tank.m_visibilityDistance &&
-                    GameManager.Instance.isEnemyOnPosition(positionOnGrid, tank.m_factionName, out targetID))
+                    Map.Instance.isEnemyOnPosition(positionOnGrid, tank.m_factionName, out targetID))
                 {
                     Debug.Log("Enemy Spotted");
                     Assert.IsTrue(targetID != Utilities.INVALID_ID);
