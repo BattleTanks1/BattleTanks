@@ -94,11 +94,15 @@ public class AITank : MonoBehaviour
             case eAIState.MovingToNewPosition:
                 {
                     Vector3 enemyPosition = new Vector3();
-                    if(m_targetID != Utilities.INVALID_ID && isTargetInSight(out enemyPosition) &&
-                        m_tankShooting.isTargetInAttackRange(enemyPosition))
+                    if(m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
                     {
-                        m_tankMovement.stop();
-                        m_currentState = eAIState.ShootingAtEnemy;
+                        m_tankMovement.moveTo(enemyPosition);
+
+                        if(m_tankShooting.isTargetInAttackRange(enemyPosition))
+                        {
+                            m_tankMovement.stop();
+                            m_currentState = eAIState.ShootingAtEnemy;
+                        }
                     }
                     else
                     {
@@ -112,9 +116,17 @@ public class AITank : MonoBehaviour
             case eAIState.ShootingAtEnemy:
                 {
                     Vector3 enemyPosition = new Vector3();
-                    if(isTargetInSight(out enemyPosition))
+                    if(isTargetInVisibleSight(out enemyPosition))
                     {
-                        m_tankShooting.FireAtPosition(enemyPosition);
+                        if(m_tankShooting.isTargetInAttackRange(enemyPosition))
+                        {
+                            m_tankMovement.stop();
+                            m_tankShooting.FireAtPosition(enemyPosition);
+                        }
+                        else
+                        {
+                            m_tankMovement.moveTo(enemyPosition);
+                        }
                     }
                     else
                     {
@@ -155,7 +167,7 @@ public class AITank : MonoBehaviour
         GameManager.Instance.sendAIControllerMessage(message);
     }
     
-    private bool isTargetInSight(out Vector3 enemyPosition)
+    private bool isTargetInVisibleSight(out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
         iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
