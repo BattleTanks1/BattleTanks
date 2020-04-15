@@ -47,16 +47,9 @@ public class MessageToAIController
 public enum eAIState
 {
     AwaitingDecision = 0,
-    FindEnemy,
     ShootingAtEnemy,
     MovingToNewPosition,
     SetDestinationToSafePosition,
-    FleeToSafeLocation,
-    FleeToClosestSafeAlly,
-
-    //Test States
-    Idle,
-    Flee
 }
 
 public class AITank : MonoBehaviour
@@ -85,6 +78,11 @@ public class AITank : MonoBehaviour
 
     private void Update()
     {
+        //if (InfluenceMap.Instance.isPositionInThreat(m_tank))
+        //{
+        //    m_currentState = eAIState.SetDestinationToSafePosition;
+        //}
+
         switch (m_currentState)
         {
             case eAIState.SetDestinationToSafePosition:
@@ -95,8 +93,7 @@ public class AITank : MonoBehaviour
                 break;
             case eAIState.MovingToNewPosition:
                 {
-                    if(m_targetID != Utilities.INVALID_ID && m_tankMovement.reachedDestination() &&
-                        isTargetInSight())
+                    if(m_targetID != Utilities.INVALID_ID && isTargetInSight())
                     {
                         m_currentState = eAIState.ShootingAtEnemy;
                     }
@@ -133,6 +130,13 @@ public class AITank : MonoBehaviour
             {
                 m_targetID = message.m_targetID;
                 m_currentState = message.m_messageType;
+                m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_lastTargetPosition));
+            }
+            break;
+            case eAIState.MovingToNewPosition:
+            {
+                m_targetID = message.m_targetID;
+                m_currentState = eAIState.MovingToNewPosition;
                 m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_lastTargetPosition));
             }
             break;
