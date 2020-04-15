@@ -54,34 +54,14 @@ public class FactionAI : Faction
         handleReceivedMessages();
         handleToSendMessages();
 
-        //FIND ENEMY - THIS ACTS AS A HSM
-        //            case eAIState.FindEnemy:
-        //        {
-        //    iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(transform.position), m_tank.m_visibilityDistance);
-        //    for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
-        //    {
-        //        for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
-        //        {
-        //            Vector2Int positionOnGrid = new Vector2Int(x, y);
-        //            if (Vector2Int.Distance(Utilities.convertToGridPosition(transform.position), positionOnGrid) <= m_tank.m_visibilityDistance &&
-        //                GameManager.Instance.isEnemyOnPosition(positionOnGrid, m_tank.m_factionName))
-        //            {
-        //                print("Spotted Enemy");
-        //                m_currentState = eAIState.AwaitingDecision;
-        //                SendMessageToCommander(positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition);
-        //            }
-        //        }
-        //    }
-        //}
-
         foreach (Tank tank in m_tanks)
         {
             AITank aiComponent = tank.gameObject.GetComponent<AITank>();
             Assert.IsNotNull(aiComponent);
 
-            if (InfluenceMap.Instance.isPositionInThreat(tank))
+            if(aiComponent.m_currentState == eAIState.AwaitingDecision)
             {
-                aiComponent.m_currentState = eAIState.SetDestinationToSafePosition;
+                assignTankToEnemyInRange(tank);
             }
         }
     }
@@ -236,5 +216,29 @@ public class FactionAI : Faction
     End:
         targetGridPosition = position;  
         return targetFound;
+    }
+
+    private void assignTankToEnemyInRange(Tank tank)
+    {
+        iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(tank.transform.position), tank.m_visibilityDistance);
+        for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
+        {
+            for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
+            {
+                Vector2Int positionOnGrid = new Vector2Int(x, y);
+                int targetID = Utilities.INVALID_ID;
+                if (Vector2Int.Distance(Utilities.convertToGridPosition(tank.transform.position), positionOnGrid) <= tank.m_visibilityDistance &&
+                    GameManager.Instance.isEnemyOnPosition(positionOnGrid, tank.m_factionName, out targetID))
+                {
+                    Debug.Log("Enemy Spotted");
+                    Assert.IsTrue(targetID != Utilities.INVALID_ID);
+                    AITank aiComponent = tank.gameObject.GetComponent<AITank>();
+                    Assert.IsNotNull(aiComponent);
+
+                    MessageToAIUnit message = new MessageToAIUnit(targetID, eAIState.MovingToNewPosition, positionOnGrid);
+                    aiComponent.receiveMessage(message);
+                }
+            }
+        }
     }
 }
