@@ -6,6 +6,11 @@ using UnityEngine.Assertions;
 
 public class GraphPoint
 {
+    public bool isEmpty()
+    {
+        return tankID == Utilities.INVALID_ID;
+    }
+
     public void assign(int ID, eFactionName factionName)
     {
         tankID = ID;
@@ -96,17 +101,17 @@ public class GameManager : MonoBehaviour
         return ID;
     }
 
-    public void updatePositionOnMap(Tank tank, TankMovement tankMovement)
+    public void updatePositionOnMap(Vector3 oldPosition, Vector3 position, eFactionName factionName, int ID)
     {
-        Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(tankMovement.m_oldPosition);
-        Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+        Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(oldPosition);
+        Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(position);
 
         if (oldPositionOnGrid != currentPositionOnGrid)
         {
             m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
+            Assert.IsTrue(m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].isEmpty());
+            m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(ID, factionName);
         }
-
-        m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(tank.m_ID, tank.m_factionName);
     }
 
     public bool isPositionOccupied(Vector3 newPosition, int tankID)
@@ -116,25 +121,27 @@ public class GameManager : MonoBehaviour
         {
             return true;
         }
-
         //Tank moving in same grid
-        if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID == tankID)
+        else if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID == tankID)
         {
             return false;
         }
-
-        return m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != tankID &&
-            m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != Utilities.INVALID_ID;
+        else
+        {
+            return m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != Utilities.INVALID_ID;
+        }
     }
 
-    public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName)
+    public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
     {
         if(m_map[position.y, position.x].tankID != Utilities.INVALID_ID)
         {
+            targetID = m_map[position.y, position.x].tankID;
             return m_map[position.y, position.x].tankFactionName != factionName;
         }
         else
         {
+            targetID = Utilities.INVALID_ID;
             return false;
         }
     }
