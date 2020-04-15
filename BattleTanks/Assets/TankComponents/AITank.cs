@@ -180,7 +180,10 @@ public class AITank : MonoBehaviour
                 if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
                     Map.Instance.getPointOnMap(y, x).tankID == m_targetID)
                 {
-                    enemyPosition = new Vector3(x, 0, y);
+                    Vector3 position = GameManager.Instance.getTankPosition(m_targetID);
+                    Assert.IsTrue(position != Utilities.INVALID_POSITION);
+
+                    enemyPosition = new Vector3(position.x, 0, position.z);
                     return true;
                 }
             }

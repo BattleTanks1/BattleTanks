@@ -16,6 +16,7 @@ public enum eDirection2D
 public static class Utilities
 {
     public const int INVALID_ID = -1;
+    static public Vector3 INVALID_POSITION = new Vector3(-1, -1, -1);
     static public Vector2Int[] getDirections2D()
     {
         Vector2Int[] directions2D = new Vector2Int[(int)eDirection2D.Total]

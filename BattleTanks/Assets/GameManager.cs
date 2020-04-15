@@ -28,8 +28,6 @@ public class GameManager : MonoBehaviour
         m_factions = new Faction[(int)eFactionName.Total];
         m_factions[(int)eFactionName.Red] = new FactionHuman(eFactionName.Red);
         m_factions[(int)eFactionName.Blue] = new FactionAI(eFactionName.Blue);
-
-
     }
 
     private void Update()
@@ -151,5 +149,23 @@ public class GameManager : MonoBehaviour
                 tankMovement.moveTo(position);
             }
         }
+    }
+
+    public Vector3 getTankPosition(int tankID)
+    {
+        Assert.IsTrue(tankID != Utilities.INVALID_ID);
+
+        foreach (Faction faction in m_factions)
+        {
+            foreach(Tank tank in faction.m_tanks)
+            {
+                if(tank.m_ID == tankID)
+                {
+                    return tank.transform.position;
+                }
+            }
+        }
+
+        return Utilities.INVALID_POSITION;
     }
 }
