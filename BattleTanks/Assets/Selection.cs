@@ -12,7 +12,7 @@ public class Selection : MonoBehaviour
     private void Start()
     {
         Assert.IsNotNull(m_selectionBox);
-        m_selectionBox.SetActive(false);
+        //m_selectionBox.SetActive(false);
 
         m_AABB = new fRectangle(transform.position, transform.localScale);
     }

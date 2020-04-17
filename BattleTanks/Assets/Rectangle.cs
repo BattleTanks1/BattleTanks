@@ -30,7 +30,7 @@ public class iRectangle : Rectangle<int>
 
     public void reset(Vector2Int position, int distance)
     {
-        Vector2Int mapSize = GameManager.Instance.m_mapSize;
+        Vector2Int mapSize = Map.Instance.m_mapSize;
 
         m_left = Mathf.Max(position.x - distance, 0);
         m_right = Mathf.Min(position.x + distance, mapSize.x);
@@ -65,7 +65,15 @@ public class fRectangle : Rectangle<float>
             m_right >= other.m_left &&
             m_top >= other.m_bottom &&
             m_bottom <= other.m_top;
-    }    
+    }
+
+    public bool contains(Vector3 position)
+    {
+        return position.x >= m_left &&
+            position.x <= m_right &&
+            position.y >= m_bottom &&
+            position.y <= m_top;
+    }
 
     public void reset(Vector3 position, Vector3 localScale)
     {

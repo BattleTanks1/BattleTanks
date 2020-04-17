@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-
 public class GameManager : MonoBehaviour
 {
     public Faction[] m_factions;
 
-    private int m_ID = 0; //Unique ID per ship
+    private int m_ID = 0; //Unique ID
 
     private static GameManager _instance;
     public static GameManager Instance { get { return _instance; } }
@@ -24,26 +23,15 @@ public class GameManager : MonoBehaviour
         {
             _instance = this;
         }
-
-        m_factions = new Faction[(int)eFactionName.Total];
-        m_factions[(int)eFactionName.Red] = new FactionHuman(eFactionName.Red);
-        m_factions[(int)eFactionName.Blue] = new FactionAI(eFactionName.Blue);
     }
 
-    private void Update()
-    {
-        foreach(Faction faction in m_factions)
-        {
-            faction.update();
-        }
-    }
 
-    private Faction getPlayerFaction()
+    public Faction getPlayerFaction()
     {
         Faction playerFaction = null;
         foreach(Faction faction in m_factions)
         {
-            if(faction.m_controllerType == eFactionControllerType.eHuman)
+            if(faction.getControllerType() == eFactionControllerType.Human)
             {
                 playerFaction = faction;
             }
@@ -52,19 +40,10 @@ public class GameManager : MonoBehaviour
         return playerFaction;
     }
 
-    public int addTank(Tank tank)
+    public int addUnit(Tank tank)
     {
         int ID = m_ID;
         ++m_ID;
-        switch (tank.m_factionName)
-        {
-            case eFactionName.Red:
-                m_factions[(int)tank.m_factionName].addTank(tank);
-                break;
-            case eFactionName.Blue:
-                m_factions[(int)tank.m_factionName].addTank(tank);
-                break;
-        }
 
         return ID;
     }
@@ -167,5 +146,23 @@ public class GameManager : MonoBehaviour
         }
 
         return Utilities.INVALID_POSITION;
+    }
+
+    public void targetEnemyAtPosition(Vector3 position)
+    {
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+        Faction playerFaction = getPlayerFaction();
+        Assert.IsNotNull(playerFaction);
+        
+        foreach(Tank tank in playerFaction.m_tanks)
+        {
+            Selection selectionComponent = tank.GetComponent<Selection>();
+            Assert.IsNotNull(selectionComponent);
+
+            if(selectionComponent.isSelected())
+            {
+                
+            }
+        }
     }
 }

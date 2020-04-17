@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class TankShooting : MonoBehaviour
 {
@@ -14,17 +15,27 @@ public class TankShooting : MonoBehaviour
     private float m_timeBetweenShot;
     
     private float m_elaspedTime = 0.0f;
+    private Tank m_tank = null;
+
+    private void Awake()
+    {
+        m_tank = GetComponent<Tank>();
+        Assert.IsNotNull(m_tank);
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
         m_elaspedTime += Time.deltaTime;
+        if(m_tank.getControllerType() != eFactionControllerType.Human)
+        {
+
+        }
     }
 
     public void FireAtPosition(Vector3 position)

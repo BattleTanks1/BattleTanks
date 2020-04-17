@@ -35,22 +35,24 @@ public class MessageToAIUnit
 
 public class FactionAI : Faction
 {
-    public FactionAI(eFactionName name) :
-        base(name, eFactionControllerType.eAI)
+    private Queue<MessageToAIController> m_receivedMessages;
+    private Queue<MessageToAIUnit> m_messagesToSend;
+    private HashSet<int> m_visibleTargets;
+
+    private void Awake()
     {
         m_receivedMessages = new Queue<MessageToAIController>();
         m_messagesToSend = new Queue<MessageToAIUnit>();
         m_visibleTargets = new HashSet<int>();
     }
 
-    Queue<MessageToAIController> m_receivedMessages;
-    Queue<MessageToAIUnit> m_messagesToSend;
-    HashSet<int> m_visibleTargets;
-
-    public override void update()
+    private void Start()
     {
-        base.update();
+        m_controllerType = eFactionControllerType.AI;
+    }
 
+    private void Update() 
+    {
         handleReceivedMessages();
         handleToSendMessages();
 
@@ -59,7 +61,7 @@ public class FactionAI : Faction
             AITank aiComponent = tank.gameObject.GetComponent<AITank>();
             Assert.IsNotNull(aiComponent);
 
-            if(aiComponent.m_currentState == eAIState.AwaitingDecision)
+            if (aiComponent.m_currentState == eAIState.AwaitingDecision)
             {
                 assignTankToEnemyInRange(tank);
             }
@@ -145,10 +147,6 @@ public class FactionAI : Faction
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int vBetween = senderPositionOnGrid - new Vector2Int(x, y);
-
-                //if(new Vector2Int(senderPositionOnGrid - new Vector2Int(x, y)).
-                //Vector2Int result = new Vector2Int(senderPositionOnGri - new Vector2Int(x, y));
-                //float distance = Vector2Int.Distance(senderPositionOnGrid, new Vector2Int(x, y));
                 if (vBetween.sqrMagnitude <= messageSender.m_visibilityDistance * messageSender.m_visibilityDistance &&
                     Map.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
                 {

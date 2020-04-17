@@ -27,18 +27,8 @@ public class CameraController : MonoBehaviour
     private void Update()
     {
         Move();
-        handleSelectionBox();
-
-        if(Input.GetMouseButtonDown(1))
-        {
-            Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if(Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
-            {
-                GameManager.Instance.moveSelectedPlayerUnitsToPosition(hit.point);
-                clearSelectionBox();
-            }
-        }
+        onLeftClick();
+        onRightClick();
     }
 
     private void Move()
@@ -94,7 +84,7 @@ public class CameraController : MonoBehaviour
         transform.position += position;
     }
 
-    private void handleSelectionBox()
+    private void onLeftClick()
     {
         if (Input.GetMouseButtonDown(0) && !m_leftButtonHeld)
         {
@@ -130,6 +120,25 @@ public class CameraController : MonoBehaviour
 
             if (Input.GetMouseButtonUp(0))
             {
+                clearSelectionBox();
+            }
+        }
+    }
+
+    private void onRightClick()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Enemy")
+            {
+                Debug.Log("Hit Enemy");
+            }
+            else if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
+            {
+                GameManager.Instance.moveSelectedPlayerUnitsToPosition(hit.point);
                 clearSelectionBox();
             }
         }

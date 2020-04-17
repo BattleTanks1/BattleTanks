@@ -11,26 +11,31 @@ public enum eFactionName
 
 public enum eFactionControllerType
 {
-    eHuman = 0,
-    eAI
+    Human = 0,
+    AI
 }
 
-abstract public class Faction
+abstract public class Faction : MonoBehaviour
 {
     public List<Tank> m_tanks;
-    public eFactionName m_name { get; private set; }
-    public eFactionControllerType m_controllerType { get; private set; }
 
-    public Faction(eFactionName name, eFactionControllerType controllerType)
+    [SerializeField]
+    protected eFactionName m_factionName;
+    protected eFactionControllerType m_controllerType;
+
+    private void Awake()
     {
-        m_name = name;
-        m_controllerType = controllerType;
         m_tanks = new List<Tank>();
     }
 
-    public virtual void update()
+    public eFactionControllerType getControllerType()
     {
+        return m_controllerType;
+    }
 
+    public eFactionName getFactionName()
+    {
+        return m_factionName;
     }
 
     public void addTank(Tank tank)
@@ -39,9 +44,9 @@ abstract public class Faction
     }
 }
 
-public class FactionHuman : Faction
-{
-    public FactionHuman(eFactionName name) :
-        base(name, eFactionControllerType.eHuman)
-    { }
-}
+//public class FactionHuman : Faction
+//{
+//    public FactionHuman(eFactionName name) :
+//        base(name, eFactionControllerType.Human)
+//    { }
+//}

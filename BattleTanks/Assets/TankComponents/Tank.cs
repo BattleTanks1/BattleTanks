@@ -16,12 +16,19 @@ public class Tank : MonoBehaviour
 
     [SerializeField]
     public eFactionName m_factionName;
+    [SerializeField]
+    private eFactionControllerType m_controllerType;
 
     public float m_scaredValue;
     public float m_maxValueAtPosition;
 
     private void Start()
     {
-        m_ID = GameManager.Instance.addTank(this);
+        m_ID = GameManager.Instance.addUnit(this);
+    }
+
+    public eFactionControllerType getControllerType()
+    {
+        return m_controllerType;
     }
 }
