@@ -94,15 +94,16 @@ public class AITank : MonoBehaviour
             case eAIState.MovingToNewPosition:
                 {
                     Vector3 enemyPosition = new Vector3();
-                    if(m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
-                    {
+                    bool targetVisible = isTargetInVisibleSight(out enemyPosition);
+                    if(targetVisible)
+                    { 
                         m_tankMovement.moveTo(enemyPosition);
 
-                        if(m_tankShooting.isTargetInAttackRange(enemyPosition))
+                        if (m_targetID != Utilities.INVALID_ID)
                         {
                             m_tankMovement.stop();
                             m_currentState = eAIState.ShootingAtEnemy;
-                        }
+                        }        
                     }
                     else
                     {
@@ -110,6 +111,8 @@ public class AITank : MonoBehaviour
                         {
                             m_currentState = eAIState.AwaitingDecision;
                         }
+
+                        m_tankMovement.stop();
                     }
                 }
                 break;
@@ -131,6 +134,7 @@ public class AITank : MonoBehaviour
                     else
                     {
                         m_currentState = eAIState.AwaitingDecision;
+                        m_tankMovement.stop();
                     }
                 }
                 break;
