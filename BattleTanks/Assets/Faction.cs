@@ -31,6 +31,5 @@ abstract public class Faction : MonoBehaviour
     public eFactionName getFactionName()
     {
         return m_factionName;
-
     }
 }

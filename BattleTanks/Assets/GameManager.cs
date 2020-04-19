@@ -67,62 +67,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void selectPlayerUnits(fRectangle selectionBox)
-    {
-        Faction playerFaction = getPlayerFaction();
-        Assert.IsNotNull(playerFaction);
-
-        foreach (Tank tank in playerFaction.m_tanks)
-        {
-            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
-            Assert.IsNotNull(tankSelection);
-            tankSelection.Select(selectionBox);
-        }
-    }
-
-    public void deselectPlayerUnits()
-    {
-        Faction playerFaction = getPlayerFaction();
-        Assert.IsNotNull(playerFaction);
-        if (playerFaction == null)
-        {
-            return;
-        }
-
-        foreach (Tank tank in playerFaction.m_tanks)
-        {
-            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
-            Assert.IsNotNull(tankSelection);
-            if (tankSelection)
-            {
-                tankSelection.Deselect();
-            }
-        }
-    }
-
-    public void moveSelectedPlayerUnitsToPosition(Vector3 position)
-    {
-        Faction playerFaction = getPlayerFaction();
-        Assert.IsNotNull(playerFaction);
-        if (playerFaction == null)
-        {
-            return;
-        }
-
-        foreach(Tank tank in playerFaction.m_tanks)
-        {
-            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
-            Assert.IsNotNull(tankSelection);
-            TankMovement tankMovement = tank.gameObject.GetComponent<TankMovement>();
-            Assert.IsNotNull(tankMovement);
-
-            if(tankSelection.isSelected())
-            {
-                tankMovement.moveTo(position);
-            }
-        }
-    }
-
     public Vector3 getTankPosition(int tankID)
     {
         Assert.IsTrue(tankID != Utilities.INVALID_ID);

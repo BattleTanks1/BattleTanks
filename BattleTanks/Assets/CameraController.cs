@@ -88,7 +88,7 @@ public class CameraController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !m_leftButtonHeld)
         {
-            GameManager.Instance.deselectPlayerUnits();
+            FactionPlayer.Instance.deselectAllUnits();
 
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -115,7 +115,7 @@ public class CameraController : MonoBehaviour
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
 
                 fRectangle selectionBoxAABB = new fRectangle(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
-                GameManager.Instance.selectPlayerUnits(selectionBoxAABB);
+                FactionPlayer.Instance.selectUnits(selectionBoxAABB);
             }
 
             if (Input.GetMouseButtonUp(0))
@@ -138,7 +138,7 @@ public class CameraController : MonoBehaviour
             }
             else if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
             {
-                GameManager.Instance.moveSelectedPlayerUnitsToPosition(hit.point);
+                FactionPlayer.Instance.moveSelectedUnitsToPosition(hit.point);
                 clearSelectionBox();
             }
         }
