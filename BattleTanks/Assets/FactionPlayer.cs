@@ -80,7 +80,7 @@ public class FactionPlayer : Faction
         {
             return;
         }
-        Debug.Log("Targetting Enemy");
+        
         foreach (Tank tank in m_tanks)
         {
             Selection selectionComponent = tank.gameObject.GetComponent<Selection>();

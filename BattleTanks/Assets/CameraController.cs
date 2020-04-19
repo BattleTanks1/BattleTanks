@@ -92,7 +92,8 @@ public class CameraController : MonoBehaviour
 
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
+            int layerMask = 1 << 10;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~layerMask) && hit.collider.tag == "Ground")
             {
                 m_mousePressedPosition = hit.point;
             }
@@ -106,7 +107,8 @@ public class CameraController : MonoBehaviour
         {
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
+            int layerMask = 1 << 10;
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~layerMask) && hit.collider.tag == "Ground")
             {
                 Assert.IsNotNull(m_selectionBoxClone);
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
@@ -134,7 +136,6 @@ public class CameraController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Enemy")
             {
-                Debug.Log("Hit Enemy");
                 FactionPlayer.Instance.targetEnemyAtPosition(hit.point);
             }
             else if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
