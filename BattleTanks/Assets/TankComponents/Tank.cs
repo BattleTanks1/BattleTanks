@@ -18,6 +18,8 @@ public class Tank : MonoBehaviour
     public eFactionName m_factionName;
     [SerializeField]
     private eFactionControllerType m_controllerType;
+    [SerializeField]
+    private int m_health = 1;
 
     public float m_scaredValue;
     public float m_maxValueAtPosition;
@@ -30,5 +32,15 @@ public class Tank : MonoBehaviour
     public eFactionControllerType getControllerType()
     {
         return m_controllerType;
+    }
+
+    public void reduceHealth(int amount)
+    {
+        m_health -= amount;
+    }
+
+    public bool isDead()
+    {
+        return m_health <= 0;
     }
 }

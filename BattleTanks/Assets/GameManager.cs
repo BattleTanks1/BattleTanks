@@ -116,4 +116,17 @@ public class GameManager : MonoBehaviour
 
         return Utilities.INVALID_POSITION;
     }
+
+    public void damageTank(Tank tank, int damage)
+    {
+        Assert.IsNotNull(tank);
+        tank.reduceHealth(damage);
+        
+        if(tank.isDead())
+        {
+            Map.Instance.remove(tank);
+            m_factions[(int)tank.m_factionName].m_tanks.Remove(tank);
+            Destroy(tank.gameObject);
+        }
+    }
 }

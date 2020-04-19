@@ -144,4 +144,12 @@ public class Map : MonoBehaviour
     {
         return m_map[y, x].sceneryType != eSceneryType.None;
     }
+
+    public void remove(Tank tank)
+    {
+        Assert.IsNotNull(tank);
+
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+        m_map[positionOnGrid.y, positionOnGrid.x].reset();
+    }
 }

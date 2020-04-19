@@ -23,14 +23,9 @@ public class TankShooting : MonoBehaviour
         Assert.IsNotNull(m_tank);
     }
 
-    // Update is called once per frame
     void Update()
     {
         m_elaspedTime += Time.deltaTime;
-        //if(m_tank.getControllerType() != eFactionControllerType.Human)
-        //{
-
-        //}
     }
 
     public void FireAtPosition(Vector3 position)
