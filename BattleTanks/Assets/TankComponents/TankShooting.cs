@@ -46,6 +46,10 @@ public class TankShooting : MonoBehaviour
             clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
             Vector3 vBetween = position - transform.position;
             clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
+
+            Projectile projectile = clone.GetComponent<Projectile>();
+            Assert.IsNotNull(projectile);
+            projectile.setSenderID(m_tank.m_ID);
         }
     }
 
