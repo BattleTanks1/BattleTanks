@@ -5,11 +5,10 @@ using UnityEngine.Assertions;
 
 public class TankPlayer : MonoBehaviour
 {
-    //AI Stuff
     [SerializeField]
-    public eAIState m_currentState;
-    public eAIBehaviour m_behaviour;
-    public int m_targetID = Utilities.INVALID_ID;
+    private eAIState m_currentState;
+    [SerializeField]
+    private int m_targetID = Utilities.INVALID_ID;
 
     private Tank m_tank = null;
     private TankMovement m_tankMovement = null;
