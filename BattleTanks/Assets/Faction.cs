@@ -24,7 +24,6 @@ abstract public class Faction : MonoBehaviour
     protected eFactionControllerType m_controllerType;
 
 
-
     public eFactionControllerType getControllerType()
     {
         return m_controllerType;

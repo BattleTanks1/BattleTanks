@@ -8,13 +8,13 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private GameObject m_selectionBoxPrefab = null;
     [SerializeField]
-    private float m_zoomSpeed = 0.0f;
+    private float m_magnificationSpeed = 0.0f;
     [SerializeField]
     private float m_maximumMagnification = 0.0f;
     [SerializeField]
     private float m_selectionBoxHeight = 0.5f;
     [SerializeField]
-    private float m_speed = 30.0f;
+    private float m_movementSpeed = 30.0f;
     [SerializeField]
     private float m_borderOffset = 20.0f;
     [SerializeField]
@@ -29,8 +29,8 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         m_camera = GetComponent<Camera>();
-        Assert.IsNotNull(m_selectionBoxPrefab);
 
+        Assert.IsNotNull(m_selectionBoxPrefab);
         Assert.IsNotNull(m_player);
     }
 
@@ -50,46 +50,46 @@ public class CameraController : MonoBehaviour
         if (Input.mousePosition.y >= Screen.height - m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x >= Screen.width - m_borderOffset * m_diagonalOffSetMultipler)
         {
-            Vector3 move = new Vector3(position.x + m_speed, 0, position.z + m_speed);
-            position += move.normalized * m_speed * Time.deltaTime;
+            Vector3 move = new Vector3(position.x + m_movementSpeed, 0, position.z + m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
         }
         else if (Input.mousePosition.y <= m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x >= Screen.width - m_borderOffset * m_diagonalOffSetMultipler)
         {
-            Vector3 move = new Vector3(position.x + m_speed, 0, position.z - m_speed);
-            position += move.normalized * m_speed * Time.deltaTime;
+            Vector3 move = new Vector3(position.x + m_movementSpeed, 0, position.z - m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
         }
         else if (Input.mousePosition.y <= m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x <= m_borderOffset * m_diagonalOffSetMultipler)
         {
-            Vector3 move = new Vector3(position.x - m_speed, 0, position.z - m_speed);
-            position += move.normalized * m_speed * Time.deltaTime;
+            Vector3 move = new Vector3(position.x - m_movementSpeed, 0, position.z - m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
         }
         else if (Input.mousePosition.y >= Screen.height - m_borderOffset * m_diagonalOffSetMultipler &&
             Input.mousePosition.x <= m_borderOffset * m_diagonalOffSetMultipler)
         {
-            Vector3 move = new Vector3(position.x - m_speed, 0, position.z + m_speed);
-            position += move.normalized * m_speed * Time.deltaTime;
+            Vector3 move = new Vector3(position.x - m_movementSpeed, 0, position.z + m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
         }
 
         //Vertical
         else if (Input.mousePosition.y >= Screen.height - m_borderOffset)
         {
-            position.z += m_speed * Time.deltaTime;
+            position.z += m_movementSpeed * Time.deltaTime;
         }
         else if (Input.mousePosition.y <= m_borderOffset)
         {
-            position.z -= m_speed * Time.deltaTime;
+            position.z -= m_movementSpeed * Time.deltaTime;
         }
 
         //Horizontal
         else if (Input.mousePosition.x <= m_borderOffset)
         {
-            position.x -= m_speed * Time.deltaTime;
+            position.x -= m_movementSpeed * Time.deltaTime;
         }
         else if (Input.mousePosition.x >= Screen.width - m_borderOffset)
         {
-            position.x += m_speed * Time.deltaTime;
+            position.x += m_movementSpeed * Time.deltaTime;
         }
 
         transform.position += position;
@@ -161,7 +161,7 @@ public class CameraController : MonoBehaviour
     {
         if(Input.mouseScrollDelta.y > 0.0f)
         {
-            Vector3 newPosition = transform.position + transform.forward * m_zoomSpeed;
+            Vector3 newPosition = transform.position + transform.forward * m_magnificationSpeed;
             Vector3 vBetween = newPosition - transform.position;
             if(m_currentMagnification * m_currentMagnification + vBetween.sqrMagnitude < m_maximumMagnification * m_maximumMagnification)
             {
@@ -171,7 +171,7 @@ public class CameraController : MonoBehaviour
         }
         else if(Input.mouseScrollDelta.y < 0.0f)
         {
-            Vector3 newPosition = transform.position - transform.forward * m_zoomSpeed;
+            Vector3 newPosition = transform.position - transform.forward * m_magnificationSpeed;
             Vector3 vBetween = newPosition - transform.position;
             if (m_currentMagnification * m_currentMagnification - vBetween.sqrMagnitude > 0)
             {

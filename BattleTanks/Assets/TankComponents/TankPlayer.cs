@@ -85,6 +85,7 @@ public class TankPlayer : MonoBehaviour
                     }
                     else
                     {
+                        m_targetID = Utilities.INVALID_ID;
                         m_currentState = eAIState.AwaitingDecision;
                     }
                 }
