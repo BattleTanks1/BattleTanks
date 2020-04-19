@@ -6,13 +6,13 @@ using UnityEngine.Assertions;
 public class TankShooting : MonoBehaviour
 {
     [SerializeField]
-    private float m_shootRange;
+    private float m_shootRange = 0.0f;
     [SerializeField]
     private Rigidbody m_projectile = null;
     [SerializeField]
     private float m_projectileSpeed = 0.0f;
     [SerializeField]
-    private float m_timeBetweenShot;
+    private float m_timeBetweenShot = 0.0f;
     
     private float m_elaspedTime = 0.0f;
     private Tank m_tank = null;
@@ -23,19 +23,14 @@ public class TankShooting : MonoBehaviour
         Assert.IsNotNull(m_tank);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
     // Update is called once per frame
     void Update()
     {
         m_elaspedTime += Time.deltaTime;
-        if(m_tank.getControllerType() != eFactionControllerType.Human)
-        {
+        //if(m_tank.getControllerType() != eFactionControllerType.Human)
+        //{
 
-        }
+        //}
     }
 
     public void FireAtPosition(Vector3 position)

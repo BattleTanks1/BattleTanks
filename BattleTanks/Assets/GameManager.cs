@@ -71,19 +71,12 @@ public class GameManager : MonoBehaviour
     {
         Faction playerFaction = getPlayerFaction();
         Assert.IsNotNull(playerFaction);
-        if(playerFaction == null)
-        {
-            return;
-        }
 
         foreach (Tank tank in playerFaction.m_tanks)
         {
             Selection tankSelection = tank.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(tankSelection);
-            if(tankSelection)
-            {
-                tankSelection.Select(selectionBox);
-            }
+            tankSelection.Select(selectionBox);
         }
     }
 

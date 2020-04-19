@@ -23,11 +23,6 @@ abstract public class Faction : MonoBehaviour
     protected eFactionName m_factionName;
     protected eFactionControllerType m_controllerType;
 
-    private void Awake()
-    {
-        m_tanks = new List<Tank>();
-    }
-
     public eFactionControllerType getControllerType()
     {
         return m_controllerType;
@@ -36,17 +31,6 @@ abstract public class Faction : MonoBehaviour
     public eFactionName getFactionName()
     {
         return m_factionName;
-    }
 
-    public void addTank(Tank tank)
-    {
-        m_tanks.Add(tank);
     }
 }
-
-//public class FactionHuman : Faction
-//{
-//    public FactionHuman(eFactionName name) :
-//        base(name, eFactionControllerType.Human)
-//    { }
-//}
