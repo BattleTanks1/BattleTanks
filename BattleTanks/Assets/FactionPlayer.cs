@@ -5,9 +5,13 @@ using UnityEngine.Assertions;
 
 public class FactionPlayer : Faction
 {
+    [SerializeField]
+    private Building m_building = null;
+
     // Start is called before the first frame update
     void Start()
     {
+        Assert.IsNotNull(m_building);
         m_controllerType = eFactionControllerType.Human;
     }
 
@@ -37,6 +41,10 @@ public class FactionPlayer : Faction
 
             tankSelection.Deselect();
         }
+
+        Selection selection = m_building.GetComponent<Selection>();
+        Assert.IsNotNull(selection);
+        selection.Deselect();
     }
 
     public void moveSelectedUnitsToPosition(Vector3 position)
@@ -80,5 +88,13 @@ public class FactionPlayer : Faction
                     Utilities.convertToGridPosition(enemy.transform.position)));
             }
         }
+    }
+
+    public void selectBuilding(Vector3 position)
+    {
+        Selection selection = m_building.GetComponent<Selection>();
+        Assert.IsNotNull(selection);
+
+        selection.select(position);
     }
 }

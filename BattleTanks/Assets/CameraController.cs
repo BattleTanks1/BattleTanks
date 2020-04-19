@@ -108,6 +108,11 @@ public class CameraController : MonoBehaviour
             {
                 m_mousePressedPosition = hit.point;
             }
+            else if(Physics.Raycast(ray, out hit) && hit.collider.tag == "PlayerBuilding")
+            {
+                onBuildingInteraction(hit.point);
+                return;
+            }
             
             m_leftButtonHeld = true;
             m_selectionBoxClone = Instantiate(m_selectionBoxPrefab, hit.point, Quaternion.identity);
@@ -179,6 +184,11 @@ public class CameraController : MonoBehaviour
                 transform.position = newPosition;
             }
         }
+    }
+
+    private void onBuildingInteraction(Vector3 position)
+    {
+        m_player.selectBuilding(position);
     }
 
     private void clearSelectionBox()

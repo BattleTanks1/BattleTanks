@@ -48,6 +48,18 @@ public class Selection : MonoBehaviour
         }
     }
 
+    public void select(Vector3 position)
+    {
+        if(m_AABB.contains(Utilities.convertToGridPosition(position)))
+        {
+            m_selectionBox.SetActive(true);
+        }
+        else
+        {
+            m_selectionBox.SetActive(false);
+        }
+    }
+
     public void Deselect()
     {
         m_selectionBox.SetActive(false);
