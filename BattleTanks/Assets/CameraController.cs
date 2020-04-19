@@ -135,6 +135,7 @@ public class CameraController : MonoBehaviour
             if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Enemy")
             {
                 Debug.Log("Hit Enemy");
+                FactionPlayer.Instance.targetEnemyAtPosition(hit.point);
             }
             else if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
             {

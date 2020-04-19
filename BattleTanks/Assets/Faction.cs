@@ -23,6 +23,8 @@ abstract public class Faction : MonoBehaviour
     protected eFactionName m_factionName;
     protected eFactionControllerType m_controllerType;
 
+
+
     public eFactionControllerType getControllerType()
     {
         return m_controllerType;

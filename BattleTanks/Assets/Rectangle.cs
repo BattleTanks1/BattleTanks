@@ -67,7 +67,7 @@ public class fRectangle : Rectangle<float>
             m_bottom <= other.m_top;
     }
 
-    public bool contains(Vector3 position)
+    public bool contains(Vector2Int position)
     {
         return position.x >= m_left &&
             position.x <= m_right &&

@@ -24,7 +24,6 @@ public class FactionPlayer : Faction
     void Start()
     {
         m_controllerType = eFactionControllerType.Human;
-
     }
 
     // Update is called once per frame
@@ -66,10 +65,35 @@ public class FactionPlayer : Faction
                 continue;
             }
 
-            TankMovement tankMovement = tank.gameObject.GetComponent<TankMovement>();
-            Assert.IsNotNull(tankMovement);
+            TankPlayer tankPlayer = tank.GetComponent<TankPlayer>();
+            Assert.IsNotNull(tankPlayer);
 
-            tankMovement.moveTo(position);
+            tankPlayer.receiveMessage(new MessageToAIUnit(Utilities.INVALID_ID, eAIState.MovingToNewPosition,
+                Utilities.convertToGridPosition(position)));
+        }
+    }
+
+    public void targetEnemyAtPosition(Vector3 position)
+    {
+        Tank enemy = GameManager.Instance.getTank(position);
+        if(!enemy)
+        {
+            return;
+        }
+        Debug.Log("Targetting Enemy");
+        foreach (Tank tank in m_tanks)
+        {
+            Selection selectionComponent = tank.gameObject.GetComponent<Selection>();
+            Assert.IsNotNull(selectionComponent);
+
+            if (selectionComponent.isSelected())
+            {
+                TankPlayer tankPlayer = tank.gameObject.GetComponent<TankPlayer>();
+                Assert.IsNotNull(tankPlayer);
+
+                tankPlayer.receiveMessage(new MessageToAIUnit(enemy.m_ID, eAIState.MovingToNewPosition,
+                    Utilities.convertToGridPosition(enemy.transform.position)));
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -25,6 +24,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public Tank getTank(Vector3 position)
+    {
+        foreach(Faction faction in m_factions)
+        {
+            foreach(Tank tank in faction.m_tanks)
+            {
+                Selection tankSelection = tank.GetComponent<Selection>();
+                Assert.IsNotNull(tankSelection);
+                if(tankSelection.contains(position))
+                {
+                    return tank;
+                }
+            }
+        }
+
+        return null;
+    }
 
     public Faction getPlayerFaction()
     {
@@ -83,23 +99,5 @@ public class GameManager : MonoBehaviour
         }
 
         return Utilities.INVALID_POSITION;
-    }
-
-    public void targetEnemyAtPosition(Vector3 position)
-    {
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        Faction playerFaction = getPlayerFaction();
-        Assert.IsNotNull(playerFaction);
-        
-        foreach(Tank tank in playerFaction.m_tanks)
-        {
-            Selection selectionComponent = tank.GetComponent<Selection>();
-            Assert.IsNotNull(selectionComponent);
-
-            if(selectionComponent.isSelected())
-            {
-                
-            }
-        }
     }
 }
