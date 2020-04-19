@@ -31,10 +31,19 @@ public class TankPlayer : MonoBehaviour
     {
         switch (m_currentState)
         {
-            case eAIState.SetDestinationToSafePosition:
+            case eAIState.AwaitingDecision:
                 {
-                    m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_tank));
-                    m_currentState = eAIState.MovingToNewPosition;
+                    int targetID = Utilities.INVALID_ID;
+                    Vector3 targetPosition;
+                    if(isEnemyInVisibleSight(out targetID, out targetPosition))
+                    {
+                        Assert.IsTrue(targetID != Utilities.INVALID_ID);
+                        Assert.IsTrue(targetPosition != Utilities.INVALID_POSITION);
+
+                        m_targetID = targetID;
+                        m_currentState = eAIState.MovingToNewPosition;
+                        m_tankMovement.moveTo(targetPosition);
+                    }
                 }
                 break;
             case eAIState.MovingToNewPosition:
@@ -136,6 +145,39 @@ public class TankPlayer : MonoBehaviour
         }
 
         enemyPosition = new Vector3();
+        return false;
+    }
+
+    private bool isEnemyInVisibleSight(out int enemyID, out Vector3 enemyPosition)
+    {
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
+
+        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        {
+            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            {
+                Vector2Int result = positionOnGrid - new Vector2Int(x, y);
+                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
+                    Map.Instance.getPointOnMap(y, x).tankID != Utilities.INVALID_ID && 
+                    Map.Instance.getPointOnMap(y, x).tankFactionName != m_tank.m_factionName)
+                {
+                    Tank enemy = GameManager.Instance.getTank(Map.Instance.getPointOnMap(y, x).tankID);
+                    Assert.IsNotNull(enemy);
+                    if(!enemy)
+                    {
+                        continue;
+                    }
+
+                    enemyID = enemy.m_ID;
+                    enemyPosition = enemy.transform.position;
+                    return true;
+                }
+            }
+        }
+
+        enemyID = Utilities.INVALID_ID;
+        enemyPosition = Utilities.INVALID_POSITION;
         return false;
     }
 }

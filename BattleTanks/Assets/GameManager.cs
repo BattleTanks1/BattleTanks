@@ -24,6 +24,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public Tank getTank(int ID)
+    {
+        foreach (Faction faction in m_factions)
+        {
+            foreach (Tank tank in faction.m_tanks)
+            {
+                if(tank.m_ID == ID)
+                {
+                    return tank;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public Tank getTank(Vector3 position)
     {
         foreach(Faction faction in m_factions)
