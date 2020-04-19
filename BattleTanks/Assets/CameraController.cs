@@ -7,6 +7,10 @@ public class CameraController : MonoBehaviour
     private GameObject m_selectionBoxClone = null;
 
     [SerializeField]
+    private float m_zoomSpeed = 0.0f;
+    [SerializeField]
+    private float m_maximumMagnification = 0.0f;
+    [SerializeField]
     private float m_selectionBoxHeight = 0.5f;
     [SerializeField]
     private float m_speed = 30.0f;
@@ -18,6 +22,7 @@ public class CameraController : MonoBehaviour
     private Vector3 m_mousePressedPosition;
     private bool m_leftButtonHeld = false;
     private Camera m_camera = null;
+    private float m_currentMagnification = 0.0f;
 
     private void Awake()
     {
@@ -29,6 +34,7 @@ public class CameraController : MonoBehaviour
         Move();
         onLeftClick();
         onRightClick();
+        onScroll();
     }
 
     private void Move()
@@ -142,6 +148,30 @@ public class CameraController : MonoBehaviour
             {
                 FactionPlayer.Instance.moveSelectedUnitsToPosition(hit.point);
                 clearSelectionBox();
+            }
+        }
+    }
+
+    private void onScroll()
+    {
+        if(Input.mouseScrollDelta.y > 0.0f)
+        {
+            Vector3 newPosition = transform.position + transform.forward * m_zoomSpeed;
+            Vector3 vBetween = newPosition - transform.position;
+            if(m_currentMagnification * m_currentMagnification + vBetween.sqrMagnitude < m_maximumMagnification * m_maximumMagnification)
+            {
+                m_currentMagnification += vBetween.sqrMagnitude;
+                transform.position = newPosition;
+            }
+        }
+        else if(Input.mouseScrollDelta.y < 0.0f)
+        {
+            Vector3 newPosition = transform.position - transform.forward * m_zoomSpeed;
+            Vector3 vBetween = newPosition - transform.position;
+            if (m_currentMagnification * m_currentMagnification - vBetween.sqrMagnitude > 0)
+            {
+                m_currentMagnification -= vBetween.sqrMagnitude;
+                transform.position = newPosition;
             }
         }
     }
