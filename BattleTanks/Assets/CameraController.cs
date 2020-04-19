@@ -3,9 +3,10 @@ using UnityEngine.Assertions;
 
 public class CameraController : MonoBehaviour
 {
-    public GameObject m_selectionBoxPrefab = null;
-    private GameObject m_selectionBoxClone = null;
-
+    [SerializeField]
+    private FactionPlayer m_player = null;
+    [SerializeField]
+    private GameObject m_selectionBoxPrefab = null;
     [SerializeField]
     private float m_zoomSpeed = 0.0f;
     [SerializeField]
@@ -19,6 +20,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float m_diagonalOffSetMultipler = 15.0f;
 
+    private GameObject m_selectionBoxClone = null;
     private Vector3 m_mousePressedPosition;
     private bool m_leftButtonHeld = false;
     private Camera m_camera = null;
@@ -28,6 +30,8 @@ public class CameraController : MonoBehaviour
     {
         m_camera = GetComponent<Camera>();
         Assert.IsNotNull(m_selectionBoxPrefab);
+
+        Assert.IsNotNull(m_player);
     }
 
     private void Update()
@@ -95,7 +99,7 @@ public class CameraController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0) && !m_leftButtonHeld)
         {
-            FactionPlayer.Instance.deselectAllUnits();
+            m_player.deselectAllUnits();
 
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -124,7 +128,7 @@ public class CameraController : MonoBehaviour
                 m_selectionBoxClone.transform.position = m_mousePressedPosition + (hit.point - m_mousePressedPosition) / 2.0f;
 
                 fRectangle selectionBoxAABB = new fRectangle(m_selectionBoxClone.transform.position, m_selectionBoxClone.transform.localScale);
-                FactionPlayer.Instance.selectUnits(selectionBoxAABB);
+                m_player.selectUnits(selectionBoxAABB);
             }
 
             if (Input.GetMouseButtonUp(0))
@@ -143,11 +147,11 @@ public class CameraController : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Enemy")
             {
-                FactionPlayer.Instance.targetEnemyAtPosition(hit.point);
+                m_player.targetEnemyAtPosition(hit.point);
             }
             else if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
             {
-                FactionPlayer.Instance.moveSelectedUnitsToPosition(hit.point);
+                m_player.moveSelectedUnitsToPosition(hit.point);
                 clearSelectionBox();
             }
         }

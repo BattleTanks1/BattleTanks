@@ -5,21 +5,6 @@ using UnityEngine.Assertions;
 
 public class FactionPlayer : Faction
 {
-    private static FactionPlayer _instance;
-    public static FactionPlayer Instance { get { return _instance; } }
-
-    private void Awake()
-    {
-        if (_instance != null && _instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            _instance = this;
-        }
-    }
-
     // Start is called before the first frame update
     void Start()
     {
