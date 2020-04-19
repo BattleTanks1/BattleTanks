@@ -27,6 +27,7 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         m_camera = GetComponent<Camera>();
+        Assert.IsNotNull(m_selectionBoxPrefab);
     }
 
     private void Update()
