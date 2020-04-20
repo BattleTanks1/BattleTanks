@@ -26,16 +26,16 @@ public class Building : MonoBehaviour
 
     public void setWayPoint(Vector3 position)
     {
-        //Reset waypoint
         if(m_selectionComponent.contains(position))
         {
+            //Reset waypoint
             m_wayPointClone.transform.position = transform.position;
             m_wayPointClone.SetActive(false);
            
         }
-        //Assign waypoint to new position
         else
         {
+            //Assign waypoint to new position
             m_wayPointClone.SetActive(true);
             m_wayPointClone.transform.position = new Vector3(position.x, 1, position.z);
         }
