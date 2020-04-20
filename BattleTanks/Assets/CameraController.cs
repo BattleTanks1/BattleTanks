@@ -149,12 +149,13 @@ public class CameraController : MonoBehaviour
         {
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
+            Physics.Raycast(ray, out hit);
 
-            if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Enemy")
+            if (hit.collider.tag == "Enemy")
             {
                 m_player.targetEnemyAtPosition(hit.point);
             }
-            else if (Physics.Raycast(ray, out hit) && hit.collider.tag == "Ground")
+            else if (hit.collider.tag == "Ground")
             {
                 m_player.moveSelectedUnitsToPosition(hit.point);
                 clearSelectionBox();
