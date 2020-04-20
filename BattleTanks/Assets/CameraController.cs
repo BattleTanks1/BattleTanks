@@ -41,7 +41,10 @@ public class CameraController : MonoBehaviour
         onRightClick();
         onScroll();
 
-       // if(Input.get)
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            m_player.spawnUnit();
+        }
     }
 
     private void Move()

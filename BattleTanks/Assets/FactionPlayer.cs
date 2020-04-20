@@ -50,12 +50,14 @@ public class FactionPlayer : Faction
 
     public void handleSelectedUnit(Vector3 position)
     {
+        //Handle selected building
         Selection buildingSelection = m_building.GetComponent<Selection>();
         Assert.IsNotNull(buildingSelection);
         if (buildingSelection.isSelected())
         {
             m_building.setWayPoint(position);
         }
+        //Handle tanks
         else
         {
             foreach (Tank tank in m_tanks)
@@ -75,23 +77,6 @@ public class FactionPlayer : Faction
             }
         }
     }
-
-    //public void assignBuildingWayPoint(Vector3 position)
-    //{
-    //    Selection buildingSelection = m_building.GetComponent<Selection>();
-    //    Assert.IsNotNull(buildingSelection);
-    //    Debug.Log("Hit");
-    //    Assert.IsTrue(buildingSelection.isSelected());
-    //    if(buildingSelection.isSelected())
-    //    {
-    //        m_building.setWayPoint(position);
-    //    }
-    //}
-
-    //public void moveSelectedUnitsToPosition(Vector3 position)
-    //{
-       
-    //}
 
     public void targetEnemyAtPosition(Vector3 position)
     {
@@ -124,5 +109,20 @@ public class FactionPlayer : Faction
 
         m_building.showWayPoint();
         selection.select(position);
+    }
+
+    public void spawnUnit()
+    {
+        Selection buildingSelection = m_building.GetComponent<Selection>();
+        Assert.IsNotNull(buildingSelection);
+
+        if(buildingSelection.isSelected())
+        {
+            Tank newTank = m_building.spawnUnit();
+            if(newTank)
+            {
+                m_tanks.Add(newTank);
+            }
+        }
     }
 }
