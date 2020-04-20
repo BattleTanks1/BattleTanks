@@ -40,6 +40,8 @@ public class CameraController : MonoBehaviour
         onLeftClick();
         onRightClick();
         onScroll();
+
+       // if(Input.get)
     }
 
     private void Move()
@@ -103,8 +105,7 @@ public class CameraController : MonoBehaviour
 
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            int layerMask = 1 << 10;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~layerMask) && hit.collider.tag == "Ground")
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~(1 << 10)) && hit.collider.tag == "Ground")
             {
                 m_mousePressedPosition = hit.point;
             }
@@ -123,8 +124,7 @@ public class CameraController : MonoBehaviour
         {
             Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            int layerMask = 1 << 10;
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~layerMask) && hit.collider.tag == "Ground")
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~(1 << 10)) && hit.collider.tag == "Ground")
             {
                 Assert.IsNotNull(m_selectionBoxClone);
                 m_selectionBoxClone.transform.localScale = hit.point - m_mousePressedPosition;
