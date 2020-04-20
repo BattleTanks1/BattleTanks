@@ -66,8 +66,9 @@ public class Building : MonoBehaviour
                 newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
                 
                 //Move new tank to waypoint
-                if(m_wayPointClone && m_wayPointClone.transform.position != transform.position)
+                if(m_wayPointClone.transform.position != transform.position)
                 {
+                    Assert.IsTrue(m_wayPointClone.activeSelf);
                     TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
                     Assert.IsNotNull(tankPlayer);
                      
