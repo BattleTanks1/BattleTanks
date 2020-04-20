@@ -46,7 +46,7 @@ public class Map : MonoBehaviour
             _instance = this;
         }
 
-        m_mapSize = new Vector2Int(128, 128);
+        m_mapSize = new Vector2Int(250, 250);
         m_map = new GraphPoint[m_mapSize.y, m_mapSize.x];
         for (int y = 0; y < m_mapSize.y; ++y)
         {
@@ -70,21 +70,21 @@ public class Map : MonoBehaviour
         }
     }
 
-    public bool isPositionOccupied(Vector3 newPosition, int tankID)
+    public bool isPositionOccupied(Vector3 position, int senderID)
     {
-        Vector2Int newPositionOnGrid = Utilities.convertToGridPosition(newPosition);
-        if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].sceneryType != eSceneryType.None)
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+        if (m_map[positionOnGrid.y, positionOnGrid.x].sceneryType != eSceneryType.None)
         {
             return true;
         }
         //Tank moving in same grid
-        else if (m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID == tankID)
+        else if (m_map[positionOnGrid.y, positionOnGrid.x].tankID == senderID)
         {
             return false;
         }
         else
         {
-            return m_map[newPositionOnGrid.y, newPositionOnGrid.x].tankID != Utilities.INVALID_ID;
+            return m_map[positionOnGrid.y, positionOnGrid.x].tankID != Utilities.INVALID_ID;
         }
     }
 

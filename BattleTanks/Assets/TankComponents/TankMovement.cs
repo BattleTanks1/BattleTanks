@@ -12,13 +12,17 @@ public class TankMovement : MonoBehaviour
     private bool m_reachedDestination = true;
     private Vector3 m_oldPosition;
 
-    // Start is called before the first frame update
-    private void Start()
+    private void Awake()
     {
         m_tank = GetComponent<Tank>();
         Assert.IsNotNull(m_tank);
         m_oldPosition = transform.position;
+    }
 
+    // Start is called before the first frame update
+    private void Start()
+    {
+        Assert.IsTrue(!Map.Instance.isPositionOccupied(transform.position, m_tank.m_ID));
         Map.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
     }
 

@@ -15,12 +15,6 @@ public class FactionPlayer : Faction
         m_controllerType = eFactionControllerType.Human;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void selectUnits(fRectangle selectionBox)
     {
         foreach (Tank tank in m_tanks)

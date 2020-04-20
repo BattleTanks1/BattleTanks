@@ -98,6 +98,7 @@ public class CameraController : MonoBehaviour
         }
 
         transform.position += position;
+
     }
 
     private void onLeftClick()
