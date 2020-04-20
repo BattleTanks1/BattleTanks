@@ -6,23 +6,39 @@ using UnityEngine.Assertions;
 public class Building : MonoBehaviour
 {
     [SerializeField]
-    private Tank m_spawnableUnit = null;
+    private GameObject m_spawnableUnit = null;
     [SerializeField]
     private GameObject m_wayPointPrefab = null;
+
     private GameObject m_wayPointClone = null;
-    
+    private Selection m_selectionComponent = null;
+
     private void Awake()
     {
         Assert.IsNotNull(m_spawnableUnit);
         Assert.IsNotNull(m_wayPointPrefab);
+
+        m_selectionComponent = GetComponent<Selection>();
+        Assert.IsNotNull(m_selectionComponent);
 
         m_wayPointClone = Instantiate(m_wayPointPrefab, transform.position, Quaternion.identity);
     }
 
     public void setWayPoint(Vector3 position)
     {
-        m_wayPointClone.SetActive(true);
-        m_wayPointClone.transform.position = new Vector3(position.x, 1, position.z);
+        //Reset waypoint
+        if(m_selectionComponent.contains(position))
+        {
+            m_wayPointClone.transform.position = transform.position;
+            m_wayPointClone.SetActive(false);
+           
+        }
+        //Assign waypoint to new position
+        else
+        {
+            m_wayPointClone.SetActive(true);
+            m_wayPointClone.transform.position = new Vector3(position.x, 1, position.z);
+        }
     }
 
     public void showWayPoint()
@@ -35,22 +51,29 @@ public class Building : MonoBehaviour
         m_wayPointClone.SetActive(false);
     }
 
-    public Tank spawnUnit()
+    public GameObject spawnUnit()
     {
-        Selection selectionComponent = GetComponent<Selection>();
-        Assert.IsNotNull(selectionComponent);
-
         Vector3 startingPosition = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f));
         int distance = 1;
-        Tank newTank = null;
+        GameObject newTank = null;
 
         while(!newTank)
         {
             Vector3 spawnPosition = transform.position + startingPosition.normalized * distance;
             spawnPosition = new Vector3(spawnPosition.x, 1, spawnPosition.z);
-            if(!selectionComponent.contains(spawnPosition))
+            if(!m_selectionComponent.contains(spawnPosition))
             {
                 newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
+                
+                //Move new tank to waypoint
+                if(m_wayPointClone && m_wayPointClone.transform.position != transform.position)
+                {
+                    TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
+                    Assert.IsNotNull(tankPlayer);
+                     
+                    tankPlayer.receiveMessage(new MessageToAIUnit(
+                        Utilities.INVALID_ID, eAIState.MovingToNewPosition, Utilities.convertToGridPosition(m_wayPointClone.transform.position)));
+                }
             }
 
             ++distance;

@@ -14,7 +14,8 @@ public class TankPlayer : MonoBehaviour
     private TankMovement m_tankMovement = null;
     private TankShooting m_tankShooting = null;
 
-    private void Start()
+
+    private void Awake()
     {
         m_tank = GetComponent<Tank>();
         Assert.IsNotNull(m_tank);
