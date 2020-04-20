@@ -111,7 +111,7 @@ public class CameraController : MonoBehaviour
             }
             else if(Physics.Raycast(ray, out hit) && hit.collider.tag == "PlayerBuilding")
             {
-                onBuildingInteraction(hit.point);
+                m_player.selectBuilding(hit.point);
                 return;
             }
             
@@ -157,9 +157,10 @@ public class CameraController : MonoBehaviour
             }
             else if (hit.collider.tag == "Ground")
             {
-                m_player.moveSelectedUnitsToPosition(hit.point);
-                clearSelectionBox();
+                m_player.handleSelectedUnit(hit.point);
             }
+
+            clearSelectionBox();
         }
     }
 
@@ -185,11 +186,6 @@ public class CameraController : MonoBehaviour
                 transform.position = newPosition;
             }
         }
-    }
-
-    private void onBuildingInteraction(Vector3 position)
-    {
-        m_player.selectBuilding(position);
     }
 
     private void clearSelectionBox()

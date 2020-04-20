@@ -22,6 +22,11 @@ public class GameManager : MonoBehaviour
         {
             _instance = this;
         }
+
+        foreach(Faction faction in m_factions)
+        {
+            Assert.IsNotNull(faction);
+        }
     }
 
     public Tank getTank(int ID)
@@ -78,6 +83,11 @@ public class GameManager : MonoBehaviour
         ++m_ID;
 
         return ID;
+    }
+
+    public void addUnit(eFactionName factionName)
+    {
+        
     }
 
     public void sendAIControllerMessage(MessageToAIController message)

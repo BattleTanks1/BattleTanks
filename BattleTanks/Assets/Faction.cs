@@ -34,6 +34,11 @@ abstract public class Faction : MonoBehaviour
         return m_factionName;
     }
 
+    public void addNewTank()
+    {
+
+    }
+
     public void removeTank(Tank tank)
     {
         m_tanks.Remove(tank);

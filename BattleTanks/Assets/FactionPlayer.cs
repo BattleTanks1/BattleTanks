@@ -45,26 +45,53 @@ public class FactionPlayer : Faction
         Selection selection = m_building.GetComponent<Selection>();
         Assert.IsNotNull(selection);
         selection.Deselect();
+        m_building.hideWayPoint();
     }
 
-    public void moveSelectedUnitsToPosition(Vector3 position)
+    public void handleSelectedUnit(Vector3 position)
     {
-        foreach (Tank tank in m_tanks)
+        Selection buildingSelection = m_building.GetComponent<Selection>();
+        Assert.IsNotNull(buildingSelection);
+        if (buildingSelection.isSelected())
         {
-            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
-            Assert.IsNotNull(tankSelection);
-            if(!tankSelection.isSelected())
+            m_building.setWayPoint(position);
+        }
+        else
+        {
+            foreach (Tank tank in m_tanks)
             {
-                continue;
+                Selection tankSelection = tank.gameObject.GetComponent<Selection>();
+                Assert.IsNotNull(tankSelection);
+                if (!tankSelection.isSelected())
+                {
+                    continue;
+                }
+
+                TankPlayer tankPlayer = tank.GetComponent<TankPlayer>();
+                Assert.IsNotNull(tankPlayer);
+
+                tankPlayer.receiveMessage(new MessageToAIUnit(Utilities.INVALID_ID, eAIState.MovingToNewPosition,
+                    Utilities.convertToGridPosition(position)));
             }
-
-            TankPlayer tankPlayer = tank.GetComponent<TankPlayer>();
-            Assert.IsNotNull(tankPlayer);
-
-            tankPlayer.receiveMessage(new MessageToAIUnit(Utilities.INVALID_ID, eAIState.MovingToNewPosition,
-                Utilities.convertToGridPosition(position)));
         }
     }
+
+    //public void assignBuildingWayPoint(Vector3 position)
+    //{
+    //    Selection buildingSelection = m_building.GetComponent<Selection>();
+    //    Assert.IsNotNull(buildingSelection);
+    //    Debug.Log("Hit");
+    //    Assert.IsTrue(buildingSelection.isSelected());
+    //    if(buildingSelection.isSelected())
+    //    {
+    //        m_building.setWayPoint(position);
+    //    }
+    //}
+
+    //public void moveSelectedUnitsToPosition(Vector3 position)
+    //{
+       
+    //}
 
     public void targetEnemyAtPosition(Vector3 position)
     {
@@ -95,6 +122,7 @@ public class FactionPlayer : Faction
         Selection selection = m_building.GetComponent<Selection>();
         Assert.IsNotNull(selection);
 
+        m_building.showWayPoint();
         selection.select(position);
     }
 }
