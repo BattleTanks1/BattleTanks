@@ -61,7 +61,7 @@ public class Building : MonoBehaviour
         {
             Vector3 spawnPosition = transform.position + startingPosition.normalized * distance;
             spawnPosition = new Vector3(spawnPosition.x, 1, spawnPosition.z);
-            if(!m_selectionComponent.contains(spawnPosition))
+            if(!m_selectionComponent.contains(spawnPosition) && !Map.Instance.isPositionOccupied(spawnPosition, Utilities.INVALID_ID))
             {
                 newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
                 
@@ -71,7 +71,7 @@ public class Building : MonoBehaviour
                     Assert.IsTrue(m_wayPointClone.activeSelf);
                     TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
                     Assert.IsNotNull(tankPlayer);
-                     
+                    
                     tankPlayer.receiveMessage(new MessageToAIUnit(
                         Utilities.INVALID_ID, eAIState.MovingToNewPosition, Utilities.convertToGridPosition(m_wayPointClone.transform.position)));
                 }
