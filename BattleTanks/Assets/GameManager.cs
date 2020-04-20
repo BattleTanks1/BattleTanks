@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
         return playerFaction;
     }
 
-    public int addUnit(Tank tank)
+    public int addUnit()
     {
         int ID = m_ID;
         ++m_ID;

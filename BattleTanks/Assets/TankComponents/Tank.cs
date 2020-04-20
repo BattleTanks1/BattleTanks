@@ -26,7 +26,7 @@ public class Tank : MonoBehaviour
 
     private void Start()
     {
-        m_ID = GameManager.Instance.addUnit(this);
+        m_ID = GameManager.Instance.addUnit();
     }
 
     public eFactionControllerType getControllerType()
