@@ -57,7 +57,7 @@ public class Map : MonoBehaviour
         }
     }
 
-    private bool isInBounds(int x, int y)
+    public bool isInBounds(int x, int y)
     {
         return x >= 0 &&
             x < m_mapSize.x &&
@@ -65,7 +65,7 @@ public class Map : MonoBehaviour
             y <= m_mapSize.y;
     }
 
-    private bool isInBounds(Vector2Int position)
+    public bool isInBounds(Vector2Int position)
     {
         return position.x >= 0 &&
             position.x < m_mapSize.x &&
@@ -73,7 +73,7 @@ public class Map : MonoBehaviour
             position.y <= m_mapSize.y;
     }
 
-    private bool isInBounds(Vector3 position)
+    public bool isInBounds(Vector3 position)
     {
         return position.x >= 0 &&
             position.x < m_mapSize.x &&

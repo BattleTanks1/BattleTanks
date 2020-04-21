@@ -33,8 +33,9 @@ public class Building : MonoBehaviour
             m_wayPointClone.SetActive(false);
            
         }
-        else
+        else if(Map.Instance.isInBounds(position))
         {
+
             //Assign waypoint to new position
             m_wayPointClone.SetActive(true);
             m_wayPointClone.transform.position = new Vector3(position.x, 1, position.z);
