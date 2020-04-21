@@ -18,6 +18,7 @@ public class PointOnMap
 
     public void reset()
     {
+        sceneryType = eSceneryType.None;
         tankID = Utilities.INVALID_ID;
     }
 
