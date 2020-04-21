@@ -147,8 +147,14 @@ public class FactionAI : Faction
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int vBetween = senderPositionOnGrid - new Vector2Int(x, y);
-                if (vBetween.sqrMagnitude <= messageSender.m_visibilityDistance * messageSender.m_visibilityDistance &&
-                    Map.Instance.getPointOnMap(y, x).tankID == receivedMessage.m_targetID)
+                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                if(pointOnMap == null)
+                {
+                    continue;
+                }
+
+                if (pointOnMap.tankID == receivedMessage.m_targetID &&
+                    vBetween.sqrMagnitude <= messageSender.m_visibilityDistance * messageSender.m_visibilityDistance)
                 {
                     return true;
                 }

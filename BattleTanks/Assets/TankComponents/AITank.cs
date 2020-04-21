@@ -164,11 +164,15 @@ public class AITank : MonoBehaviour
 
     private void SendMessageToCommander(Vector2Int positionOnGrid, eAIUniMessageType messageType)
     {
-        GraphPoint pointOnEnemy = Map.Instance.getPointOnMap(positionOnGrid);
-        MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
-            m_tank.m_ID, m_tank.m_factionName);
-        
-        GameManager.Instance.sendAIControllerMessage(message);
+        PointOnMap pointOnEnemy = Map.Instance.getPointOnMap(positionOnGrid);
+        Assert.IsNotNull(pointOnEnemy);
+        if(pointOnEnemy != null)
+        {
+            MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
+                m_tank.m_ID, m_tank.m_factionName);
+
+            GameManager.Instance.sendAIControllerMessage(message);
+        }
     }
     
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
@@ -181,8 +185,14 @@ public class AITank : MonoBehaviour
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
+                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                if(pointOnMap == null)
+                {
+                    continue;
+                }
+
                 if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
-                    Map.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                    pointOnMap.tankID == m_targetID)
                 {
                     Vector3 position = GameManager.Instance.getTankPosition(m_targetID);
                     Assert.IsTrue(position != Utilities.INVALID_POSITION);

@@ -116,11 +116,15 @@ public class TankPlayer : MonoBehaviour
 
     private void SendMessageToCommander(Vector2Int positionOnGrid, eAIUniMessageType messageType)
     {
-        GraphPoint pointOnEnemy = Map.Instance.getPointOnMap(positionOnGrid);
-        MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
-            m_tank.m_ID, m_tank.m_factionName);
+        PointOnMap pointOnEnemy = Map.Instance.getPointOnMap(positionOnGrid);
+        Assert.IsNotNull(pointOnEnemy);
+        if(pointOnEnemy != null)
+        {
+            MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
+                m_tank.m_ID, m_tank.m_factionName);
 
-        GameManager.Instance.sendAIControllerMessage(message);
+            GameManager.Instance.sendAIControllerMessage(message);
+        }
     }
 
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
@@ -133,8 +137,14 @@ public class TankPlayer : MonoBehaviour
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
-                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
-                    Map.Instance.getPointOnMap(y, x).tankID == m_targetID)
+                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                if(pointOnMap == null)
+                {
+                    continue;
+                }
+
+                if (pointOnMap.tankID == m_targetID &&
+                    result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance)
                 {
                     Vector3 position = GameManager.Instance.getTankPosition(m_targetID);
                     Assert.IsTrue(position != Utilities.INVALID_POSITION);
@@ -159,11 +169,17 @@ public class TankPlayer : MonoBehaviour
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
-                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
-                    Map.Instance.getPointOnMap(y, x).tankID != Utilities.INVALID_ID && 
-                    Map.Instance.getPointOnMap(y, x).tankFactionName != m_tank.m_factionName)
+                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                if(pointOnMap == null)
                 {
-                    Tank enemy = GameManager.Instance.getTank(Map.Instance.getPointOnMap(y, x).tankID);
+                    continue;
+                }
+
+                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
+                    pointOnMap.tankID != Utilities.INVALID_ID && 
+                    pointOnMap.tankFactionName != m_tank.m_factionName)
+                {
+                    Tank enemy = GameManager.Instance.getTank(pointOnMap.tankID);
                     Assert.IsNotNull(enemy);
                     if(!enemy)
                     {
