@@ -177,21 +177,39 @@ public class Map : MonoBehaviour
         {
             for (int x = rect.m_left; x <= rect.m_right; ++x)
             {
-                m_map[y, x].sceneryType = type;
+                Assert.IsTrue(isInBounds(x, y));
+                if (isInBounds(x, y))
+                {
+                    m_map[y, x].sceneryType = type;
+                }
             }
         }
     }
 
     public bool isPositionScenery(int x, int y)
     {
-        return m_map[y, x].sceneryType != eSceneryType.None;
+        Assert.IsTrue(isInBounds(x, y));
+        if (isInBounds(x, y))
+        {
+            return m_map[y, x].sceneryType != eSceneryType.None;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public void remove(Tank tank)
     {
         Assert.IsNotNull(tank);
-
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-        m_map[positionOnGrid.y, positionOnGrid.x].reset();
+        if(tank)
+        {
+            Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+            Assert.IsTrue(isInBounds(positionOnGrid));
+            if (isInBounds(positionOnGrid))
+            {
+                m_map[positionOnGrid.y, positionOnGrid.x].reset();
+            }
+        }
     }
 }
