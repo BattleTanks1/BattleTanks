@@ -24,6 +24,21 @@ public class Building : MonoBehaviour
         m_wayPointClone = Instantiate(m_wayPointPrefab, transform.position, Quaternion.identity);
     }
 
+    private Vector3 getSpawnPosition()
+    {
+        Vector3 startingPosition = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f));
+        Vector3 spawnPosition = new Vector3();
+        int distance = 1;
+        do
+        {
+            spawnPosition = transform.position + startingPosition.normalized * distance;
+            ++distance;
+        }
+        while (m_selectionComponent.contains(spawnPosition));
+
+        return new Vector3(spawnPosition.x, 1, spawnPosition.z);
+    }
+
     public void setWayPoint(Vector3 position)
     {
         if(m_selectionComponent.contains(position))
@@ -35,7 +50,6 @@ public class Building : MonoBehaviour
         }
         else if(Map.Instance.isInBounds(position))
         {
-
             //Assign waypoint to new position
             m_wayPointClone.SetActive(true);
             m_wayPointClone.transform.position = new Vector3(position.x, 1, position.z);
@@ -54,31 +68,24 @@ public class Building : MonoBehaviour
 
     public GameObject spawnUnit()
     {
-        Vector3 startingPosition = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f));
-        int distance = 1;
         GameObject newTank = null;
-
-        while(!newTank)
+        while (!newTank)
         {
-            Vector3 spawnPosition = transform.position + startingPosition.normalized * distance;
-            spawnPosition = new Vector3(spawnPosition.x, 1, spawnPosition.z);
-            if(!m_selectionComponent.contains(spawnPosition) && !Map.Instance.isPositionOccupied(spawnPosition, Utilities.INVALID_ID))
+            Vector3 spawnPosition = getSpawnPosition();
+            if (!Map.Instance.isPositionOccupied(spawnPosition, Utilities.INVALID_ID))
             {
                 newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
-                
-                //Move new tank to waypoint
-                if(m_wayPointClone.transform.position != transform.position)
+
+                if (m_wayPointClone.transform.position != transform.position)
                 {
                     Assert.IsTrue(m_wayPointClone.activeSelf);
                     TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
                     Assert.IsNotNull(tankPlayer);
-                    
+
                     tankPlayer.receiveMessage(new MessageToAIUnit(
                         Utilities.INVALID_ID, eAIState.MovingToNewPosition, Utilities.convertToGridPosition(m_wayPointClone.transform.position)));
                 }
             }
-
-            ++distance;
         }
 
         return newTank;
