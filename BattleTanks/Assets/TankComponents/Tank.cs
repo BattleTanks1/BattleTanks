@@ -24,6 +24,11 @@ public class Tank : MonoBehaviour
     public float m_scaredValue;
     public float m_maxValueAtPosition;
 
+    private void Awake()
+    {
+        m_ID = Utilities.INVALID_ID;
+    }
+
     private void Start()
     {
         m_ID = GameManager.Instance.addUnit();

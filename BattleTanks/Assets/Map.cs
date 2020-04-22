@@ -63,7 +63,7 @@ public class Map : MonoBehaviour
         return x >= 0 &&
             x < m_mapSize.x &&
             y >= 0 &&
-            y <= m_mapSize.y;
+            y < m_mapSize.y;
     }
 
     public bool isInBounds(Vector2Int position)
@@ -71,7 +71,7 @@ public class Map : MonoBehaviour
         return position.x >= 0 &&
             position.x < m_mapSize.x &&
             position.y >= 0 &&
-            position.y <= m_mapSize.y;
+            position.y < m_mapSize.y;
     }
 
     public bool isInBounds(Vector3 position)
@@ -82,43 +82,93 @@ public class Map : MonoBehaviour
             position.z < m_mapSize.y;
     }
 
-    public void updatePositionOnMap(Vector3 oldPosition, Vector3 position, eFactionName factionName, int ID)
+    public void setStartingPosition(Vector3 startingPosition, eFactionName factionName, int ID)
     {
-        if(isInBounds(position))
+        Assert.IsTrue(isInBounds(startingPosition));
+        if (isInBounds(startingPosition))
+        {
+            Vector2Int startingPositionOnGrid = Utilities.convertToGridPosition(startingPosition);
+            Assert.IsTrue(m_map[startingPositionOnGrid.y, startingPositionOnGrid.x].isEmpty());
+            m_map[startingPositionOnGrid.y, startingPositionOnGrid.x].assign(ID, factionName);
+        }
+    }
+
+    public void updatePositionOnMap(Vector3 oldPosition, Vector3 currentPosition, eFactionName factionName, int ID)
+    { 
+        Assert.IsTrue(isInBounds(currentPosition));
+        if(isInBounds(currentPosition))
         {
             Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(oldPosition);
-            Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(position);
+            Assert.IsTrue(isPositionOccupied(oldPosition, ID));
+            Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
+            Assert.IsTrue(oldPositionOnGrid != currentPositionOnGrid);
 
-            if (oldPositionOnGrid != currentPositionOnGrid)
-            {
-                m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
-                Assert.IsTrue(m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].isEmpty());
-                m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(ID, factionName);
-            }
+           
+            m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
+            Assert.IsTrue(m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].isEmpty());
+            m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(ID, factionName);
+        }
+    }
+
+    public bool isPositionOnOccupiedCell(Vector3 currentPosition, Vector3 newPosition)
+    {
+        Assert.IsTrue(isInBounds(currentPosition));
+        Assert.IsTrue(isInBounds(newPosition));
+        if(isInBounds(newPosition))
+        {
+            Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
+            Vector2Int newPositionOnGrid = Utilities.convertToGridPosition(newPosition);
+
+            return currentPositionOnGrid == newPositionOnGrid;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public bool isPositionOnCurrentCell(Vector3 position, int ID)
+    {
+        Assert.IsTrue(isInBounds(position));
+        if (isInBounds(position))
+        {
+            Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+            return m_map[positionOnGrid.y, positionOnGrid.x].tankID == ID;
+        }
+        else
+        {
+            return true;
         }
     }
 
     public bool isPositionOccupied(Vector3 position, int senderID)
     {
+        Assert.IsTrue(isInBounds(position));
+        if (isInBounds(position))
+        {
+            Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+            return m_map[positionOnGrid.y, positionOnGrid.x].tankID == senderID;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public bool isPositionOccupied(Vector3 position)
+    {
+        Assert.IsTrue(isInBounds(position));
         if(isInBounds(position))
         {
             Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-            if (m_map[positionOnGrid.y, positionOnGrid.x].sceneryType != eSceneryType.None)
-            {
-                return true;
-            }
-            //Tank moving in same grid
-            else if (m_map[positionOnGrid.y, positionOnGrid.x].tankID == senderID)
-            {
-                return false;
-            }
-            else
-            {
-                return m_map[positionOnGrid.y, positionOnGrid.x].tankID != Utilities.INVALID_ID;
-            }
+            return m_map[positionOnGrid.y, positionOnGrid.x].sceneryType != eSceneryType.None ||
+                 m_map[positionOnGrid.y, positionOnGrid.x].tankID != Utilities.INVALID_ID;
+           
         }
-
-        return true;
+        else
+        {
+            return true;
+        }
     }
 
     public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)

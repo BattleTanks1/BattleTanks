@@ -72,7 +72,7 @@ public class Building : MonoBehaviour
         while (!newTank)
         {
             Vector3 spawnPosition = getSpawnPosition();
-            if (!Map.Instance.isPositionOccupied(spawnPosition, Utilities.INVALID_ID))
+            if (!Map.Instance.isPositionOccupied(spawnPosition))
             {
                 newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
 

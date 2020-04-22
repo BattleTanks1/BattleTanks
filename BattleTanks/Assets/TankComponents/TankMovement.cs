@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 public class TankMovement : MonoBehaviour
@@ -9,38 +7,46 @@ public class TankMovement : MonoBehaviour
     private float m_movementSpeed = 0.0f;
     private Vector3 m_positionToMoveTo;
     private Tank m_tank = null;
-    private bool m_reachedDestination = true;
-    private Vector3 m_oldPosition;
+    private bool m_startingPositionSet = false;
 
     private void Awake()
     {
         m_tank = GetComponent<Tank>();
         Assert.IsNotNull(m_tank);
-        m_oldPosition = transform.position;
+
+        m_positionToMoveTo = transform.position;
     }
 
-    // Start is called before the first frame update
-    private void Start()
-    {
-        Assert.IsTrue(!Map.Instance.isPositionOccupied(transform.position, m_tank.m_ID));
-        Map.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
-    }
-
-    // Update is called once per frame
     private void Update()
     {
-        if(!m_reachedDestination)
+        if(!m_startingPositionSet)
+        {
+            Map.Instance.setStartingPosition(transform.position, m_tank.m_factionName, m_tank.m_ID);
+            m_startingPositionSet = true;
+        }
+
+        if (transform.position != m_positionToMoveTo)
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, m_movementSpeed * Time.deltaTime);
-            if(!Map.Instance.isPositionOccupied(newPosition, m_tank.m_ID))
-            {
-                m_oldPosition = transform.position;
-                transform.position = newPosition;
-                Map.Instance.updatePositionOnMap(m_oldPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
 
-                if (transform.position == m_positionToMoveTo)
+            //Movement on current grid cell
+            if (Map.Instance.isPositionOnOccupiedCell(transform.position, newPosition))
+            {   
+                transform.position = newPosition;
+            }
+            //Moving to new grid cell
+            else if (!Map.Instance.isPositionOccupied(newPosition))
+            { 
+                Map.Instance.updatePositionOnMap(transform.position, newPosition, m_tank.m_factionName, m_tank.m_ID);
+                transform.position = newPosition;
+            }
+            else
+            {
+                //Grid cell to move to is occupied
+                if (!Map.Instance.isPositionOnOccupiedCell(transform.position, newPosition) &&
+                    Map.Instance.isPositionOccupied(newPosition))
                 {
-                    m_reachedDestination = true;
+                    stop();
                 }
             }
         }
@@ -48,8 +54,10 @@ public class TankMovement : MonoBehaviour
 
     public void moveTo(Vector3 position)
     {
-        m_positionToMoveTo = position;
-        m_reachedDestination = false;
+        if(Map.Instance.isInBounds(position))
+        {
+            m_positionToMoveTo = position;
+        }
     }
 
     public bool reachedDestination()
@@ -59,6 +67,6 @@ public class TankMovement : MonoBehaviour
 
     public void stop()
     {
-        m_reachedDestination = true;
+        m_positionToMoveTo = transform.position;
     }
 }
