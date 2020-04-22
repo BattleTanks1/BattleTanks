@@ -30,20 +30,20 @@ public class TankMovement : MonoBehaviour
             Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, m_movementSpeed * Time.deltaTime);
 
             //Movement on current grid cell
-            if (Map.Instance.isPositionOnOccupiedCell(transform.position, newPosition))
+            if (Map.Instance.isPositionOnOccupiedCell(newPosition, transform.position))
             {   
                 transform.position = newPosition;
             }
             //Moving to new grid cell
             else if (!Map.Instance.isPositionOccupied(newPosition))
             { 
-                Map.Instance.updatePositionOnMap(transform.position, newPosition, m_tank.m_factionName, m_tank.m_ID);
+                Map.Instance.updatePositionOnMap(newPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
                 transform.position = newPosition;
             }
             else
             {
                 //Grid cell to move to is occupied
-                if (!Map.Instance.isPositionOnOccupiedCell(transform.position, newPosition) &&
+                if (!Map.Instance.isPositionOnOccupiedCell(newPosition, transform.position) &&
                     Map.Instance.isPositionOccupied(newPosition))
                 {
                     stop();
