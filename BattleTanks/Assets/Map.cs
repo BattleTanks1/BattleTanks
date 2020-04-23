@@ -5,6 +5,11 @@ using UnityEngine.Assertions;
 
 public class PointOnMap
 {
+    public bool isOccupiedByEnemy(eFactionName factionName)
+    {
+        return (tankID != Utilities.INVALID_ID && factionName != tankFactionName);
+    }
+
     public bool isEmpty()
     {
         return tankID == Utilities.INVALID_ID;
@@ -106,9 +111,9 @@ public class Map : MonoBehaviour
         Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(oldPosition);
         Assert.IsTrue(isPositionOccupied(oldPosition, ID));
         Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
-        Assert.IsTrue(getPoint(currentPositionOnGrid).isEmpty());
         Assert.IsTrue(oldPositionOnGrid != currentPositionOnGrid);
 
+        Assert.IsTrue(getPoint(currentPositionOnGrid).isEmpty());
         getPoint(oldPositionOnGrid).reset();
         getPoint(currentPositionOnGrid).assign(ID, factionName);
     }

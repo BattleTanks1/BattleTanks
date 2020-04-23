@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 public class TankPlayer : MonoBehaviour
@@ -34,11 +32,8 @@ public class TankPlayer : MonoBehaviour
                 {
                     int targetID = Utilities.INVALID_ID;
                     Vector3 targetPosition;
-                    if(isEnemyInVisibleSight(out targetID, out targetPosition))
+                    if(getClosestVisibleTarget(out targetID, out targetPosition))
                     {
-                        Assert.IsTrue(targetID != Utilities.INVALID_ID);
-                        Assert.IsTrue(targetPosition != Utilities.INVALID_POSITION);
-
                         m_targetID = targetID;
                         m_currentState = eAIState.MovingToNewPosition;
                         m_tankMovement.moveTo(targetPosition);
@@ -124,7 +119,7 @@ public class TankPlayer : MonoBehaviour
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
                 PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
-                if(pointOnMap == null)
+                if (pointOnMap == null)
                 {
                     continue;
                 }
@@ -145,11 +140,13 @@ public class TankPlayer : MonoBehaviour
         return false;
     }
 
-    private bool isEnemyInVisibleSight(out int enemyID, out Vector3 enemyPosition)
+    private bool getClosestVisibleTarget(out int enemyID, out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
         iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
-
+        int closestTargetID = Utilities.INVALID_ID;
+        float distance = float.MaxValue;
+        
         for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
@@ -162,25 +159,32 @@ public class TankPlayer : MonoBehaviour
                 }
 
                 if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
-                    pointOnMap.tankID != Utilities.INVALID_ID && 
-                    pointOnMap.tankFactionName != m_tank.m_factionName)
+                    pointOnMap.isOccupiedByEnemy(m_tank.m_factionName))
                 {
-                    Tank enemy = GameManager.Instance.getTank(pointOnMap.tankID);
-                    Assert.IsNotNull(enemy);
-                    if(!enemy)
+                    float d = (positionOnGrid - new Vector2Int(x, y)).magnitude;
+                    if (d < distance)
                     {
-                        continue;
+                        closestTargetID = pointOnMap.tankID;
+                        distance = d;
                     }
-
-                    enemyID = enemy.m_ID;
-                    enemyPosition = enemy.transform.position;
-                    return true;
                 }
             }
         }
 
-        enemyID = Utilities.INVALID_ID;
-        enemyPosition = Utilities.INVALID_POSITION;
-        return false;
+        if(closestTargetID != Utilities.INVALID_ID)
+        {
+            Tank enemy = GameManager.Instance.getTank(closestTargetID);
+            Assert.IsNotNull(enemy);
+    
+            enemyID = enemy.m_ID;
+            enemyPosition = enemy.transform.position;
+            return true;
+        }
+        else
+        {
+            enemyID = Utilities.INVALID_ID;
+            enemyPosition = Utilities.INVALID_POSITION;
+            return false;
+        }
     }
 }
