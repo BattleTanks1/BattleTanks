@@ -21,6 +21,8 @@ public class CameraController : MonoBehaviour
     private float m_diagonalOffSetMultipler = 15.0f;
     [SerializeField]
     private float m_maxDistanceFromMap = 0.0f;
+    [SerializeField]
+    private bool m_movable = true;
 
     private GameObject m_selectionBoxClone = null;
     private Vector3 m_mousePressedPosition;
@@ -38,7 +40,11 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        Move();
+        if (m_movable)
+        {
+            Move();
+        }
+
         onLeftClick();
         onRightClick();
         onScroll();
