@@ -7,9 +7,9 @@ public class FactionPlayer : Faction
 {
     [SerializeField]
     private Building m_building = null;
+    private bool m_attackMoveNextSelection = false;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         Assert.IsNotNull(m_building);
         m_controllerType = eFactionControllerType.Human;
@@ -66,7 +66,15 @@ public class FactionPlayer : Faction
                 TankStateHandler tankStateHandler = tank.GetComponent<TankStateHandler>();
                 Assert.IsNotNull(tankStateHandler);
 
-                tankStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                if(m_attackMoveNextSelection)
+                {
+                    tankStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
+                }
+                else
+                {
+                    tankStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                }
+                
             }
         }
     }
@@ -117,5 +125,15 @@ public class FactionPlayer : Faction
                 m_tanks.Add(tankComponent);
             }
         }
+    }
+
+    public void turnOnAttackMove()
+    {
+        m_attackMoveNextSelection = true;
+    }
+
+    public void turnOffAttackMove()
+    {
+        m_attackMoveNextSelection = false;
     }
 }
