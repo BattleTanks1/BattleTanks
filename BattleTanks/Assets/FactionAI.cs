@@ -23,16 +23,16 @@ public class FactionAI : Faction
     {
         handleReceivedMessages();
 
-        foreach (Tank tank in m_tanks)
-        {
-            AITank aiComponent = tank.gameObject.GetComponent<AITank>();
-            Assert.IsNotNull(aiComponent);
+        //foreach (Tank tank in m_tanks)
+        //{
+        //    TankStateHandler stateHandlerComponent = tank.gameObject.GetComponent<TankStateHandler>();
+        //    Assert.IsNotNull(stateHandlerComponent);
 
-            if (aiComponent.m_currentState == eAIState.AwaitingDecision)
-            {
-                assignTankToEnemyInRange(tank);
-            }
-        }
+        //    if (stateHandlerComponent.m_currentState == eAIState.AwaitingDecision)
+        //    {
+        //        assignTankToEnemyInRange(tank);
+        //    }
+        //}
     }
 
     public void addMessage(MessageToAIController newMessage)
@@ -50,9 +50,11 @@ public class FactionAI : Faction
                 case eAIUniMessageType.EnemySpottedAtPosition:
                     if (isEnemyStillInSight(receivedMessage))
                     {
-                        AITank aiComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<AITank>();
-                        Assert.IsNotNull(aiComponent);
-                        aiComponent.switchToState(eAIState.ShootingAtEnemy, receivedMessage.m_targetID, Utilities.convertToWorldPosition(receivedMessage.m_lastTargetPosition));
+                        TankStateHandler stateHandlerComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<TankStateHandler>();
+                        Assert.IsNotNull(stateHandlerComponent);
+
+                        stateHandlerComponent.switchToState(eAIState.ShootingAtEnemy, receivedMessage.m_targetID, 
+                            Utilities.convertToWorldPosition(receivedMessage.m_lastTargetPosition));
                     }
                     break;
                 case eAIUniMessageType.LostSightOfEnemy:
@@ -124,9 +126,9 @@ public class FactionAI : Faction
                     Debug.Log("Enemy Spotted");
                     Assert.IsTrue(targetID != Utilities.INVALID_ID);
 
-                    AITank aiComponent = tank.gameObject.GetComponent<AITank>();
-                    Assert.IsNotNull(aiComponent);
-                    aiComponent.switchToState(eAIState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
+                    TankStateHandler stateHandlerComponent = tank.gameObject.GetComponent<TankStateHandler>();
+                    Assert.IsNotNull(stateHandlerComponent);
+                    stateHandlerComponent.switchToState(eAIState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
                 }
             }
         }

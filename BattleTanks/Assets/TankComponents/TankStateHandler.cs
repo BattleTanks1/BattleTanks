@@ -55,6 +55,11 @@ public class TankStateHandler : MonoBehaviour
                             m_currentState = eAIState.ShootingAtEnemy;
                         }
                     }
+                    else if(m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
+                    {
+                        m_tankMovement.stop();
+                        m_targetID = Utilities.INVALID_ID;
+                    }
                     else
                     {
                         if (m_tankMovement.reachedDestination())
@@ -81,6 +86,7 @@ public class TankStateHandler : MonoBehaviour
                     }
                     else
                     {
+                        m_tankMovement.stop();
                         m_targetID = Utilities.INVALID_ID;
                         m_currentState = eAIState.AwaitingDecision;
                     }

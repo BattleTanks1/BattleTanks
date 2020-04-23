@@ -87,10 +87,10 @@ public class Building : MonoBehaviour
             if (m_wayPointClone.transform.position != transform.position)
             {
                 Assert.IsTrue(m_wayPointClone.activeSelf);
-                TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
-                Assert.IsNotNull(tankPlayer);
+                TankStateHandler stateHandlerComponent = newTank.GetComponent<TankStateHandler>();
+                Assert.IsNotNull(stateHandlerComponent);
 
-                tankPlayer.switchToState(eAIState.MovingToNewPosition, Utilities.INVALID_ID, m_wayPointClone.transform.position);
+                stateHandlerComponent.switchToState(eAIState.MovingToNewPosition, Utilities.INVALID_ID, m_wayPointClone.transform.position);
             }
 
             return newTank;
