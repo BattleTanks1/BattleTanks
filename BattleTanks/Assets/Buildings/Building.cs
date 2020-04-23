@@ -26,8 +26,17 @@ public class Building : MonoBehaviour
 
     private Vector3 getSpawnPosition()
     {
-        Vector3 startingPosition = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f));
-        Vector3 spawnPosition = new Vector3();
+        Vector3 startingPosition;
+        if(m_wayPointClone.activeSelf)
+        {
+            startingPosition = (m_wayPointClone.transform.position - transform.position).normalized;
+        }
+        else
+        {
+            startingPosition = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f));
+        }
+
+        Vector3 spawnPosition;
         int distance = 1;
         do
         {
