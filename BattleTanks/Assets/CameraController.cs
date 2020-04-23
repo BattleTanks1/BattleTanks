@@ -19,6 +19,8 @@ public class CameraController : MonoBehaviour
     private float m_borderOffset = 20.0f;
     [SerializeField]
     private float m_diagonalOffSetMultipler = 15.0f;
+    [SerializeField]
+    private float m_maxDistanceFromMap = 0.0f;
 
     private GameObject m_selectionBoxClone = null;
     private Vector3 m_mousePressedPosition;
@@ -97,8 +99,53 @@ public class CameraController : MonoBehaviour
             position.x += m_movementSpeed * Time.deltaTime;
         }
 
-        transform.position += position;
+        if (isInBounds(Utilities.convertToGridPosition(transform.position + position)))
+        {
+            transform.position += position;
+        }
+    }
 
+    private bool isInBounds(Vector2Int positionOnGrid)
+    {
+        //Horizontal
+        if (positionOnGrid.x - m_camera.fieldOfView < 0)
+        {
+            Vector2Int positionOnBoundary = new Vector2Int(0, positionOnGrid.y);
+            if((positionOnBoundary - 
+                new Vector2Int(positionOnGrid.x - (int)m_camera.fieldOfView, positionOnGrid.y)).sqrMagnitude > m_maxDistanceFromMap * m_maxDistanceFromMap)
+            {
+                return false;
+            }
+        }
+        else if (positionOnGrid.x + m_camera.fieldOfView > Map.Instance.m_mapSize.x)
+        {
+            Vector2Int positionOnBoundary = new Vector2Int(Map.Instance.m_mapSize.x, positionOnGrid.y);
+            if ((positionOnBoundary -
+                new Vector2Int(positionOnGrid.x + (int)m_camera.fieldOfView, positionOnGrid.y)).sqrMagnitude > m_maxDistanceFromMap * m_maxDistanceFromMap)
+            {
+                return false;
+            }
+        }
+        
+        //Vertical
+        if (positionOnGrid.y < 0)
+        {
+            Vector2Int positionOnBoundary = new Vector2Int(positionOnGrid.x, 0);
+            if ((positionOnBoundary - positionOnGrid).sqrMagnitude > m_maxDistanceFromMap * m_maxDistanceFromMap)
+            {
+                return false;
+            }
+        }
+        else if(positionOnGrid.y > Map.Instance.m_mapSize.y)
+        {
+            Vector2Int positionOnBoundary = new Vector2Int(positionOnGrid.x, Map.Instance.m_mapSize.y);
+            if((positionOnBoundary - positionOnGrid).sqrMagnitude > m_maxDistanceFromMap * m_maxDistanceFromMap)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void onLeftClick()
