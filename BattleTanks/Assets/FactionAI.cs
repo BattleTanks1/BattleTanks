@@ -16,21 +16,21 @@ public class MessageToAIUnit
         m_targetID = targetID;
         m_receiverID = Utilities.INVALID_ID;
         m_messageType = messageType;
-        m_lastTargetPosition = position;
+        m_position = position;
     }
 
-    public MessageToAIUnit(int targetID, int receiverID, eAIState messageType, Vector2Int lastTargetPosition)
+    public MessageToAIUnit(int targetID, int receiverID, eAIState messageType, Vector2Int position)
     {
         m_targetID = targetID;
         m_receiverID = receiverID;
         m_messageType = messageType;
-        m_lastTargetPosition = lastTargetPosition;
+        m_position = position;
     }
 
     public int m_targetID { get; private set; }
     public int m_receiverID { get; private set; }
     public eAIState m_messageType { get; private set; }
-    public Vector2Int m_lastTargetPosition { get; private set; }
+    public Vector2Int m_position { get; private set; }
 }
 
 public class FactionAI : Faction

@@ -101,14 +101,14 @@ public class TankPlayer : MonoBehaviour
                 {
                     m_targetID = message.m_targetID;
                     m_currentState = message.m_messageType;
-                    m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_lastTargetPosition));
+                    m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_position));
                 }
                 break;
             case eAIState.MovingToNewPosition:
                 {
                     m_targetID = message.m_targetID;
                     m_currentState = eAIState.MovingToNewPosition;
-                    m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_lastTargetPosition));
+                    m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_position));
                 }
                 break;
         }
