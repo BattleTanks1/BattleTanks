@@ -3,74 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-//http://lecturer.ukdw.ac.id/~mahas/dossier/gameng_AIFG.pdf
-//https://www.reddit.com/r/gamedev/comments/9onssu/where_can_i_learn_more_about_rts_ai/
-
-//http://dl.booktolearn.com/ebooks2/computer/artificialintelligence/9781138483972_AI_for_Games_3rd_a694.pdf
-
-public class Transition
+public class TankStateHandler : MonoBehaviour
 {
-    //When conditions are met - it is said to trigger
-    //When transition goes to new state - it has fired
-}
-
-public enum eAIUniMessageType
-{
-    EnemySpottedAtPosition = 0,
-    LostSightOfEnemy
-}
-
-public class MessageToAIController
-{
-    public MessageToAIController(int targetID, Vector2Int lastTargetPosition, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
-    {
-        m_targetID = targetID;
-        m_lastTargetPosition = lastTargetPosition;
-        m_messageType = messageType;
-        m_senderID = senderID;
-        m_senderFaction = senderFaction;
-    }
-
-    public MessageToAIController(int targetID, eAIUniMessageType messageType, eFactionName senderFaction)
-    {
-        m_targetID = targetID;
-        m_messageType = messageType;
-    }
-
-    public Vector2Int m_lastTargetPosition { get; private set; }
-    public int m_targetID { get; private set; }
-    public eAIUniMessageType m_messageType { get; private set; }
-    public int m_senderID { get; private set; }
-    public eFactionName m_senderFaction { get; private set; }
-}
-
-public enum eAIState
-{
-    AwaitingDecision = 0,
-    ShootingAtEnemy,
-    MovingToNewPosition,
-    SetDestinationToSafePosition,
-}
-
-public class AITank : MonoBehaviour
-{    
-    //AI Stuff
     [SerializeField]
-    public eAIState m_currentState;
-    public int m_targetID = Utilities.INVALID_ID;
+    private eAIState m_currentState;
+    [SerializeField]
+    private int m_targetID = Utilities.INVALID_ID;
 
     private Tank m_tank = null;
     private TankMovement m_tankMovement = null;
     private TankShooting m_tankShooting = null;
 
-    private void Start()
+    private void Awake()
     {
         m_tank = GetComponent<Tank>();
         Assert.IsNotNull(m_tank);
-        
+
         m_tankMovement = GetComponent<TankMovement>();
         Assert.IsNotNull(m_tankMovement);
-        
+
         m_tankShooting = GetComponent<TankShooting>();
         Assert.IsNotNull(m_tankShooting);
     }
@@ -79,25 +30,30 @@ public class AITank : MonoBehaviour
     {
         switch (m_currentState)
         {
-            case eAIState.SetDestinationToSafePosition:
+            case eAIState.AwaitingDecision:
                 {
-                    m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_tank));
-                    m_currentState = eAIState.MovingToNewPosition;                    
+                    int targetID = Utilities.INVALID_ID;
+                    Vector3 targetPosition;
+                    if (getClosestVisibleTarget(out targetID, out targetPosition))
+                    {
+                        m_targetID = targetID;
+                        m_currentState = eAIState.MovingToNewPosition;
+                        m_tankMovement.moveTo(targetPosition);
+                    }
                 }
                 break;
             case eAIState.MovingToNewPosition:
                 {
                     Vector3 enemyPosition = new Vector3();
-                    bool targetVisible = isTargetInVisibleSight(out enemyPosition);
-                    if(targetVisible)
-                    { 
+                    if (m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
+                    {
                         m_tankMovement.moveTo(enemyPosition);
 
-                        if (m_targetID != Utilities.INVALID_ID)
+                        if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
                             m_tankMovement.stop();
                             m_currentState = eAIState.ShootingAtEnemy;
-                        }        
+                        }
                     }
                     else
                     {
@@ -105,17 +61,15 @@ public class AITank : MonoBehaviour
                         {
                             m_currentState = eAIState.AwaitingDecision;
                         }
-
-                        m_tankMovement.stop();
                     }
                 }
                 break;
             case eAIState.ShootingAtEnemy:
                 {
                     Vector3 enemyPosition = new Vector3();
-                    if(isTargetInVisibleSight(out enemyPosition))
+                    if (isTargetInVisibleSight(out enemyPosition))
                     {
-                        if(m_tankShooting.isTargetInAttackRange(enemyPosition))
+                        if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
                             m_tankMovement.stop();
                             m_tankShooting.FireAtPosition(enemyPosition);
@@ -127,8 +81,8 @@ public class AITank : MonoBehaviour
                     }
                     else
                     {
+                        m_targetID = Utilities.INVALID_ID;
                         m_currentState = eAIState.AwaitingDecision;
-                        m_tankMovement.stop();
                     }
                 }
                 break;
@@ -149,7 +103,7 @@ public class AITank : MonoBehaviour
                 break;
         }
     }
-    
+
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
@@ -161,13 +115,13 @@ public class AITank : MonoBehaviour
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
                 PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
-                if(pointOnMap == null)
+                if (pointOnMap == null)
                 {
                     continue;
                 }
 
-                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
-                    pointOnMap.tankID == m_targetID)
+                if (pointOnMap.tankID == m_targetID &&
+                    result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance)
                 {
                     Vector3 position = GameManager.Instance.getTankPosition(m_targetID);
                     Assert.IsTrue(position != Utilities.INVALID_POSITION);
@@ -180,5 +134,53 @@ public class AITank : MonoBehaviour
 
         enemyPosition = new Vector3();
         return false;
+    }
+
+    private bool getClosestVisibleTarget(out int enemyID, out Vector3 enemyPosition)
+    {
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
+        int closestTargetID = Utilities.INVALID_ID;
+        float distance = float.MaxValue;
+
+        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        {
+            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            {
+                Vector2Int result = positionOnGrid - new Vector2Int(x, y);
+                PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
+                if (pointOnMap == null)
+                {
+                    continue;
+                }
+
+                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
+                    pointOnMap.isOccupiedByEnemy(m_tank.m_factionName))
+                {
+                    float d = (positionOnGrid - new Vector2Int(x, y)).magnitude;
+                    if (d < distance)
+                    {
+                        closestTargetID = pointOnMap.tankID;
+                        distance = d;
+                    }
+                }
+            }
+        }
+
+        if (closestTargetID != Utilities.INVALID_ID)
+        {
+            Tank enemy = GameManager.Instance.getTank(closestTargetID);
+            Assert.IsNotNull(enemy);
+
+            enemyID = enemy.m_ID;
+            enemyPosition = enemy.transform.position;
+            return true;
+        }
+        else
+        {
+            enemyID = Utilities.INVALID_ID;
+            enemyPosition = Utilities.INVALID_POSITION;
+            return false;
+        }
     }
 }

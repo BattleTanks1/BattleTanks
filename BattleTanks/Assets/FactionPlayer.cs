@@ -63,10 +63,10 @@ public class FactionPlayer : Faction
                     continue;
                 }
 
-                TankPlayer tankPlayer = tank.GetComponent<TankPlayer>();
-                Assert.IsNotNull(tankPlayer);
+                TankStateHandler tankStateHandler = tank.GetComponent<TankStateHandler>();
+                Assert.IsNotNull(tankStateHandler);
 
-                tankPlayer.switchToState(eAIState.MovingToNewPosition, Utilities.INVALID_ID, position);
+                tankStateHandler.switchToState(eAIState.MovingToNewPosition, Utilities.INVALID_ID, position);
             }
         }
     }
@@ -86,10 +86,10 @@ public class FactionPlayer : Faction
 
             if (selectionComponent.isSelected())
             {
-                TankPlayer tankPlayer = tank.gameObject.GetComponent<TankPlayer>();
-                Assert.IsNotNull(tankPlayer);
+                TankStateHandler tankStateHandler = tank.gameObject.GetComponent<TankStateHandler>();
+                Assert.IsNotNull(tankStateHandler);
 
-                tankPlayer.switchToState(eAIState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
+                tankStateHandler.switchToState(eAIState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
             }
         }
     }

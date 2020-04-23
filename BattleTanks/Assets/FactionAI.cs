@@ -3,40 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public class MessageToUnit
-{
-    public MessageToUnit(int targetID, eAIState messageType, Vector2Int position)
-    {
-        m_targetID = targetID;
-        m_receiverID = Utilities.INVALID_ID;
-        m_messageType = messageType;
-        m_position = position;
-    }
-
-    public MessageToUnit(int targetID, int receiverID, eAIState messageType, Vector2Int position)
-    {
-        m_targetID = targetID;
-        m_receiverID = receiverID;
-        m_messageType = messageType;
-        m_position = position;
-    }
-
-    public int m_targetID { get; private set; }
-    public int m_receiverID { get; private set; }
-    public eAIState m_messageType { get; private set; }
-    public Vector2Int m_position { get; private set; }
-}
-
 public class FactionAI : Faction
 {
     private Queue<MessageToAIController> m_receivedMessages;
-    private Queue<MessageToUnit> m_messagesToSend;
     private HashSet<int> m_visibleTargets;
 
     private void Awake()
     {
         m_receivedMessages = new Queue<MessageToAIController>();
-        m_messagesToSend = new Queue<MessageToUnit>();
         m_visibleTargets = new HashSet<int>();
     }
 
@@ -48,7 +22,6 @@ public class FactionAI : Faction
     private void Update() 
     {
         handleReceivedMessages();
-        handleToSendMessages();
 
         foreach (Tank tank in m_tanks)
         {
@@ -67,28 +40,6 @@ public class FactionAI : Faction
         m_receivedMessages.Enqueue(newMessage);
     }
 
-    private void handleToSendMessages()
-    {
-        while (m_messagesToSend.Count > 0)
-        {
-            MessageToUnit messageToSend = m_messagesToSend.Dequeue();
-            AITank aiComponent = getTank(messageToSend.m_receiverID).gameObject.GetComponent<AITank>();
-            Assert.IsNotNull(aiComponent);
-            if(aiComponent)
-            {
-                aiComponent.receiveMessage(messageToSend);
-            }
-            switch (messageToSend.m_messageType)
-            {
-                case eAIState.ShootingAtEnemy:
-                {
-
-                }
-                break;
-            }
-        }
-    }
-
     private void handleReceivedMessages()
     {
         while (m_receivedMessages.Count > 0)
@@ -99,10 +50,9 @@ public class FactionAI : Faction
                 case eAIUniMessageType.EnemySpottedAtPosition:
                     if (isEnemyStillInSight(receivedMessage))
                     {
-                        m_messagesToSend.Enqueue(new MessageToUnit(receivedMessage.m_targetID, receivedMessage.m_senderID,
-                           eAIState.ShootingAtEnemy, receivedMessage.m_lastTargetPosition));
-
-                        m_visibleTargets.Add(receivedMessage.m_targetID);
+                        AITank aiComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<AITank>();
+                        Assert.IsNotNull(aiComponent);
+                        aiComponent.switchToState(eAIState.ShootingAtEnemy, receivedMessage.m_targetID, Utilities.convertToWorldPosition(receivedMessage.m_lastTargetPosition));
                     }
                     break;
                 case eAIUniMessageType.LostSightOfEnemy:
@@ -173,11 +123,10 @@ public class FactionAI : Faction
                 {
                     Debug.Log("Enemy Spotted");
                     Assert.IsTrue(targetID != Utilities.INVALID_ID);
+
                     AITank aiComponent = tank.gameObject.GetComponent<AITank>();
                     Assert.IsNotNull(aiComponent);
-
-                    MessageToUnit message = new MessageToUnit(targetID, eAIState.MovingToNewPosition, positionOnGrid);
-                    aiComponent.receiveMessage(message);
+                    aiComponent.switchToState(eAIState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
                 }
             }
         }
