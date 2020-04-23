@@ -27,7 +27,7 @@ public class Building : MonoBehaviour
     private Vector3 getSpawnPosition()
     {
         Vector3 startingPosition;
-        if(m_wayPointClone.activeSelf)
+        if(m_wayPointClone.transform.position != transform.position)
         {
             startingPosition = (m_wayPointClone.transform.position - transform.position).normalized;
         }
@@ -54,13 +54,11 @@ public class Building : MonoBehaviour
         {
             //Reset waypoint
             m_wayPointClone.transform.position = transform.position;
-            m_wayPointClone.SetActive(false);
            
         }
         else if(Map.Instance.isInBounds(position))
         {
             //Assign waypoint to new position
-            m_wayPointClone.SetActive(true);
             m_wayPointClone.transform.position = new Vector3(position.x, 1, position.z);
         }
     }
