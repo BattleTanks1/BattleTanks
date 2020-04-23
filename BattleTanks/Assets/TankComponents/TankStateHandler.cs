@@ -6,15 +6,16 @@ using UnityEngine.Assertions;
 public enum eTankState
 {
     AwaitingDecision = 0,
+    SetNewDestination,
     ShootingAtEnemy,
     MovingToNewPosition,
-    SetDestinationToSafePosition,
+    SetDestinationToSafePosition
 }
 
 public class TankStateHandler : MonoBehaviour
 {
     [SerializeField]
-    private eTankState m_currentState;
+    private eTankState m_currentState = eTankState.AwaitingDecision;
     [SerializeField]
     private int m_targetID = Utilities.INVALID_ID;
 
@@ -42,6 +43,7 @@ public class TankStateHandler : MonoBehaviour
                 {
                     int targetID = Utilities.INVALID_ID;
                     Vector3 targetPosition;
+
                     if (getClosestVisibleTarget(out targetID, out targetPosition))
                     {
                         m_targetID = targetID;
@@ -79,6 +81,7 @@ public class TankStateHandler : MonoBehaviour
                 break;
             case eTankState.ShootingAtEnemy:
                 {
+                    
                     Vector3 enemyPosition = new Vector3();
                     if (isTargetInVisibleSight(out enemyPosition))
                     {
@@ -112,6 +115,13 @@ public class TankStateHandler : MonoBehaviour
                 {
                     m_targetID = targetID;
                     m_currentState = state;
+                    m_tankMovement.moveTo(position);
+                }
+                break;
+            case eTankState.SetNewDestination:
+                {
+                    m_targetID = targetID;
+                    m_currentState = eTankState.MovingToNewPosition;
                     m_tankMovement.moveTo(position);
                 }
                 break;

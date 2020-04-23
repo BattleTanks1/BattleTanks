@@ -66,7 +66,7 @@ public class FactionPlayer : Faction
                 TankStateHandler tankStateHandler = tank.GetComponent<TankStateHandler>();
                 Assert.IsNotNull(tankStateHandler);
 
-                tankStateHandler.switchToState(eTankState.MovingToNewPosition, Utilities.INVALID_ID, position);
+                tankStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
             }
         }
     }
