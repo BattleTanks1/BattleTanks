@@ -113,10 +113,9 @@ public class FactionPlayer : Faction
         if(buildingSelection.isSelected())
         {
             Tank newTank = m_building.spawnUnit().GetComponent<Tank>();
-            if(newTank)
-            {
-                m_tanks.Add(newTank);
-            }
+            Assert.IsNotNull(newTank);
+
+            m_tanks.Add(newTank);
         }
     }
 }
