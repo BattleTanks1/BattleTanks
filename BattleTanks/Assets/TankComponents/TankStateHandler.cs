@@ -3,10 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+public enum eTankState
+{
+    AwaitingDecision = 0,
+    ShootingAtEnemy,
+    MovingToNewPosition,
+    SetDestinationToSafePosition,
+}
+
 public class TankStateHandler : MonoBehaviour
 {
     [SerializeField]
-    private eAIState m_currentState;
+    private eTankState m_currentState;
     [SerializeField]
     private int m_targetID = Utilities.INVALID_ID;
 
@@ -30,19 +38,19 @@ public class TankStateHandler : MonoBehaviour
     {
         switch (m_currentState)
         {
-            case eAIState.AwaitingDecision:
+            case eTankState.AwaitingDecision:
                 {
                     int targetID = Utilities.INVALID_ID;
                     Vector3 targetPosition;
                     if (getClosestVisibleTarget(out targetID, out targetPosition))
                     {
                         m_targetID = targetID;
-                        m_currentState = eAIState.MovingToNewPosition;
+                        m_currentState = eTankState.MovingToNewPosition;
                         m_tankMovement.moveTo(targetPosition);
                     }
                 }
                 break;
-            case eAIState.MovingToNewPosition:
+            case eTankState.MovingToNewPosition:
                 {
                     Vector3 enemyPosition = new Vector3();
                     if (m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
@@ -52,7 +60,7 @@ public class TankStateHandler : MonoBehaviour
                         if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
                             m_tankMovement.stop();
-                            m_currentState = eAIState.ShootingAtEnemy;
+                            m_currentState = eTankState.ShootingAtEnemy;
                         }
                     }
                     else if(m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
@@ -64,12 +72,12 @@ public class TankStateHandler : MonoBehaviour
                     {
                         if (m_tankMovement.reachedDestination())
                         {
-                            m_currentState = eAIState.AwaitingDecision;
+                            m_currentState = eTankState.AwaitingDecision;
                         }
                     }
                 }
                 break;
-            case eAIState.ShootingAtEnemy:
+            case eTankState.ShootingAtEnemy:
                 {
                     Vector3 enemyPosition = new Vector3();
                     if (isTargetInVisibleSight(out enemyPosition))
@@ -88,19 +96,19 @@ public class TankStateHandler : MonoBehaviour
                     {
                         m_tankMovement.stop();
                         m_targetID = Utilities.INVALID_ID;
-                        m_currentState = eAIState.AwaitingDecision;
+                        m_currentState = eTankState.AwaitingDecision;
                     }
                 }
                 break;
         }
     }
 
-    public void switchToState(eAIState state, int targetID, Vector3 position)
+    public void switchToState(eTankState state, int targetID, Vector3 position)
     {
         switch (state)
         {
-            case eAIState.ShootingAtEnemy:
-            case eAIState.MovingToNewPosition:
+            case eTankState.ShootingAtEnemy:
+            case eTankState.MovingToNewPosition:
                 {
                     m_targetID = targetID;
                     m_currentState = state;

@@ -3,6 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+public enum eAIUniMessageType
+{
+    EnemySpottedAtPosition = 0,
+    LostSightOfEnemy
+}
+
+public class MessageToAIController
+{
+    public MessageToAIController(int targetID, Vector2Int lastTargetPosition, eAIUniMessageType messageType, int senderID, eFactionName senderFaction)
+    {
+        m_targetID = targetID;
+        m_lastTargetPosition = lastTargetPosition;
+        m_messageType = messageType;
+        m_senderID = senderID;
+        m_senderFaction = senderFaction;
+    }
+
+    public MessageToAIController(int targetID, eAIUniMessageType messageType, eFactionName senderFaction)
+    {
+        m_targetID = targetID;
+        m_messageType = messageType;
+    }
+
+    public Vector2Int m_lastTargetPosition { get; private set; }
+    public int m_targetID { get; private set; }
+    public eAIUniMessageType m_messageType { get; private set; }
+    public int m_senderID { get; private set; }
+    public eFactionName m_senderFaction { get; private set; }
+}
+
 public class FactionAI : Faction
 {
     private Queue<MessageToAIController> m_receivedMessages;
@@ -53,7 +83,7 @@ public class FactionAI : Faction
                         TankStateHandler stateHandlerComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<TankStateHandler>();
                         Assert.IsNotNull(stateHandlerComponent);
 
-                        stateHandlerComponent.switchToState(eAIState.ShootingAtEnemy, receivedMessage.m_targetID, 
+                        stateHandlerComponent.switchToState(eTankState.ShootingAtEnemy, receivedMessage.m_targetID, 
                             Utilities.convertToWorldPosition(receivedMessage.m_lastTargetPosition));
                     }
                     break;
@@ -128,7 +158,7 @@ public class FactionAI : Faction
 
                     TankStateHandler stateHandlerComponent = tank.gameObject.GetComponent<TankStateHandler>();
                     Assert.IsNotNull(stateHandlerComponent);
-                    stateHandlerComponent.switchToState(eAIState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
+                    stateHandlerComponent.switchToState(eTankState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
                 }
             }
         }
