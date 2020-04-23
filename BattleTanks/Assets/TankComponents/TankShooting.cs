@@ -44,7 +44,7 @@ public class TankShooting : MonoBehaviour
 
             Projectile projectile = clone.GetComponent<Projectile>();
             Assert.IsNotNull(projectile);
-            projectile.setSenderID(m_tank.m_ID);
+            projectile.setSenderID(m_tank.m_ID, m_tank.m_factionName);
         }
     }
 
