@@ -58,6 +58,12 @@ public class Map : MonoBehaviour
         }
     }
 
+    private PointOnMap getPoint(Vector2Int position)
+    {
+        Assert.IsTrue(isInBounds(position));
+        return m_map[position.y, position.x];
+    }
+
     public bool isInBounds(int x, int y)
     {
         return x >= 0 &&
@@ -87,8 +93,9 @@ public class Map : MonoBehaviour
         Assert.IsTrue(isInBounds(startingPosition));
 
         Vector2Int startingPositionOnGrid = Utilities.convertToGridPosition(startingPosition);
-        Assert.IsTrue(m_map[startingPositionOnGrid.y, startingPositionOnGrid.x].isEmpty());
-        m_map[startingPositionOnGrid.y, startingPositionOnGrid.x].assign(ID, factionName);
+        Assert.IsTrue(getPoint(startingPositionOnGrid).isEmpty());
+
+        getPoint(startingPositionOnGrid).assign(ID, factionName);
     }
 
     public void updatePositionOnMap(Vector3 currentPosition, Vector3 oldPosition, eFactionName factionName, int ID)
@@ -99,12 +106,11 @@ public class Map : MonoBehaviour
         Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(oldPosition);
         Assert.IsTrue(isPositionOccupied(oldPosition, ID));
         Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
+        Assert.IsTrue(getPoint(currentPositionOnGrid).isEmpty());
         Assert.IsTrue(oldPositionOnGrid != currentPositionOnGrid);
 
-
-        m_map[oldPositionOnGrid.y, oldPositionOnGrid.x].reset();
-        Assert.IsTrue(m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].isEmpty());
-        m_map[currentPositionOnGrid.y, currentPositionOnGrid.x].assign(ID, factionName);
+        getPoint(oldPositionOnGrid).reset();
+        getPoint(currentPositionOnGrid).assign(ID, factionName);
     }
 
     public bool isPositionOnOccupiedCell(Vector3 newPosition, Vector3 currentPosition)
@@ -123,7 +129,7 @@ public class Map : MonoBehaviour
         Assert.IsTrue(isInBounds(position));
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        return m_map[positionOnGrid.y, positionOnGrid.x].tankID == senderID;
+        return getPoint(positionOnGrid).tankID == senderID;
     }
 
     public bool isPositionOccupied(Vector3 position)
@@ -131,17 +137,17 @@ public class Map : MonoBehaviour
         Assert.IsTrue(isInBounds(position));
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        return m_map[positionOnGrid.y, positionOnGrid.x].sceneryType != eSceneryType.None ||
-             m_map[positionOnGrid.y, positionOnGrid.x].tankID != Utilities.INVALID_ID;
+        return getPoint(positionOnGrid).sceneryType != eSceneryType.None ||
+             getPoint(positionOnGrid).tankID != Utilities.INVALID_ID;
     }
 
     public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
     {
         Assert.IsTrue(isInBounds(position));
-        if (m_map[position.y, position.x].tankID != Utilities.INVALID_ID)
+        if (getPoint(position).tankID != Utilities.INVALID_ID)
         {
-            targetID = m_map[position.y, position.x].tankID;
-            return m_map[position.y, position.x].tankFactionName != factionName;
+            targetID = getPoint(position).tankID;
+            return getPoint(position).tankFactionName != factionName;
         }
         else
         {
@@ -153,29 +159,23 @@ public class Map : MonoBehaviour
     public bool isPointOnScenery(Vector2Int position)
     {
         Assert.IsTrue(isInBounds(position));
-        return m_map[position.y, position.x].sceneryType != eSceneryType.None;
+        return getPoint(position).sceneryType != eSceneryType.None;
     }
 
-    public PointOnMap getPointOnMap(Vector2Int position)
-    {
-        Assert.IsTrue(isInBounds(position));
-        return m_map[position.y, position.x];
-    }
-
-    public PointOnMap getPointOnMap(int x, int y)
+    public PointOnMap getPoint(int x, int y)
     {
         Assert.IsTrue(isInBounds(x, y));
         return m_map[y, x];
     }
 
-    public void addScenery(iRectangle rect, eSceneryType type)
+    public void addScenery(iRectangle rect, eSceneryType sceneryType)
     {
         for (int y = rect.m_top; y <= rect.m_bottom; ++y)
         {
             for (int x = rect.m_left; x <= rect.m_right; ++x)
             {
                 Assert.IsTrue(isInBounds(x, y));
-                m_map[y, x].sceneryType = type;
+                getPoint(x, y).sceneryType = sceneryType;
             }
         }
     }
@@ -183,7 +183,7 @@ public class Map : MonoBehaviour
     public bool isPositionScenery(int x, int y)
     {
         Assert.IsTrue(isInBounds(x, y));
-        return m_map[y, x].sceneryType != eSceneryType.None;
+        return getPoint(x, y).sceneryType != eSceneryType.None;
     }
 
     public void remove(Tank tank)
@@ -193,7 +193,7 @@ public class Map : MonoBehaviour
         {
             Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
             Assert.IsTrue(isInBounds(positionOnGrid));
-            m_map[positionOnGrid.y, positionOnGrid.x].reset();
+            getPoint(positionOnGrid).reset();
         }
     }
 }

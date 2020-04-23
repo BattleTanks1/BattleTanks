@@ -147,7 +147,7 @@ public class FactionAI : Faction
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int vBetween = senderPositionOnGrid - new Vector2Int(x, y);
-                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
                 if(pointOnMap == null)
                 {
                     continue;
