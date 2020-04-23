@@ -85,30 +85,6 @@ public class GameManager : MonoBehaviour
         return ID;
     }
 
-    public void addUnit(eFactionName factionName)
-    {
-        
-    }
-
-    public void sendAIControllerMessage(MessageToAIController message)
-    {
-        switch (message.m_senderFaction)
-        {
-            case eFactionName.Red:
-                {
-                    FactionAI faction = m_factions[(int)message.m_senderFaction] as FactionAI;
-                    faction.addMessage(message);
-                }
-                break;
-            case eFactionName.Blue:
-                {
-                    FactionAI faction = m_factions[(int)message.m_senderFaction] as FactionAI;
-                    faction.addMessage(message);
-                }
-                break;
-        }
-    }
-
     public Vector3 getTankPosition(int tankID)
     {
         Assert.IsTrue(tankID != Utilities.INVALID_ID);

@@ -114,19 +114,6 @@ public class TankPlayer : MonoBehaviour
         }
     }
 
-    private void SendMessageToCommander(Vector2Int positionOnGrid, eAIUniMessageType messageType)
-    {
-        PointOnMap pointOnEnemy = Map.Instance.getPointOnMap(positionOnGrid);
-        Assert.IsNotNull(pointOnEnemy);
-        if(pointOnEnemy != null)
-        {
-            MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
-                m_tank.m_ID, m_tank.m_factionName);
-
-            GameManager.Instance.sendAIControllerMessage(message);
-        }
-    }
-
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
@@ -137,7 +124,7 @@ public class TankPlayer : MonoBehaviour
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
-                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
                 if(pointOnMap == null)
                 {
                     continue;
@@ -169,7 +156,7 @@ public class TankPlayer : MonoBehaviour
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
-                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
                 if(pointOnMap == null)
                 {
                     continue;

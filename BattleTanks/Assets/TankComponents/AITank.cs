@@ -78,11 +78,6 @@ public class AITank : MonoBehaviour
 
     private void Update()
     {
-        //if (InfluenceMap.Instance.isPositionInThreat(m_tank))
-        //{
-        //    m_currentState = eAIState.SetDestinationToSafePosition;
-        //}
-
         switch (m_currentState)
         {
             case eAIState.SetDestinationToSafePosition:
@@ -161,19 +156,6 @@ public class AITank : MonoBehaviour
             break;
         }
     }
-
-    private void SendMessageToCommander(Vector2Int positionOnGrid, eAIUniMessageType messageType)
-    {
-        PointOnMap pointOnEnemy = Map.Instance.getPointOnMap(positionOnGrid);
-        Assert.IsNotNull(pointOnEnemy);
-        if(pointOnEnemy != null)
-        {
-            MessageToAIController message = new MessageToAIController(pointOnEnemy.tankID, positionOnGrid, eAIUniMessageType.EnemySpottedAtPosition,
-                m_tank.m_ID, m_tank.m_factionName);
-
-            GameManager.Instance.sendAIControllerMessage(message);
-        }
-    }
     
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
     {
@@ -185,7 +167,7 @@ public class AITank : MonoBehaviour
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
                 Vector2Int result = positionOnGrid - new Vector2Int(x, y);
-                PointOnMap pointOnMap = Map.Instance.getPointOnMap(x, y);
+                PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
                 if(pointOnMap == null)
                 {
                     continue;
