@@ -66,7 +66,7 @@ public class FactionPlayer : Faction
                 TankPlayer tankPlayer = tank.GetComponent<TankPlayer>();
                 Assert.IsNotNull(tankPlayer);
 
-                tankPlayer.receiveMessage(new MessageToAIUnit(Utilities.INVALID_ID, eAIState.MovingToNewPosition,
+                tankPlayer.receiveMessage(new MessageToUnit(Utilities.INVALID_ID, eAIState.MovingToNewPosition,
                     Utilities.convertToGridPosition(position)));
             }
         }
@@ -90,7 +90,7 @@ public class FactionPlayer : Faction
                 TankPlayer tankPlayer = tank.gameObject.GetComponent<TankPlayer>();
                 Assert.IsNotNull(tankPlayer);
 
-                tankPlayer.receiveMessage(new MessageToAIUnit(enemy.m_ID, eAIState.MovingToNewPosition,
+                tankPlayer.receiveMessage(new MessageToUnit(enemy.m_ID, eAIState.MovingToNewPosition,
                     Utilities.convertToGridPosition(enemy.transform.position)));
             }
         }

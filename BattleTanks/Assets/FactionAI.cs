@@ -9,9 +9,9 @@ public enum eAIBehaviour
     Passive
 }
 
-public class MessageToAIUnit
+public class MessageToUnit
 {
-    public MessageToAIUnit(int targetID, eAIState messageType, Vector2Int position)
+    public MessageToUnit(int targetID, eAIState messageType, Vector2Int position)
     {
         m_targetID = targetID;
         m_receiverID = Utilities.INVALID_ID;
@@ -19,7 +19,7 @@ public class MessageToAIUnit
         m_position = position;
     }
 
-    public MessageToAIUnit(int targetID, int receiverID, eAIState messageType, Vector2Int position)
+    public MessageToUnit(int targetID, int receiverID, eAIState messageType, Vector2Int position)
     {
         m_targetID = targetID;
         m_receiverID = receiverID;
@@ -36,13 +36,13 @@ public class MessageToAIUnit
 public class FactionAI : Faction
 {
     private Queue<MessageToAIController> m_receivedMessages;
-    private Queue<MessageToAIUnit> m_messagesToSend;
+    private Queue<MessageToUnit> m_messagesToSend;
     private HashSet<int> m_visibleTargets;
 
     private void Awake()
     {
         m_receivedMessages = new Queue<MessageToAIController>();
-        m_messagesToSend = new Queue<MessageToAIUnit>();
+        m_messagesToSend = new Queue<MessageToUnit>();
         m_visibleTargets = new HashSet<int>();
     }
 
@@ -77,7 +77,7 @@ public class FactionAI : Faction
     {
         while (m_messagesToSend.Count > 0)
         {
-            MessageToAIUnit messageToSend = m_messagesToSend.Dequeue();
+            MessageToUnit messageToSend = m_messagesToSend.Dequeue();
             AITank aiComponent = getTank(messageToSend.m_receiverID).gameObject.GetComponent<AITank>();
             Assert.IsNotNull(aiComponent);
             if(aiComponent)
@@ -105,7 +105,7 @@ public class FactionAI : Faction
                 case eAIUniMessageType.EnemySpottedAtPosition:
                     if (isEnemyStillInSight(receivedMessage))
                     {
-                        m_messagesToSend.Enqueue(new MessageToAIUnit(receivedMessage.m_targetID, receivedMessage.m_senderID,
+                        m_messagesToSend.Enqueue(new MessageToUnit(receivedMessage.m_targetID, receivedMessage.m_senderID,
                            eAIState.ShootingAtEnemy, receivedMessage.m_lastTargetPosition));
 
                         m_visibleTargets.Add(receivedMessage.m_targetID);
@@ -182,7 +182,7 @@ public class FactionAI : Faction
                     AITank aiComponent = tank.gameObject.GetComponent<AITank>();
                     Assert.IsNotNull(aiComponent);
 
-                    MessageToAIUnit message = new MessageToAIUnit(targetID, eAIState.MovingToNewPosition, positionOnGrid);
+                    MessageToUnit message = new MessageToUnit(targetID, eAIState.MovingToNewPosition, positionOnGrid);
                     aiComponent.receiveMessage(message);
                 }
             }

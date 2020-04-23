@@ -136,7 +136,7 @@ public class AITank : MonoBehaviour
         }
     }
 
-    public void receiveMessage(MessageToAIUnit message)
+    public void receiveMessage(MessageToUnit message)
     {
         switch(message.m_messageType)
         {

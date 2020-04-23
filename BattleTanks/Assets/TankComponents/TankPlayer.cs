@@ -14,7 +14,6 @@ public class TankPlayer : MonoBehaviour
     private TankMovement m_tankMovement = null;
     private TankShooting m_tankShooting = null;
 
-
     private void Awake()
     {
         m_tank = GetComponent<Tank>();
@@ -93,7 +92,7 @@ public class TankPlayer : MonoBehaviour
         }
     }
 
-    public void receiveMessage(MessageToAIUnit message)
+    public void receiveMessage(MessageToUnit message)
     {
         switch (message.m_messageType)
         {
