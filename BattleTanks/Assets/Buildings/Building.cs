@@ -78,25 +78,27 @@ public class Building : MonoBehaviour
     public GameObject spawnUnit()
     {
         GameObject newTank = null;
-        while (!newTank)
+        Vector3 spawnPosition = getSpawnPosition();
+        
+        if (!Map.Instance.isPositionOccupied(spawnPosition))
         {
-            Vector3 spawnPosition = getSpawnPosition();
-            if (!Map.Instance.isPositionOccupied(spawnPosition))
+            newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
+
+            if (m_wayPointClone.transform.position != transform.position)
             {
-                newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
+                Assert.IsTrue(m_wayPointClone.activeSelf);
+                TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
+                Assert.IsNotNull(tankPlayer);
 
-                if (m_wayPointClone.transform.position != transform.position)
-                {
-                    Assert.IsTrue(m_wayPointClone.activeSelf);
-                    TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
-                    Assert.IsNotNull(tankPlayer);
-
-                    tankPlayer.receiveMessage(new MessageToUnit(
-                        Utilities.INVALID_ID, eAIState.MovingToNewPosition, Utilities.convertToGridPosition(m_wayPointClone.transform.position)));
-                }
+                tankPlayer.receiveMessage(new MessageToUnit(
+                    Utilities.INVALID_ID, eAIState.MovingToNewPosition, Utilities.convertToGridPosition(m_wayPointClone.transform.position)));
             }
-        }
 
-        return newTank;
+            return newTank;
+        }
+        else
+        {
+            return null;
+        }
     }
 }
