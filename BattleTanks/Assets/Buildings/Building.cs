@@ -90,8 +90,7 @@ public class Building : MonoBehaviour
                 TankPlayer tankPlayer = newTank.GetComponent<TankPlayer>();
                 Assert.IsNotNull(tankPlayer);
 
-                tankPlayer.receiveMessage(new MessageToUnit(
-                    Utilities.INVALID_ID, eAIState.MovingToNewPosition, Utilities.convertToGridPosition(m_wayPointClone.transform.position)));
+                tankPlayer.switchToState(eAIState.MovingToNewPosition, Utilities.INVALID_ID, m_wayPointClone.transform.position);
             }
 
             return newTank;

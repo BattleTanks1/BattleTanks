@@ -87,24 +87,18 @@ public class TankPlayer : MonoBehaviour
         }
     }
 
-    public void receiveMessage(MessageToUnit message)
+    public void switchToState(eAIState state, int targetID, Vector3 position)
     {
-        switch (message.m_messageType)
+        switch (state)
         {
             case eAIState.ShootingAtEnemy:
-                {
-                    m_targetID = message.m_targetID;
-                    m_currentState = message.m_messageType;
-                    m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_position));
-                }
-                break;
             case eAIState.MovingToNewPosition:
-                {
-                    m_targetID = message.m_targetID;
-                    m_currentState = eAIState.MovingToNewPosition;
-                    m_tankMovement.moveTo(Utilities.convertToWorldPosition(message.m_position));
-                }
-                break;
+            {
+                m_targetID = targetID;
+                m_currentState = state;
+                m_tankMovement.moveTo(position);
+            }
+            break;
         }
     }
 
