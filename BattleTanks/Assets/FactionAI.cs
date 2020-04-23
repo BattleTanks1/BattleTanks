@@ -3,12 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public enum eAIBehaviour
-{
-    Aggressive = 0,
-    Passive
-}
-
 public class MessageToUnit
 {
     public MessageToUnit(int targetID, eAIState messageType, Vector2Int position)

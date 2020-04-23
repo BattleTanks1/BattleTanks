@@ -23,7 +23,6 @@ abstract public class Faction : MonoBehaviour
     protected eFactionName m_factionName;
     protected eFactionControllerType m_controllerType;
 
-
     public eFactionControllerType getControllerType()
     {
         return m_controllerType;
@@ -32,11 +31,6 @@ abstract public class Faction : MonoBehaviour
     public eFactionName getFactionName()
     {
         return m_factionName;
-    }
-
-    public void addNewTank()
-    {
-
     }
 
     public void removeTank(Tank tank)

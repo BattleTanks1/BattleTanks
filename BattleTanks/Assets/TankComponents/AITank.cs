@@ -57,7 +57,6 @@ public class AITank : MonoBehaviour
     //AI Stuff
     [SerializeField]
     public eAIState m_currentState;
-    public eAIBehaviour m_behaviour;
     public int m_targetID = Utilities.INVALID_ID;
 
     private Tank m_tank = null;
