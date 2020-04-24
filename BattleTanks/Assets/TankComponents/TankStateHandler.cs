@@ -21,7 +21,7 @@ public class TankStateHandler : MonoBehaviour
     private int m_targetID = Utilities.INVALID_ID;
 
     private Unit m_unit = null;
-    private TankMovement m_tankMovement = null;
+    private UnitMovement m_tankMovement = null;
     private TankShooting m_tankShooting = null;
     private bool m_attackMove = false;
 
@@ -30,7 +30,7 @@ public class TankStateHandler : MonoBehaviour
         m_unit = GetComponent<Unit>();
         Assert.IsNotNull(m_unit);
 
-        m_tankMovement = GetComponent<TankMovement>();
+        m_tankMovement = GetComponent<UnitMovement>();
         Assert.IsNotNull(m_tankMovement);
 
         m_tankShooting = GetComponent<TankShooting>();

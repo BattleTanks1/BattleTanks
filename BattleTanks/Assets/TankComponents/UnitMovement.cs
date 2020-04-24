@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
 
-public class TankMovement : MonoBehaviour
+public class UnitMovement : MonoBehaviour
 {
     [SerializeField]
     private float m_movementSpeed = 0.0f;
