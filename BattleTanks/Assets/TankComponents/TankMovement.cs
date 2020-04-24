@@ -25,6 +25,7 @@ public class TankMovement : MonoBehaviour
             m_startingPositionSet = true;
         }
 
+        Assert.IsTrue(Map.Instance.isPositionOccupied(transform.position, m_tank.m_ID));
         if (transform.position != m_positionToMoveTo)
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, m_movementSpeed * Time.deltaTime);

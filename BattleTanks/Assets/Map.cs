@@ -191,14 +191,12 @@ public class Map : MonoBehaviour
         return getPoint(x, y).sceneryType != eSceneryType.None;
     }
 
-    public void remove(Tank tank)
+    public void clear(Vector3 position, int ID)
     {
-        Assert.IsNotNull(tank);
-        if(tank)
-        {
-            Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-            Assert.IsTrue(isInBounds(positionOnGrid));
-            getPoint(positionOnGrid).reset();
-        }
+        Assert.IsTrue(isInBounds(position));
+        Assert.IsTrue(isPositionOccupied(position, ID));
+
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+        getPoint(positionOnGrid).reset();
     }
 }

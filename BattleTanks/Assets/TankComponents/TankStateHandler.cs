@@ -99,7 +99,6 @@ public class TankStateHandler : MonoBehaviour
                 break;
             case eTankState.ShootingAtEnemy:
                 {
-                    
                     Vector3 enemyPosition = new Vector3();
                     if (isTargetInVisibleSight(out enemyPosition))
                     {

@@ -74,7 +74,6 @@ public class FactionPlayer : Faction
                 {
                     tankStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
                 }
-                
             }
         }
     }

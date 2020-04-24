@@ -110,7 +110,7 @@ public class GameManager : MonoBehaviour
         
         if(tank.isDead())
         {
-            Map.Instance.remove(tank);
+            Map.Instance.clear(tank.transform.position, tank.m_ID);
             m_factions[(int)tank.m_factionName].m_tanks.Remove(tank);
             Destroy(tank.gameObject);
         }

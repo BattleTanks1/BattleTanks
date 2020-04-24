@@ -33,6 +33,5 @@ public class Projectile : MonoBehaviour
             GameManager.Instance.damageTank(tank, m_damage);
             Destroy(gameObject);
         }
-       
     }
 }

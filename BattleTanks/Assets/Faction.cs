@@ -36,6 +36,7 @@ abstract public class Faction : MonoBehaviour
     public void removeTank(Tank tank)
     {
         m_tanks.Remove(tank);
+        
         Destroy(tank.gameObject);
     }
 }
