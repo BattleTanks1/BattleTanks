@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class Unit : MonoBehaviour
 {
@@ -32,6 +33,10 @@ public class Unit : MonoBehaviour
     private void Start()
     {
         m_ID = GameManager.Instance.addUnit();
+
+        Faction faction = transform.parent.gameObject.GetComponent<Faction>();
+        Assert.IsNotNull(faction);
+        faction.addUnit(this);
     }
 
     public eFactionControllerType getControllerType()

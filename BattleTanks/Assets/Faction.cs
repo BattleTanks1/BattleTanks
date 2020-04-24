@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public enum eFactionName
 {
@@ -31,6 +32,12 @@ abstract public class Faction : MonoBehaviour
     public eFactionName getFactionName()
     {
         return m_factionName;
+    }
+
+    public void addUnit(Unit newUnit)
+    {
+        Assert.IsNotNull(newUnit);
+        m_unit.Add(newUnit);
     }
 
     public void removeTank(Unit unit)
