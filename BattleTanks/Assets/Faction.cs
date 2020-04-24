@@ -17,7 +17,7 @@ public enum eFactionControllerType
 
 abstract public class Faction : MonoBehaviour
 {
-    public List<Tank> m_tanks;
+    public List<Unit> m_unit;
 
     [SerializeField]
     protected eFactionName m_factionName;
@@ -33,10 +33,10 @@ abstract public class Faction : MonoBehaviour
         return m_factionName;
     }
 
-    public void removeTank(Tank tank)
+    public void removeTank(Unit unit)
     {
-        m_tanks.Remove(tank);
+        m_unit.Remove(unit);
         
-        Destroy(tank.gameObject);
+        Destroy(unit.gameObject);
     }
 }

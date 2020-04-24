@@ -6,13 +6,13 @@ public class TankMovement : MonoBehaviour
     [SerializeField]
     private float m_movementSpeed = 0.0f;
     private Vector3 m_positionToMoveTo;
-    private Tank m_tank = null;
+    private Unit m_unit = null;
     private bool m_startingPositionSet = false;
 
     private void Awake()
     {
-        m_tank = GetComponent<Tank>();
-        Assert.IsNotNull(m_tank);
+        m_unit = GetComponent<Unit>();
+        Assert.IsNotNull(m_unit);
 
         m_positionToMoveTo = transform.position;
     }
@@ -21,11 +21,11 @@ public class TankMovement : MonoBehaviour
     {
         if(!m_startingPositionSet)
         {
-            Map.Instance.setStartingPosition(transform.position, m_tank.m_factionName, m_tank.m_ID);
+            Map.Instance.setStartingPosition(transform.position, m_unit.m_factionName, m_unit.m_ID);
             m_startingPositionSet = true;
         }
 
-        Assert.IsTrue(Map.Instance.isPositionOccupied(transform.position, m_tank.m_ID));
+        Assert.IsTrue(Map.Instance.isPositionOccupied(transform.position, m_unit.m_ID));
         if (transform.position != m_positionToMoveTo)
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, m_movementSpeed * Time.deltaTime);
@@ -38,7 +38,7 @@ public class TankMovement : MonoBehaviour
             //Moving to new grid cell
             else if (!Map.Instance.isPositionOccupied(newPosition))
             { 
-                Map.Instance.updatePositionOnMap(newPosition, transform.position, m_tank.m_factionName, m_tank.m_ID);
+                Map.Instance.updatePositionOnMap(newPosition, transform.position, m_unit.m_factionName, m_unit.m_ID);
                 transform.position = newPosition;
             }
             else

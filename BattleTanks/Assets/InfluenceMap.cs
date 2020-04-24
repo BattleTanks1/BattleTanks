@@ -260,18 +260,18 @@ public class InfluenceMap : MonoBehaviour
         }
     }
 
-    public bool isPositionInThreat(Tank tank)
+    public bool isPositionInThreat(Unit unit)
     {
         float threatValue = -1.0f;
         foreach(FactionInfluenceMap threatMap in m_threatMaps)
         {
-            if(threatMap.m_ownerName != tank.m_factionName)
+            if(threatMap.m_ownerName != unit.m_factionName)
             {
-                threatValue += threatMap.getPoint(tank.transform.position).value;
+                threatValue += threatMap.getPoint(unit.transform.position).value;
             }
         }
 
-        return threatValue >= tank.m_scaredValue;
+        return threatValue >= unit.m_scaredValue;
     }
 
     public Point getPointOnProximityMap(Vector2Int position, eFactionName factionName)
@@ -302,12 +302,12 @@ public class InfluenceMap : MonoBehaviour
             
             foreach(Faction faction in GameManager.Instance.m_factions)
             {
-                foreach(Tank tank in faction.m_tanks)
+                foreach(Unit unit in faction.m_unit)
                 {
-                    Vector2Int tankPositionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-                    m_proximityMaps[(int)tank.m_factionName].createInfluence(tankPositionOnGrid, tank.m_proximityStrength, tank.m_proximityDistance);
-                    m_threatMaps[(int)tank.m_factionName].createThreat(tankPositionOnGrid, tank.m_threatStrength, tank.m_threatDistance, 
-                        tank.m_threatFallOffStrength, tank.m_threatFallOffDistance);
+                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(unit.transform.position);
+                    m_proximityMaps[(int)unit.m_factionName].createInfluence(positionOnGrid, unit.m_proximityStrength, unit.m_proximityDistance);
+                    m_threatMaps[(int)unit.m_factionName].createThreat(positionOnGrid, unit.m_threatStrength, unit.m_threatDistance, 
+                        unit.m_threatFallOffStrength, unit.m_threatFallOffDistance);
                 }
             }
 

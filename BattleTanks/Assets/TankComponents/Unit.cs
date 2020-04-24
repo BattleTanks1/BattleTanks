@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tank : MonoBehaviour
+public class Unit : MonoBehaviour
 {
     public int m_visibilityDistance;
     public float m_threatStrength;

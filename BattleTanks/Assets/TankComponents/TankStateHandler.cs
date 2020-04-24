@@ -20,15 +20,15 @@ public class TankStateHandler : MonoBehaviour
     [SerializeField]
     private int m_targetID = Utilities.INVALID_ID;
 
-    private Tank m_tank = null;
+    private Unit m_unit = null;
     private TankMovement m_tankMovement = null;
     private TankShooting m_tankShooting = null;
     private bool m_attackMove = false;
 
     private void Awake()
     {
-        m_tank = GetComponent<Tank>();
-        Assert.IsNotNull(m_tank);
+        m_unit = GetComponent<Unit>();
+        Assert.IsNotNull(m_unit);
 
         m_tankMovement = GetComponent<TankMovement>();
         Assert.IsNotNull(m_tankMovement);
@@ -156,7 +156,7 @@ public class TankStateHandler : MonoBehaviour
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.m_visibilityDistance);
 
         for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
         {
@@ -169,8 +169,8 @@ public class TankStateHandler : MonoBehaviour
                     continue;
                 }
 
-                if (pointOnMap.tankID == m_targetID &&
-                    result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance)
+                if (pointOnMap.unitID == m_targetID &&
+                    result.sqrMagnitude <= m_unit.m_visibilityDistance * m_unit.m_visibilityDistance)
                 {
                     Vector3 position = GameManager.Instance.getTankPosition(m_targetID);
                     Assert.IsTrue(position != Utilities.INVALID_POSITION);
@@ -188,7 +188,7 @@ public class TankStateHandler : MonoBehaviour
     private bool getClosestVisibleTarget(out int enemyID, out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        iRectangle searchableRect = new iRectangle(positionOnGrid, m_tank.m_visibilityDistance);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.m_visibilityDistance);
         int closestTargetID = Utilities.INVALID_ID;
         float distance = float.MaxValue;
 
@@ -203,13 +203,13 @@ public class TankStateHandler : MonoBehaviour
                     continue;
                 }
 
-                if (result.sqrMagnitude <= m_tank.m_visibilityDistance * m_tank.m_visibilityDistance &&
-                    pointOnMap.isOccupiedByEnemy(m_tank.m_factionName))
+                if (result.sqrMagnitude <= m_unit.m_visibilityDistance * m_unit.m_visibilityDistance &&
+                    pointOnMap.isOccupiedByEnemy(m_unit.m_factionName))
                 {
                     float d = (positionOnGrid - new Vector2Int(x, y)).magnitude;
                     if (d < distance)
                     {
-                        closestTargetID = pointOnMap.tankID;
+                        closestTargetID = pointOnMap.unitID;
                         distance = d;
                     }
                 }
@@ -218,7 +218,7 @@ public class TankStateHandler : MonoBehaviour
 
         if (closestTargetID != Utilities.INVALID_ID)
         {
-            Tank enemy = GameManager.Instance.getTank(closestTargetID);
+            Unit enemy = GameManager.Instance.getUnit(closestTargetID);
             Assert.IsNotNull(enemy);
 
             enemyID = enemy.m_ID;

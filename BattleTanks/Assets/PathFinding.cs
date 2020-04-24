@@ -110,7 +110,7 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    public Vector3 getClosestSafePosition(int minDistance, Tank tank)
+    public Vector3 getClosestSafePosition(int minDistance, Unit tank)
     {
         reset();
         Queue<FrontierNode> frontier = new Queue<FrontierNode>();

@@ -17,28 +17,28 @@ public class FactionPlayer : Faction
 
     public void selectUnits(fRectangle selectionBox)
     {
-        foreach (Tank tank in m_tanks)
+        foreach (Unit unit in m_unit)
         {
-            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
-            Assert.IsNotNull(tankSelection);
+            Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+            Assert.IsNotNull(unitSelection);
 
-            tankSelection.Select(selectionBox);
+            unitSelection.Select(selectionBox);
         }
     }
 
     public void deselectAllUnits()
     { 
-        foreach (Tank tank in m_tanks)
+        foreach (Unit unit in m_unit)
         {
-            Selection tankSelection = tank.gameObject.GetComponent<Selection>();
-            Assert.IsNotNull(tankSelection);
+            Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+            Assert.IsNotNull(unitSelection);
 
-            tankSelection.Deselect();
+            unitSelection.Deselect();
         }
 
-        Selection selection = m_building.GetComponent<Selection>();
-        Assert.IsNotNull(selection);
-        selection.Deselect();
+        Selection buildingSelection = m_building.GetComponent<Selection>();
+        Assert.IsNotNull(buildingSelection);
+        buildingSelection.Deselect();
         m_building.hideWayPoint();
     }
 
@@ -54,16 +54,16 @@ public class FactionPlayer : Faction
         //Handle tanks
         else
         {
-            foreach (Tank tank in m_tanks)
+            foreach (Unit unit in m_unit)
             {
-                Selection tankSelection = tank.gameObject.GetComponent<Selection>();
-                Assert.IsNotNull(tankSelection);
-                if (!tankSelection.isSelected())
+                Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                Assert.IsNotNull(unitSelection);
+                if (!unitSelection.isSelected())
                 {
                     continue;
                 }
 
-                TankStateHandler tankStateHandler = tank.GetComponent<TankStateHandler>();
+                TankStateHandler tankStateHandler = unit.GetComponent<TankStateHandler>();
                 Assert.IsNotNull(tankStateHandler);
 
                 if(m_attackMoveNextSelection)
@@ -80,13 +80,13 @@ public class FactionPlayer : Faction
 
     public void targetEnemyAtPosition(Vector3 position)
     {
-        Tank enemy = GameManager.Instance.getTank(position);
+        Unit enemy = GameManager.Instance.getUnit(position);
         if(!enemy)
         {
             return;
         }
         
-        foreach (Tank tank in m_tanks)
+        foreach (Unit tank in m_unit)
         {
             Selection selectionComponent = tank.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(selectionComponent);
@@ -103,11 +103,11 @@ public class FactionPlayer : Faction
 
     public void selectBuilding(Vector3 position)
     {
-        Selection selection = m_building.GetComponent<Selection>();
-        Assert.IsNotNull(selection);
+        Selection buildingSelection = m_building.GetComponent<Selection>();
+        Assert.IsNotNull(buildingSelection);
 
         m_building.showWayPoint();
-        selection.select(position);
+        buildingSelection.select(position);
     }
 
     public void spawnUnit()
@@ -120,8 +120,8 @@ public class FactionPlayer : Faction
             GameObject newGameObject = m_building.spawnUnit();
             if(newGameObject)
             {
-                Tank tankComponent = newGameObject.GetComponent<Tank>();
-                m_tanks.Add(tankComponent);
+                Unit unit = newGameObject.GetComponent<Unit>();
+                m_unit.Add(unit);
             }
         }
     }

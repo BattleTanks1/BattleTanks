@@ -29,15 +29,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public Tank getTank(int ID)
+    public Unit getUnit(int ID)
     {
         foreach (Faction faction in m_factions)
         {
-            foreach (Tank tank in faction.m_tanks)
+            foreach (Unit unit in faction.m_unit)
             {
-                if(tank.m_ID == ID)
+                if(unit.m_ID == ID)
                 {
-                    return tank;
+                    return unit;
                 }
             }
         }
@@ -45,17 +45,17 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public Tank getTank(Vector3 position)
+    public Unit getUnit(Vector3 position)
     {
         foreach(Faction faction in m_factions)
         {
-            foreach(Tank tank in faction.m_tanks)
+            foreach(Unit unit in faction.m_unit)
             {
-                Selection tankSelection = tank.GetComponent<Selection>();
+                Selection tankSelection = unit.GetComponent<Selection>();
                 Assert.IsNotNull(tankSelection);
                 if(tankSelection.contains(position))
                 {
-                    return tank;
+                    return unit;
                 }
             }
         }
@@ -91,11 +91,11 @@ public class GameManager : MonoBehaviour
 
         foreach (Faction faction in m_factions)
         {
-            foreach(Tank tank in faction.m_tanks)
+            foreach(Unit unit in faction.m_unit)
             {
-                if(tank.m_ID == tankID)
+                if(unit.m_ID == tankID)
                 {
-                    return tank.transform.position;
+                    return unit.transform.position;
                 }
             }
         }
@@ -103,16 +103,16 @@ public class GameManager : MonoBehaviour
         return Utilities.INVALID_POSITION;
     }
 
-    public void damageTank(Tank tank, int damage)
+    public void damageUnit(Unit unit, int damage)
     {
-        Assert.IsNotNull(tank);
-        tank.reduceHealth(damage);
+        Assert.IsNotNull(unit);
+        unit.reduceHealth(damage);
         
-        if(tank.isDead())
+        if(unit.isDead())
         {
-            Map.Instance.clear(tank.transform.position, tank.m_ID);
-            m_factions[(int)tank.m_factionName].m_tanks.Remove(tank);
-            Destroy(tank.gameObject);
+            Map.Instance.clear(unit.transform.position, unit.m_ID);
+            m_factions[(int)unit.m_factionName].m_unit.Remove(unit);
+            Destroy(unit.gameObject);
         }
     }
 }

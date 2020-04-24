@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 public class TankShooting : MonoBehaviour
@@ -15,12 +13,12 @@ public class TankShooting : MonoBehaviour
     private float m_timeBetweenShot = 0.0f;
     
     private float m_elaspedTime = 0.0f;
-    private Tank m_tank = null;
+    private Unit m_unit = null;
 
     private void Awake()
     {
-        m_tank = GetComponent<Tank>();
-        Assert.IsNotNull(m_tank);
+        m_unit = GetComponent<Unit>();
+        Assert.IsNotNull(m_unit);
     }
 
     void Update()
@@ -44,7 +42,7 @@ public class TankShooting : MonoBehaviour
 
             Projectile projectile = clone.GetComponent<Projectile>();
             Assert.IsNotNull(projectile);
-            projectile.setSenderID(m_tank.m_ID, m_tank.m_factionName);
+            projectile.setSenderID(m_unit.m_ID, m_unit.m_factionName);
         }
     }
 

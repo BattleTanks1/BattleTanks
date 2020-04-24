@@ -94,23 +94,23 @@ public class FactionAI : Faction
         }
     }
 
-    private Tank getTank(int ID)
+    private Unit getTank(int ID)
     {
-        Tank tank = null;
-        foreach (Tank i in m_tanks)
+        Unit unit = null;
+        foreach (Unit i in m_unit)
         {
             if (i.m_ID == ID)
             {
-                tank = i;
+                unit = i;
             }
         }
 
-        return tank;
+        return unit;
     }
 
     private bool isEnemyStillInSight(MessageToAIController receivedMessage)
     {
-        Tank messageSender = getTank(receivedMessage.m_senderID);
+        Unit messageSender = getTank(receivedMessage.m_senderID);
         if (!messageSender)
         {
             return false;
@@ -129,7 +129,7 @@ public class FactionAI : Faction
                     continue;
                 }
 
-                if (pointOnMap.tankID == receivedMessage.m_targetID &&
+                if (pointOnMap.unitID == receivedMessage.m_targetID &&
                     vBetween.sqrMagnitude <= messageSender.m_visibilityDistance * messageSender.m_visibilityDistance)
                 {
                     return true;
@@ -140,23 +140,23 @@ public class FactionAI : Faction
         return false;
     }
 
-    private void assignTankToEnemyInRange(Tank tank)
+    private void assignTankToEnemyInRange(Unit unit)
     {
-        iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(tank.transform.position), tank.m_visibilityDistance);
+        iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(unit.transform.position), unit.m_visibilityDistance);
         for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
         {
             for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
             {
                 Vector2Int positionOnGrid = new Vector2Int(x, y);
                 int targetID = Utilities.INVALID_ID;
-                Vector2Int vBetween = Utilities.convertToGridPosition(tank.transform.position) - positionOnGrid;
-                if (vBetween.sqrMagnitude <= tank.m_visibilityDistance * tank.m_visibilityDistance &&
-                    Map.Instance.isEnemyOnPosition(positionOnGrid, tank.m_factionName, out targetID))
+                Vector2Int vBetween = Utilities.convertToGridPosition(unit.transform.position) - positionOnGrid;
+                if (vBetween.sqrMagnitude <= unit.m_visibilityDistance * unit.m_visibilityDistance &&
+                    Map.Instance.isEnemyOnPosition(positionOnGrid, unit.m_factionName, out targetID))
                 {
                     Debug.Log("Enemy Spotted");
                     Assert.IsTrue(targetID != Utilities.INVALID_ID);
 
-                    TankStateHandler stateHandlerComponent = tank.gameObject.GetComponent<TankStateHandler>();
+                    TankStateHandler stateHandlerComponent = unit.gameObject.GetComponent<TankStateHandler>();
                     Assert.IsNotNull(stateHandlerComponent);
                     stateHandlerComponent.switchToState(eTankState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
                 }

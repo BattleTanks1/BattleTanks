@@ -7,29 +7,29 @@ public class PointOnMap
 {
     public bool isOccupiedByEnemy(eFactionName factionName)
     {
-        return (tankID != Utilities.INVALID_ID && factionName != tankFactionName);
+        return (unitID != Utilities.INVALID_ID && factionName != unitFactionName);
     }
 
     public bool isEmpty()
     {
-        return tankID == Utilities.INVALID_ID;
+        return unitID == Utilities.INVALID_ID;
     }
 
     public void assign(int ID, eFactionName factionName)
     {
-        tankID = ID;
-        tankFactionName = factionName;
+        unitID = ID;
+        unitFactionName = factionName;
     }
 
     public void reset()
     {
         sceneryType = eSceneryType.None;
-        tankID = Utilities.INVALID_ID;
+        unitID = Utilities.INVALID_ID;
     }
 
     public eSceneryType sceneryType;
-    public int tankID = Utilities.INVALID_ID;
-    public eFactionName tankFactionName;
+    public int unitID = Utilities.INVALID_ID;
+    public eFactionName unitFactionName;
 }
 
 public class Map : MonoBehaviour
@@ -134,7 +134,7 @@ public class Map : MonoBehaviour
         Assert.IsTrue(isInBounds(position));
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        return getPoint(positionOnGrid).tankID == senderID;
+        return getPoint(positionOnGrid).unitID == senderID;
     }
 
     public bool isPositionOccupied(Vector3 position)
@@ -143,16 +143,16 @@ public class Map : MonoBehaviour
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
         return getPoint(positionOnGrid).sceneryType != eSceneryType.None ||
-             getPoint(positionOnGrid).tankID != Utilities.INVALID_ID;
+             getPoint(positionOnGrid).unitID != Utilities.INVALID_ID;
     }
 
     public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
     {
         Assert.IsTrue(isInBounds(position));
-        if (getPoint(position).tankID != Utilities.INVALID_ID)
+        if (getPoint(position).unitID != Utilities.INVALID_ID)
         {
-            targetID = getPoint(position).tankID;
-            return getPoint(position).tankFactionName != factionName;
+            targetID = getPoint(position).unitID;
+            return getPoint(position).unitFactionName != factionName;
         }
         else
         {
