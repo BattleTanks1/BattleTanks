@@ -54,7 +54,6 @@ public class UnitAttack : MonoBehaviour
         projectile.setSenderID(m_unit.m_ID, m_unit.m_factionName, m_damage);
     }
 
-
     public void attackPosition(Vector3 position)
     {
         //If enemy in range

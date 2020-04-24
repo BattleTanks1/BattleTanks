@@ -80,7 +80,7 @@ public class FactionAI : Faction
                 case eAIUniMessageType.EnemySpottedAtPosition:
                     if (isEnemyStillInSight(receivedMessage))
                     {
-                        TankStateHandler stateHandlerComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<TankStateHandler>();
+                        UnitStateHandler stateHandlerComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<UnitStateHandler>();
                         Assert.IsNotNull(stateHandlerComponent);
 
                         stateHandlerComponent.switchToState(eTankState.ShootingAtEnemy, receivedMessage.m_targetID, 
@@ -156,7 +156,7 @@ public class FactionAI : Faction
                     Debug.Log("Enemy Spotted");
                     Assert.IsTrue(targetID != Utilities.INVALID_ID);
 
-                    TankStateHandler stateHandlerComponent = unit.gameObject.GetComponent<TankStateHandler>();
+                    UnitStateHandler stateHandlerComponent = unit.gameObject.GetComponent<UnitStateHandler>();
                     Assert.IsNotNull(stateHandlerComponent);
                     stateHandlerComponent.switchToState(eTankState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
                 }

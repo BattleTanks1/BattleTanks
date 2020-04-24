@@ -13,7 +13,7 @@ public enum eTankState
     SetDestinationToSafePosition
 }
 
-public class TankStateHandler : MonoBehaviour
+public class UnitStateHandler : MonoBehaviour
 {
     [SerializeField]
     private eTankState m_currentState = eTankState.AwaitingDecision;

@@ -7,6 +7,7 @@ public class FactionPlayer : Faction
 {
     [SerializeField]
     private Building m_building = null;
+
     private bool m_attackMoveNextSelection = false;
 
     private void Awake()
@@ -51,7 +52,7 @@ public class FactionPlayer : Faction
         {
             m_building.setWayPoint(position);
         }
-        //Handle tanks
+        //Handle units
         else
         {
             foreach (Unit unit in m_unit)
@@ -63,16 +64,16 @@ public class FactionPlayer : Faction
                     continue;
                 }
 
-                TankStateHandler tankStateHandler = unit.GetComponent<TankStateHandler>();
-                Assert.IsNotNull(tankStateHandler);
+                UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
+                Assert.IsNotNull(unitStateHandler);
 
                 if(m_attackMoveNextSelection)
                 {
-                    tankStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
+                    unitStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
                 }
                 else
                 {
-                    tankStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                    unitStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
                 }
             }
         }
@@ -93,10 +94,10 @@ public class FactionPlayer : Faction
 
             if (selectionComponent.isSelected())
             {
-                TankStateHandler tankStateHandler = tank.gameObject.GetComponent<TankStateHandler>();
-                Assert.IsNotNull(tankStateHandler);
+                UnitStateHandler unitStateHandler = tank.gameObject.GetComponent<UnitStateHandler>();
+                Assert.IsNotNull(unitStateHandler);
 
-                tankStateHandler.switchToState(eTankState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
+                unitStateHandler.switchToState(eTankState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
             }
         }
     }
