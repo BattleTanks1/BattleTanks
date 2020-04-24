@@ -4,6 +4,8 @@ using UnityEngine.Assertions;
 public class TankShooting : MonoBehaviour
 {
     [SerializeField]
+    private int m_damage = 0;
+    [SerializeField]
     private float m_shootRange = 0.0f;
     [SerializeField]
     private Rigidbody m_projectile = null;
@@ -21,28 +23,54 @@ public class TankShooting : MonoBehaviour
         Assert.IsNotNull(m_unit);
     }
 
-    void Update()
+    private void Update()
     {
         m_elaspedTime += Time.deltaTime;
     }
 
+    private void meleeAttack(Vector3 position)
+    {
+        RaycastHit hit;
+        if(Physics.Raycast(transform.position, (position - transform.position), out hit, m_shootRange, (1 << 12)))
+        {
+            Unit unit = hit.collider.gameObject.GetComponent<Unit>();
+            Assert.IsNotNull(unit);
+            if(unit)
+            {
+                GameManager.Instance.damageUnit(unit, m_damage);
+            }
+        }
+    }
+
+    private void fireProjectile(Vector3 position)
+    {
+        Rigidbody clone;
+        clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
+        Vector3 vBetween = position - transform.position;
+        clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
+
+        Projectile projectile = clone.GetComponent<Projectile>();
+        Assert.IsNotNull(projectile);
+        projectile.setSenderID(m_unit.m_ID, m_unit.m_factionName);
+    }
+
+
     public void FireAtPosition(Vector3 position)
     {
         //If enemy in range
-        Vector3 result = position - transform.position;
         if (m_elaspedTime >= m_timeBetweenShot &&
-            result.sqrMagnitude <= m_shootRange * m_shootRange)
+            (position - transform.position).sqrMagnitude <= m_shootRange * m_shootRange)
         {
             m_elaspedTime = 0.0f;
 
-            Rigidbody clone;
-            clone = Instantiate(m_projectile, transform.position, Quaternion.identity);
-            Vector3 vBetween = position - transform.position;
-            clone.velocity = transform.TransformDirection(vBetween.normalized * m_projectileSpeed);
-
-            Projectile projectile = clone.GetComponent<Projectile>();
-            Assert.IsNotNull(projectile);
-            projectile.setSenderID(m_unit.m_ID, m_unit.m_factionName);
+            if(m_projectile)
+            {
+                fireProjectile(position);
+            }
+            else
+            {
+                meleeAttack(position);
+            }
         }
     }
 
