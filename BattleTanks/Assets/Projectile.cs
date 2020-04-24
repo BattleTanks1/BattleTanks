@@ -7,9 +7,8 @@ public class Projectile : MonoBehaviour
 {
     [SerializeField]
     private float m_lifeTime = 0.0f;
-    [SerializeField]
-    private int m_damage = 0;
 
+    private int m_damage = 0;
     private eFactionName m_senderFaction;
     private int m_senderID = Utilities.INVALID_ID;
 
@@ -18,11 +17,12 @@ public class Projectile : MonoBehaviour
         Destroy(gameObject, m_lifeTime);
     }
 
-    public void setSenderID(int senderID, eFactionName factionName)
+    public void setSenderID(int senderID, eFactionName factionName, int damage)
     {
         Assert.IsTrue(m_senderID == Utilities.INVALID_ID);
         m_senderFaction = factionName;
         m_senderID = senderID;
+        m_damage = damage;
     }
 
     private void OnTriggerEnter(Collider other)

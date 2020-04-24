@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
 
-public class TankShooting : MonoBehaviour
+public class UnitAttack : MonoBehaviour
 {
     [SerializeField]
     private int m_damage = 0;
@@ -51,11 +51,11 @@ public class TankShooting : MonoBehaviour
 
         Projectile projectile = clone.GetComponent<Projectile>();
         Assert.IsNotNull(projectile);
-        projectile.setSenderID(m_unit.m_ID, m_unit.m_factionName);
+        projectile.setSenderID(m_unit.m_ID, m_unit.m_factionName, m_damage);
     }
 
 
-    public void FireAtPosition(Vector3 position)
+    public void attackPosition(Vector3 position)
     {
         //If enemy in range
         if (m_elaspedTime >= m_timeBetweenShot &&

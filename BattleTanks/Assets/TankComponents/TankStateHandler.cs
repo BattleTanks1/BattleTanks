@@ -22,7 +22,7 @@ public class TankStateHandler : MonoBehaviour
 
     private Unit m_unit = null;
     private UnitMovement m_tankMovement = null;
-    private TankShooting m_tankShooting = null;
+    private UnitAttack m_tankShooting = null;
     private bool m_attackMove = false;
 
     private void Awake()
@@ -33,7 +33,7 @@ public class TankStateHandler : MonoBehaviour
         m_tankMovement = GetComponent<UnitMovement>();
         Assert.IsNotNull(m_tankMovement);
 
-        m_tankShooting = GetComponent<TankShooting>();
+        m_tankShooting = GetComponent<UnitAttack>();
         Assert.IsNotNull(m_tankShooting);
     }
 
@@ -105,7 +105,7 @@ public class TankStateHandler : MonoBehaviour
                         if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
                             m_tankMovement.stop();
-                            m_tankShooting.FireAtPosition(enemyPosition);
+                            m_tankShooting.attackPosition(enemyPosition);
                         }
                         else
                         {
