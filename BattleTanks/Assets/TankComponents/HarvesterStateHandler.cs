@@ -36,12 +36,12 @@ public class HarvesterStateHandler : UnitStateHandler
 
                     if(m_harvester.extractResource(m_resourceToHarvest))
                     {
-                        m_currentState = eUnitState.ReturnHarvestedResource;
+                        m_currentState = eUnitState.SetDestinationResourceBuilding;
                     }
                 }
                 break;
 
-            case eUnitState.ReturnHarvestedResource:
+            case eUnitState.SetDestinationResourceBuilding:
                 {
                     Building buildingToReturnResource = m_harvester.getBuildingToReturnResource();
                     if(buildingToReturnResource)

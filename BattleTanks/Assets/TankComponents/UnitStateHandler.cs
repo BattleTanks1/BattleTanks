@@ -13,7 +13,7 @@ public enum eUnitState
     MovingToHarvestPosition,
     SetDestinationToSafePosition,
     Harvest,
-    ReturnHarvestedResource,
+    SetDestinationResourceBuilding,
     ReturningHarvestedResource
 }
 
