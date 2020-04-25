@@ -16,43 +16,42 @@ public class HarvesterStateHandler : UnitStateHandler
         Assert.IsNotNull(m_harvester);
     }
 
-    // Update is called once per frame
     protected override void Update()
     {
         base.Update();
 
         switch (m_currentState)
         {
-            case eTankState.MovingToHarvestPosition:
+            case eUnitState.MovingToHarvestPosition:
                 {
                     if(m_tankMovement.reachedDestination())
                     {
-                        m_currentState = eTankState.Harvest;
+                        m_currentState = eUnitState.Harvest;
                     }
                 }   
                 break;
-            case eTankState.Harvest:
+            case eUnitState.Harvest:
                 {
                     Assert.IsNotNull(m_resourceToHarvest);
 
                     if(m_harvester.extractResource(m_resourceToHarvest))
                     {
-                        m_currentState = eTankState.ReturnHarvestedResource;
+                        m_currentState = eUnitState.ReturnHarvestedResource;
                     }
                 }
                 break;
 
-            case eTankState.ReturnHarvestedResource:
+            case eUnitState.ReturnHarvestedResource:
                 {
                     Building buildingToReturnResource = m_harvester.getBuildingToReturnResource();
                     if(buildingToReturnResource)
                     {
                         m_tankMovement.moveTo(getReturnPosition(buildingToReturnResource));
-                        m_currentState = eTankState.ReturningHarvestedResource;
+                        m_currentState = eUnitState.ReturningHarvestedResource;
                     }
                 }
                 break;
-            case eTankState.ReturningHarvestedResource:
+            case eUnitState.ReturningHarvestedResource:
                 {
                     if(m_tankMovement.reachedDestination() && m_resourceToHarvest)
                     {
@@ -106,18 +105,18 @@ public class HarvesterStateHandler : UnitStateHandler
         Vector3 positionToMoveTo = getHarvestingPosition(resourceToHarvest);
         Assert.IsTrue(positionToMoveTo != Utilities.INVALID_POSITION);
 
-        m_currentState = eTankState.MovingToHarvestPosition;
+        m_currentState = eUnitState.MovingToHarvestPosition;
         m_resourceToHarvest = resourceToHarvest;
-        switchToState(eTankState.MovingToHarvestPosition, Utilities.INVALID_ID, positionToMoveTo);
+        switchToState(eUnitState.MovingToHarvestPosition, Utilities.INVALID_ID, positionToMoveTo);
     }
 
-    public override void switchToState(eTankState state, int targetID, Vector3 position)
+    public override void switchToState(eUnitState state, int targetID, Vector3 position)
     {
         base.switchToState(state, targetID, position);
 
         switch(state)
         {
-            case eTankState.MovingToHarvestPosition:
+            case eUnitState.MovingToHarvestPosition:
                 {
                     m_targetID = targetID;
                     m_currentState = state;

@@ -81,6 +81,7 @@ public class Building : MonoBehaviour
         if (!Map.Instance.isPositionOccupied(spawnPosition))
         {
             newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
+            newTank.transform.parent = transform.parent;
 
             if (m_wayPointClone.transform.position != transform.position)
             {
@@ -88,7 +89,7 @@ public class Building : MonoBehaviour
                 UnitStateHandler stateHandlerComponent = newTank.GetComponent<UnitStateHandler>();
                 Assert.IsNotNull(stateHandlerComponent);
 
-                stateHandlerComponent.switchToState(eTankState.MovingToNewPosition, Utilities.INVALID_ID, m_wayPointClone.transform.position);
+                stateHandlerComponent.switchToState(eUnitState.MovingToNewPosition, Utilities.INVALID_ID, m_wayPointClone.transform.position);
             }
 
             return newTank;

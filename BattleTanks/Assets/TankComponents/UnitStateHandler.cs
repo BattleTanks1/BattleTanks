@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public enum eTankState
+public enum eUnitState
 {
     AwaitingDecision = 0,
     SetNewDestination,
@@ -20,7 +20,7 @@ public enum eTankState
 public class UnitStateHandler : MonoBehaviour
 {
     [SerializeField]
-    protected eTankState m_currentState = eTankState.AwaitingDecision;
+    protected eUnitState m_currentState = eUnitState.AwaitingDecision;
     [SerializeField]
     protected int m_targetID = Utilities.INVALID_ID;
 
@@ -45,7 +45,7 @@ public class UnitStateHandler : MonoBehaviour
     {
         switch (m_currentState)
         {
-            case eTankState.AwaitingDecision:
+            case eUnitState.AwaitingDecision:
                 {
                     int targetID = Utilities.INVALID_ID;
                     Vector3 targetPosition;
@@ -53,12 +53,12 @@ public class UnitStateHandler : MonoBehaviour
                     if (m_unit.getUnitType() == eUnitType.Attacker && getClosestVisibleTarget(out targetID, out targetPosition))
                     {
                         m_targetID = targetID;
-                        m_currentState = eTankState.MovingToNewPosition;
+                        m_currentState = eUnitState.MovingToNewPosition;
                         m_tankMovement.moveTo(targetPosition);
                     }
                 }
                 break;
-            case eTankState.MovingToNewPosition:
+            case eUnitState.MovingToNewPosition:
                 {
                     Vector3 enemyPosition = new Vector3();
                     if(m_attackMove)
@@ -70,7 +70,7 @@ public class UnitStateHandler : MonoBehaviour
                         {
                             m_attackMove = false;
                             m_targetID = targetID;
-                            m_currentState = eTankState.MovingToNewPosition;
+                            m_currentState = eUnitState.MovingToNewPosition;
                             m_tankMovement.moveTo(targetPosition);
                         }
                     }
@@ -83,7 +83,7 @@ public class UnitStateHandler : MonoBehaviour
                             if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                             {
                                 m_tankMovement.stop();
-                                m_currentState = eTankState.ShootingAtEnemy;
+                                m_currentState = eUnitState.ShootingAtEnemy;
                             }
                         }
                         else if (m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
@@ -95,13 +95,13 @@ public class UnitStateHandler : MonoBehaviour
                         {
                             if (m_tankMovement.reachedDestination())
                             {
-                                m_currentState = eTankState.AwaitingDecision;
+                                m_currentState = eUnitState.AwaitingDecision;
                             }
                         }
                     }
                 }
                 break;
-            case eTankState.ShootingAtEnemy:
+            case eUnitState.ShootingAtEnemy:
                 {
                     Vector3 enemyPosition = new Vector3();
                     if (isTargetInVisibleSight(out enemyPosition))
@@ -120,36 +120,36 @@ public class UnitStateHandler : MonoBehaviour
                     {
                         m_tankMovement.stop();
                         m_targetID = Utilities.INVALID_ID;
-                        m_currentState = eTankState.AwaitingDecision;
+                        m_currentState = eUnitState.AwaitingDecision;
                     }
                 }
                 break;
         }
     }
 
-    public virtual void switchToState(eTankState state, int targetID, Vector3 position)
+    public virtual void switchToState(eUnitState state, int targetID, Vector3 position)
     {
         switch (state)
         {
-            case eTankState.ShootingAtEnemy:
-            case eTankState.MovingToNewPosition:
+            case eUnitState.ShootingAtEnemy:
+            case eUnitState.MovingToNewPosition:
                 {
                     m_targetID = targetID;
                     m_currentState = state;
                     m_tankMovement.moveTo(position);
                 }
                 break;
-            case eTankState.SetNewDestination:
+            case eUnitState.SetNewDestination:
                 {
                     m_targetID = targetID;
-                    m_currentState = eTankState.MovingToNewPosition;
+                    m_currentState = eUnitState.MovingToNewPosition;
                     m_tankMovement.moveTo(position);
                 }
                 break;
-            case eTankState.SetAttackDestination:
+            case eUnitState.SetAttackDestination:
                 {
                     m_targetID = targetID;
-                    m_currentState = eTankState.MovingToNewPosition;
+                    m_currentState = eUnitState.MovingToNewPosition;
                     m_tankMovement.moveTo(position);
                     m_attackMove = true;
                 }

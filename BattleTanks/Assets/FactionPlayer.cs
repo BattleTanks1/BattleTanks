@@ -92,11 +92,11 @@ public class FactionPlayer : Faction
 
                     if (m_attackMoveNextSelection)
                     {
-                        unitStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
+                        unitStateHandler.switchToState(eUnitState.SetAttackDestination, Utilities.INVALID_ID, position);
                     }
                     else
                     {
-                        unitStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                        unitStateHandler.switchToState(eUnitState.SetNewDestination, Utilities.INVALID_ID, position);
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class FactionPlayer : Faction
                 UnitStateHandler unitStateHandler = tank.gameObject.GetComponent<UnitStateHandler>();
                 Assert.IsNotNull(unitStateHandler);
 
-                unitStateHandler.switchToState(eTankState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
+                unitStateHandler.switchToState(eUnitState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
             }
         }
     }

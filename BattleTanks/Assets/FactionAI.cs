@@ -83,7 +83,7 @@ public class FactionAI : Faction
                         UnitStateHandler stateHandlerComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<UnitStateHandler>();
                         Assert.IsNotNull(stateHandlerComponent);
 
-                        stateHandlerComponent.switchToState(eTankState.ShootingAtEnemy, receivedMessage.m_targetID, 
+                        stateHandlerComponent.switchToState(eUnitState.ShootingAtEnemy, receivedMessage.m_targetID, 
                             Utilities.convertToWorldPosition(receivedMessage.m_lastTargetPosition));
                     }
                     break;
@@ -158,7 +158,7 @@ public class FactionAI : Faction
 
                     UnitStateHandler stateHandlerComponent = unit.gameObject.GetComponent<UnitStateHandler>();
                     Assert.IsNotNull(stateHandlerComponent);
-                    stateHandlerComponent.switchToState(eTankState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
+                    stateHandlerComponent.switchToState(eUnitState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
                 }
             }
         }
