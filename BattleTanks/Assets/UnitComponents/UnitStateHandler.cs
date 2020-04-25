@@ -162,7 +162,7 @@ public class UnitStateHandler : MonoBehaviour
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
         iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.m_visibilityDistance);
 
-        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
@@ -196,7 +196,7 @@ public class UnitStateHandler : MonoBehaviour
         int closestTargetID = Utilities.INVALID_ID;
         float distance = float.MaxValue;
 
-        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
