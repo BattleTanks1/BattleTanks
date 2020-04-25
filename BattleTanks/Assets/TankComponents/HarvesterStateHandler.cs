@@ -54,7 +54,10 @@ public class HarvesterStateHandler : UnitStateHandler
                 break;
             case eTankState.ReturningHarvestedResource:
                 {
-
+                    if(m_tankMovement.reachedDestination() && m_resourceToHarvest)
+                    {
+                        harvest(m_resourceToHarvest);
+                    }
                 }
                 break;
         }
