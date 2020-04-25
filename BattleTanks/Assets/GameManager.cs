@@ -5,10 +5,11 @@ using UnityEngine.Assertions;
 
 public class GameManager : MonoBehaviour
 {
-    public Faction[] m_factions;
+    [SerializeField]
+    private Faction[] m_factions;
     [SerializeField]
     private List<Resource> m_resources;
-
+    [SerializeField]
     private int m_ID = 0; //Unique ID
 
     private static GameManager _instance;
@@ -126,5 +127,22 @@ public class GameManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void createInfluence(FactionInfluenceMap[] proximityMaps, FactionInfluenceMap[] threatMaps)
+    {
+        Assert.IsNotNull(proximityMaps);
+        Assert.IsNotNull(threatMaps);
+
+        foreach (Faction faction in m_factions)
+        {
+            foreach (Unit unit in faction.m_unit)
+            {
+                Vector2Int positionOnGrid = Utilities.convertToGridPosition(unit.transform.position);
+                proximityMaps[(int)unit.m_factionName].createInfluence(positionOnGrid, unit.m_proximityStrength, unit.m_proximityDistance);
+                threatMaps[(int)unit.m_factionName].createThreat(positionOnGrid, unit.m_threatStrength, unit.m_threatDistance,
+                    unit.m_threatFallOffStrength, unit.m_threatFallOffDistance);
+            }
+        }
     }
 }

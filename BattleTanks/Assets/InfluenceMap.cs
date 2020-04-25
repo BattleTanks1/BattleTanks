@@ -299,17 +299,8 @@ public class InfluenceMap : MonoBehaviour
                 m_threatMaps[i].reset();
                 m_proximityMaps[i].reset();
             }
-            
-            foreach(Faction faction in GameManager.Instance.m_factions)
-            {
-                foreach(Unit unit in faction.m_unit)
-                {
-                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(unit.transform.position);
-                    m_proximityMaps[(int)unit.m_factionName].createInfluence(positionOnGrid, unit.m_proximityStrength, unit.m_proximityDistance);
-                    m_threatMaps[(int)unit.m_factionName].createThreat(positionOnGrid, unit.m_threatStrength, unit.m_threatDistance, 
-                        unit.m_threatFallOffStrength, unit.m_threatFallOffDistance);
-                }
-            }
+
+            GameManager.Instance.createInfluence(m_proximityMaps, m_threatMaps);
 
             if(m_renderCubes)
             {
