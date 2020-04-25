@@ -176,10 +176,10 @@ public class UnitStateHandler : MonoBehaviour
                 if (pointOnMap.unitID == m_targetID &&
                     result.sqrMagnitude <= m_unit.m_visibilityDistance * m_unit.m_visibilityDistance)
                 {
-                    Vector3 position = GameManager.Instance.getTankPosition(m_targetID);
-                    Assert.IsTrue(position != Utilities.INVALID_POSITION);
+                    Unit unit = GameManager.Instance.getUnit(m_targetID);
+                    Assert.IsNotNull(unit);
 
-                    enemyPosition = new Vector3(position.x, 0, position.z);
+                    enemyPosition = new Vector3(unit.transform.position.x, 0, unit.transform.position.z);
                     return true;
                 }
             }

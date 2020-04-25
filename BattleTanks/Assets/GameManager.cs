@@ -67,20 +67,6 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public Faction getPlayerFaction()
-    {
-        Faction playerFaction = null;
-        foreach(Faction faction in m_factions)
-        {
-            if(faction.getControllerType() == eFactionControllerType.Human)
-            {
-                playerFaction = faction;
-            }
-        }
-
-        return playerFaction;
-    }
-
     public int addUnit()
     {
         int ID = m_ID;
