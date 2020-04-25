@@ -5,16 +5,15 @@ using UnityEngine.Assertions;
 
 public class HarvesterStateHandler : UnitStateHandler
 {
-    private Selection m_selection = null;
+    private Harvester m_harvester = null;
     private Resource m_resourceToHarvest = null;
 
     protected override void Awake()
     {
         base.Awake();
-        Assert.IsNotNull(m_tankMovement);
 
-        m_selection = GetComponent<Selection>();
-        Assert.IsNotNull(m_selection);
+        m_harvester = GetComponent<Harvester>();
+        Assert.IsNotNull(m_harvester);
     }
 
     // Update is called once per frame
@@ -36,6 +35,11 @@ public class HarvesterStateHandler : UnitStateHandler
                 {
                     Assert.IsNotNull(m_resourceToHarvest);
 
+                    if(m_harvester.extractResource(m_resourceToHarvest))
+                    {
+                        Debug.Log("Resource Extracted");
+                    }
+
                 }
                 break;
         }
@@ -44,16 +48,17 @@ public class HarvesterStateHandler : UnitStateHandler
     private Vector3 getHarvestingPosition(Resource resource)
     {
         Assert.IsNotNull(resource);
+        Selection resoureceSelection = resource.GetComponent<Selection>();
+        Assert.IsNotNull(resoureceSelection);
 
         int distance = 1;
         Vector3 position = Utilities.INVALID_POSITION;
         do
         {
-            position = transform.position + (resource.transform.position - transform.position).normalized * distance;
+            position = resource.transform.position + (transform.position - resource.transform.position).normalized * distance;
             ++distance;
 
-        } while (!m_selection.contains(position));
-
+        } while (resoureceSelection.contains(position));
 
         return position;
     }
@@ -64,7 +69,7 @@ public class HarvesterStateHandler : UnitStateHandler
 
         Vector3 positionToMoveTo = getHarvestingPosition(resourceToHarvest);
         Assert.IsTrue(positionToMoveTo != Utilities.INVALID_POSITION);
-      
+
         m_currentState = eTankState.MovingToHarvestPosition;
         m_resourceToHarvest = resourceToHarvest;
         switchToState(eTankState.MovingToHarvestPosition, Utilities.INVALID_ID, positionToMoveTo);
@@ -76,7 +81,6 @@ public class HarvesterStateHandler : UnitStateHandler
 
         switch(state)
         {
-            case eTankState.Harvest:
             case eTankState.MovingToHarvestPosition:
                 {
                     m_targetID = targetID;
