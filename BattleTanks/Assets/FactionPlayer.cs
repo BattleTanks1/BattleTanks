@@ -55,28 +55,38 @@ public class FactionPlayer : Faction
         //Handle units
         else
         {
-            foreach (Unit unit in m_unit)
+            Resource resourceAtPosition = GameManager.Instance.getResource(position);
+            if (resourceAtPosition)
             {
-                Selection unitSelection = unit.gameObject.GetComponent<Selection>();
-                Assert.IsNotNull(unitSelection);
-                if (!unitSelection.isSelected())
+                foreach (Unit unit in m_unit)
                 {
-                    continue;
-                }
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    if (!unitSelection.isSelected())
+                    {
+                        continue;
+                    }
 
-                Resource resourceAtPosition = GameManager.Instance.getResource(position);
-                if (resourceAtPosition)
-                {
                     HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
-                    if(!harvesterStateHandler)
+                    if (!harvesterStateHandler)
                     {
                         continue;
                     }
 
                     harvesterStateHandler.harvest(resourceAtPosition);
                 }
-                else
+            }
+            else
+            {
+                foreach (Unit unit in m_unit)
                 {
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    if (!unitSelection.isSelected())
+                    {
+                        continue;
+                    }
+
                     UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
                     Assert.IsNotNull(unitStateHandler);
 

@@ -128,18 +128,17 @@ public class GameManager : MonoBehaviour
 
     public Resource getResource(Vector3 position)
     {
-        Resource resourceAtPosition = null;
         foreach (Resource resource in m_resources)
         {
-            Selection selection = resourceAtPosition.GetComponent<Selection>();
+            Selection selection = resource.GetComponent<Selection>();
             Assert.IsNotNull(selection);
 
             if(selection.contains(position))
             {
-                resourceAtPosition = resource;
+                return resource;
             }
         }
 
-        return resourceAtPosition;
+        return null;
     }
 }
