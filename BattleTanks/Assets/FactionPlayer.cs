@@ -43,7 +43,7 @@ public class FactionPlayer : Faction
         m_building.hideWayPoint();
     }
 
-    public void handleSelectedUnit(Vector3 position)
+    public void handleSelectedUnits(Vector3 position)
     {
         //Handle selected building
         Selection buildingSelection = m_building.GetComponent<Selection>();
