@@ -10,22 +10,24 @@ public enum eTankState
     SetAttackDestination,
     ShootingAtEnemy,
     MovingToNewPosition,
-    SetDestinationToSafePosition
+    MovingToHarvestPosition,
+    SetDestinationToSafePosition,
+    Harvest
 }
 
 public class UnitStateHandler : MonoBehaviour
 {
     [SerializeField]
-    private eTankState m_currentState = eTankState.AwaitingDecision;
+    protected eTankState m_currentState = eTankState.AwaitingDecision;
     [SerializeField]
-    private int m_targetID = Utilities.INVALID_ID;
+    protected int m_targetID = Utilities.INVALID_ID;
 
     private Unit m_unit = null;
-    private UnitMovement m_tankMovement = null;
+    protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
     private bool m_attackMove = false;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         m_unit = GetComponent<Unit>();
         Assert.IsNotNull(m_unit);
@@ -37,7 +39,7 @@ public class UnitStateHandler : MonoBehaviour
         Assert.IsNotNull(m_tankShooting);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         switch (m_currentState)
         {
@@ -46,7 +48,7 @@ public class UnitStateHandler : MonoBehaviour
                     int targetID = Utilities.INVALID_ID;
                     Vector3 targetPosition;
 
-                    if (getClosestVisibleTarget(out targetID, out targetPosition))
+                    if (m_unit.getUnitType() == eUnitType.Attacker && getClosestVisibleTarget(out targetID, out targetPosition))
                     {
                         m_targetID = targetID;
                         m_currentState = eTankState.MovingToNewPosition;
@@ -123,7 +125,7 @@ public class UnitStateHandler : MonoBehaviour
         }
     }
 
-    public void switchToState(eTankState state, int targetID, Vector3 position)
+    public virtual void switchToState(eTankState state, int targetID, Vector3 position)
     {
         switch (state)
         {

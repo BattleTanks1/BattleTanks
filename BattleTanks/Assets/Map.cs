@@ -12,7 +12,7 @@ public class PointOnMap
 
     public bool isEmpty()
     {
-        return unitID == Utilities.INVALID_ID;
+        return unitID == Utilities.INVALID_ID && sceneryType == eSceneryType.None;
     }
 
     public void assign(int ID, eFactionName factionName)

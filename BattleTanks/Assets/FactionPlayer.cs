@@ -64,16 +64,30 @@ public class FactionPlayer : Faction
                     continue;
                 }
 
-                UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
-                Assert.IsNotNull(unitStateHandler);
-
-                if(m_attackMoveNextSelection)
+                Resource resourceAtPosition = GameManager.Instance.getResource(position);
+                if (resourceAtPosition)
                 {
-                    unitStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
+                    HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
+                    if(!harvesterStateHandler)
+                    {
+                        continue;
+                    }
+
+                    harvesterStateHandler.harvest(resourceAtPosition);
                 }
                 else
                 {
-                    unitStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                    UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
+                    Assert.IsNotNull(unitStateHandler);
+
+                    if (m_attackMoveNextSelection)
+                    {
+                        unitStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
+                    }
+                    else
+                    {
+                        unitStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                    }
                 }
             }
         }

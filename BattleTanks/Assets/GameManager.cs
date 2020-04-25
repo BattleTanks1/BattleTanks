@@ -6,6 +6,8 @@ using UnityEngine.Assertions;
 public class GameManager : MonoBehaviour
 {
     public Faction[] m_factions;
+    [SerializeField]
+    private List<Resource> m_resources;
 
     private int m_ID = 0; //Unique ID
 
@@ -27,6 +29,8 @@ public class GameManager : MonoBehaviour
         {
             Assert.IsNotNull(faction);
         }
+
+        m_resources = new List<Resource>();
     }
 
     public Unit getUnit(int ID)
@@ -114,5 +118,28 @@ public class GameManager : MonoBehaviour
             m_factions[(int)unit.m_factionName].m_unit.Remove(unit);
             Destroy(unit.gameObject);
         }
+    }
+
+    public void addResource(Resource newResource)
+    {
+        Assert.IsNotNull(newResource);
+        m_resources.Add(newResource);
+    }
+
+    public Resource getResource(Vector3 position)
+    {
+        Resource resourceAtPosition = null;
+        foreach (Resource resource in m_resources)
+        {
+            Selection selection = resourceAtPosition.GetComponent<Selection>();
+            Assert.IsNotNull(selection);
+
+            if(selection.contains(position))
+            {
+                resourceAtPosition = resource;
+            }
+        }
+
+        return resourceAtPosition;
     }
 }
