@@ -81,6 +81,7 @@ public class Building : MonoBehaviour
         if (!Map.Instance.isPositionOccupied(spawnPosition))
         {
             newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
+            newTank.transform.parent = transform.parent;
 
             if (m_wayPointClone.transform.position != transform.position)
             {
