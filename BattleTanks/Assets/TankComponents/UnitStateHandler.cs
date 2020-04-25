@@ -12,7 +12,9 @@ public enum eTankState
     MovingToNewPosition,
     MovingToHarvestPosition,
     SetDestinationToSafePosition,
-    Harvest
+    Harvest,
+    ReturnHarvestedResource,
+    ReturningHarvestedResource
 }
 
 public class UnitStateHandler : MonoBehaviour

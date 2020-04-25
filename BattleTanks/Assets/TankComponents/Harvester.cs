@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class Harvester : MonoBehaviour
 {
@@ -10,14 +11,21 @@ public class Harvester : MonoBehaviour
     private int m_maxExtractAmount = 0;
     [SerializeField]
     private float m_timeBetweenExtract = 0.0f;
+    [SerializeField]
+    private Building m_buildingToReturnResource = null;
 
     private int m_currentResourcesExtracted = 0;
     private float m_elaspedTime = 0.0f;
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        m_elaspedTime += Time.deltaTime;    
+        Assert.IsNotNull(m_buildingToReturnResource);
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        m_elaspedTime += Time.deltaTime;
     }
 
     public bool extractResource(Resource resourceToHarvest)
@@ -33,5 +41,12 @@ public class Harvester : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public Building getBuildingToReturnResource()
+    {
+        Assert.IsNotNull(m_buildingToReturnResource);
+
+        return m_buildingToReturnResource;
     }
 }

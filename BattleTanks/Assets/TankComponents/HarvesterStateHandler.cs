@@ -37,12 +37,45 @@ public class HarvesterStateHandler : UnitStateHandler
 
                     if(m_harvester.extractResource(m_resourceToHarvest))
                     {
-                        Debug.Log("Resource Extracted");
+                        m_currentState = eTankState.ReturnHarvestedResource;
                     }
+                }
+                break;
+
+            case eTankState.ReturnHarvestedResource:
+                {
+                    Building buildingToReturnResource = m_harvester.getBuildingToReturnResource();
+                    if(buildingToReturnResource)
+                    {
+                        m_tankMovement.moveTo(getReturnPosition(buildingToReturnResource));
+                        m_currentState = eTankState.ReturningHarvestedResource;
+                    }
+                }
+                break;
+            case eTankState.ReturningHarvestedResource:
+                {
 
                 }
                 break;
         }
+    }
+
+    private Vector3 getReturnPosition(Building building)
+    {
+        Assert.IsNotNull(building);
+        Selection resoureceSelection = building.GetComponent<Selection>();
+        Assert.IsNotNull(resoureceSelection);
+
+        int distance = 1;
+        Vector3 position = Utilities.INVALID_POSITION;
+        do
+        {
+            position = building.transform.position + (transform.position - building.transform.position).normalized * distance;
+            ++distance;
+
+        } while (resoureceSelection.contains(position));
+
+        return position;
     }
 
     private Vector3 getHarvestingPosition(Resource resource)
