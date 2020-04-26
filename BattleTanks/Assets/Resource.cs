@@ -13,7 +13,6 @@ public class Resource : MonoBehaviour
         GameManager.Instance.addResource(this);   
     }
 
-
     public int extractResource(int extractAmount)
     {
         --m_resourceCount;
