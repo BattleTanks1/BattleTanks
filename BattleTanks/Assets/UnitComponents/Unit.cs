@@ -35,9 +35,8 @@ public class Unit : MonoBehaviour
     private eUnitType m_unitType;
     [SerializeField]
     private int m_health = 1;
-
-    public float m_scaredValue;
-    public float m_maxValueAtPosition;
+    [SerializeField]
+    private float m_scaredValue = 0.0f;
 
     private void Awake()
     {
@@ -76,6 +75,11 @@ public class Unit : MonoBehaviour
     public eFactionName getFactionName()
     {
         return m_factionName;
+    }
+
+    public float getScaredValue()
+    {
+        return m_scaredValue;
     }
 
     public void reduceHealth(int amount)

@@ -263,7 +263,7 @@ public class InfluenceMap : MonoBehaviour
             }
         }
 
-        return threatValue >= unit.m_scaredValue;
+        return threatValue >= unit.getScaredValue();
     }
 
     public PointOnInfluenceMap getPointOnProximityMap(Vector2Int position, eFactionName factionName)
