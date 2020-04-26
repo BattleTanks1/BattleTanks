@@ -19,11 +19,15 @@ public class UnitStateHandler : MonoBehaviour
     protected eUnitState m_currentState = eUnitState.AwaitingDecision;
     [SerializeField]
     protected int m_targetID = Utilities.INVALID_ID;
+    [SerializeField]
+    private float m_timeBetweenIdleCheck = 0.0f;
 
     private Unit m_unit = null;
     protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
     private bool m_attackMove = false;
+    private float m_elaspedTime = 0.0f;
+
     protected virtual void Awake()
     {
         m_unit = GetComponent<Unit>();
@@ -42,14 +46,20 @@ public class UnitStateHandler : MonoBehaviour
         {
             case eUnitState.AwaitingDecision:
                 {
-                    int targetID = Utilities.INVALID_ID;
-                    Vector3 targetPosition;
-
-                    if (m_unit.getUnitType() == eUnitType.Attacker && getClosestVisibleTarget(out targetID, out targetPosition))
+                    m_elaspedTime += Time.deltaTime;
+                    if(m_elaspedTime >= m_timeBetweenIdleCheck)
                     {
-                        m_targetID = targetID;
-                        m_currentState = eUnitState.MovingToNewPosition;
-                        m_tankMovement.moveTo(targetPosition);
+                        m_elaspedTime = 0.0f;
+
+                        int targetID = Utilities.INVALID_ID;
+                        Vector3 targetPosition;
+
+                        if (m_unit.getUnitType() == eUnitType.Attacker && getClosestVisibleTarget(out targetID, out targetPosition))
+                        {
+                            m_targetID = targetID;
+                            m_currentState = eUnitState.MovingToNewPosition;
+                            m_tankMovement.moveTo(targetPosition);
+                        }
                     }
                 }
                 break;
