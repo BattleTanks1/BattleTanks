@@ -58,16 +58,6 @@ you can figure out where an enemy would go and how his influence would extend in
 //so that closer cells are left relatively untouched, but cells on the periphery are reduced
 //artificially—ultimately dropping to zero
 
-public class FrontierNode
-{
-    public FrontierNode(Vector2Int p)
-    {
-        position = p;
-    }
-
-    public Vector2Int position;
-}
-
 public class Point
 {
     public float value = 0.0f;

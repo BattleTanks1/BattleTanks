@@ -77,16 +77,16 @@ public class PathFinding : MonoBehaviour
     public Vector3 getClosestSafePosition(int minDistance, Unit tank)
     {
         reset();
-        Queue<FrontierNode> frontier = new Queue<FrontierNode>();
+        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
-        frontier.Enqueue(new FrontierNode(positionOnGrid));
+        frontier.Enqueue(positionOnGrid);
 
         Vector3 safePosition = new Vector3();
         bool safePositionFound = false;
         while (!safePositionFound && frontier.Count > 0)
         {
-            FrontierNode lastPosition = frontier.Dequeue();
-            getAdjacentPositions(m_adjacentPositions, lastPosition.position);
+            Vector2Int lastPosition = frontier.Dequeue();
+            getAdjacentPositions(m_adjacentPositions, lastPosition);
             foreach (Vector2Int adjacentPosition in m_adjacentPositions)
             {
                 if (m_graph[adjacentPosition.y, adjacentPosition.x])
@@ -95,7 +95,7 @@ public class PathFinding : MonoBehaviour
                 }
 
                 m_graph[adjacentPosition.y, adjacentPosition.x] = true;
-                frontier.Enqueue(new FrontierNode(adjacentPosition));
+                frontier.Enqueue(adjacentPosition);
 
                 if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), tank.transform.position) >= Mathf.Abs(minDistance) &&
                     InfluenceMap.Instance.isPositionInThreat(tank))
