@@ -58,7 +58,7 @@ you can figure out where an enemy would go and how his influence would extend in
 //so that closer cells are left relatively untouched, but cells on the periphery are reduced
 //artificially—ultimately dropping to zero
 
-public class Point
+public class PointOnInfluenceMap
 {
     public float value = 0.0f;
     public bool visited = false;
@@ -68,12 +68,12 @@ public class WorkingMap
 { 
     public WorkingMap()
     {
-        m_workingMap = new Point[40, 40];
+        m_workingMap = new PointOnInfluenceMap[40, 40];
         for(int y = 0; y < 40; ++y)
         {
             for(int x = 0; x < 40; ++x)
             {
-                m_workingMap[y, x] = new Point();
+                m_workingMap[y, x] = new PointOnInfluenceMap();
             }
         }
     }
@@ -85,12 +85,12 @@ public class WorkingMap
 
     private iRectangle m_searchableArea;
     [SerializeField]
-    public Point[,] m_workingMap { get; private set; }
+    public PointOnInfluenceMap[,] m_workingMap { get; private set; }
 }
 
 public class FactionInfluenceMap
 {
-    public Point[,] m_map { get; private set; }
+    public PointOnInfluenceMap[,] m_map { get; private set; }
 
     public eFactionName m_ownerName { get; private set; }
 
@@ -98,12 +98,12 @@ public class FactionInfluenceMap
     {
         m_ownerName = ownerName;
         Vector2Int mapSize = Map.Instance.m_mapSize;
-        m_map = new Point[mapSize.y, mapSize.x];
+        m_map = new PointOnInfluenceMap[mapSize.y, mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
         {
             for (int x = 0; x < mapSize.x; ++x)
             {
-                m_map[y, x] = new Point();
+                m_map[y, x] = new PointOnInfluenceMap();
             }
         }
     }
@@ -169,14 +169,14 @@ public class FactionInfluenceMap
         }
     }
 
-    public Point getPoint(Vector3 position)
+    public PointOnInfluenceMap getPoint(Vector3 position)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
 
         return m_map[positionOnGrid.y, positionOnGrid.x];
     }
 
-    public Point getPoint(Vector2Int position)
+    public PointOnInfluenceMap getPoint(Vector2Int position)
     {
         return m_map[position.y, position.x];
     }
@@ -266,7 +266,7 @@ public class InfluenceMap : MonoBehaviour
         return threatValue >= unit.m_scaredValue;
     }
 
-    public Point getPointOnProximityMap(Vector2Int position, eFactionName factionName)
+    public PointOnInfluenceMap getPointOnProximityMap(Vector2Int position, eFactionName factionName)
     {
         return m_proximityMaps[(int)factionName].getPoint(position);
     }
