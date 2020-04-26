@@ -62,7 +62,6 @@ public class UnitStateHandler : MonoBehaviour
                         }
                         else if(m_unit.getUnitType() == eUnitType.Harvester && enemySpotted)
                         {
-                            Debug.Log("Set position to safe area");
                             m_currentState = eUnitState.SetDestinationToSafePosition;
                         }
                     }
@@ -136,7 +135,9 @@ public class UnitStateHandler : MonoBehaviour
                 break;
             case eUnitState.SetDestinationToSafePosition:
                 {
-
+                    m_targetID = Utilities.INVALID_ID;
+                    m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_unit));
+                    m_currentState = eUnitState.MovingToNewPosition;
                 }
                 break;
         }

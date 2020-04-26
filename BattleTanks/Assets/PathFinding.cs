@@ -36,13 +36,7 @@ public class PathFinding : MonoBehaviour
     {
         Vector2Int mapSize = Map.Instance.m_mapSize;
         m_graph = new bool[mapSize.y, mapSize.x];
-        for (int y = 0; y < mapSize.y; ++y)
-        {
-            for (int x = 0; x < mapSize.x; ++x)
-            {
-                m_graph[y, x] = false;
-            }
-        }
+        reset();
     }
 
     private void reset()
@@ -74,11 +68,11 @@ public class PathFinding : MonoBehaviour
         }
     }
 
-    public Vector3 getClosestSafePosition(int minDistance, Unit tank)
+    public Vector3 getClosestSafePosition(int minDistance, Unit unit)
     {
         reset();
         Queue<Vector2Int> frontier = new Queue<Vector2Int>();
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(tank.transform.position);
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(unit.transform.position);
         frontier.Enqueue(positionOnGrid);
 
         Vector3 safePosition = new Vector3();
@@ -89,6 +83,7 @@ public class PathFinding : MonoBehaviour
             getAdjacentPositions(m_adjacentPositions, lastPosition);
             foreach (Vector2Int adjacentPosition in m_adjacentPositions)
             {
+                //Visited
                 if (m_graph[adjacentPosition.y, adjacentPosition.x])
                 {
                     continue;
@@ -97,8 +92,8 @@ public class PathFinding : MonoBehaviour
                 m_graph[adjacentPosition.y, adjacentPosition.x] = true;
                 frontier.Enqueue(adjacentPosition);
 
-                if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), tank.transform.position) >= Mathf.Abs(minDistance) &&
-                    InfluenceMap.Instance.isPositionInThreat(tank))
+                if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), unit.transform.position) >= minDistance &&
+                    InfluenceMap.Instance.isPositionInThreat(unit))
                 {
                     safePositionFound = true;
                     safePosition = new Vector3(adjacentPosition.x, 0, adjacentPosition.y);
