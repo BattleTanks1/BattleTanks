@@ -21,11 +21,11 @@ public class UnitMovement : MonoBehaviour
     {
         if(!m_startingPositionSet)
         {
-            Map.Instance.setStartingPosition(transform.position, m_unit.m_factionName, m_unit.m_ID);
+            Map.Instance.setStartingPosition(transform.position, m_unit.m_factionName, m_unit.getID());
             m_startingPositionSet = true;
         }
 
-        Assert.IsTrue(Map.Instance.isPositionOccupied(transform.position, m_unit.m_ID));
+        Assert.IsTrue(Map.Instance.isPositionOccupied(transform.position, m_unit.getID()));
         if (transform.position != m_positionToMoveTo)
         {
             Vector3 newPosition = Vector3.MoveTowards(transform.position, m_positionToMoveTo, m_movementSpeed * Time.deltaTime);
@@ -38,7 +38,7 @@ public class UnitMovement : MonoBehaviour
             //Moving to new grid cell
             else if (!Map.Instance.isPositionOccupied(newPosition))
             { 
-                Map.Instance.updatePositionOnMap(newPosition, transform.position, m_unit.m_factionName, m_unit.m_ID);
+                Map.Instance.updatePositionOnMap(newPosition, transform.position, m_unit.m_factionName, m_unit.getID());
                 transform.position = newPosition;
             }
             else

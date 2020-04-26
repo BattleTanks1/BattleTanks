@@ -25,8 +25,8 @@ public class Unit : MonoBehaviour
     private float m_proximityStrength = 0.0f;
     [SerializeField]
     private int m_proximityDistance = 0;
-
-    public int m_ID;
+    [SerializeField]
+    private int m_ID;
 
     [SerializeField]
     public eFactionName m_factionName;
@@ -57,6 +57,11 @@ public class Unit : MonoBehaviour
     public int getVisibilityDistance()
     {
         return m_visibilityDistance;
+    }
+
+    public int getID()
+    {
+        return m_ID;
     }
 
     public eUnitType getUnitType()

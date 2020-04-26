@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (Unit unit in faction.m_unit)
             {
-                if(unit.m_ID == ID)
+                if(unit.getID() == ID)
                 {
                     return unit;
                 }
@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
         {
             foreach(Unit unit in faction.m_unit)
             {
-                if(unit.m_ID == tankID)
+                if(unit.getID() == tankID)
                 {
                     return unit.transform.position;
                 }
@@ -101,7 +101,7 @@ public class GameManager : MonoBehaviour
         
         if(unit.isDead())
         {
-            Map.Instance.clear(unit.transform.position, unit.m_ID);
+            Map.Instance.clear(unit.transform.position, unit.getID());
             m_factions[(int)unit.m_factionName].m_unit.Remove(unit);
             Destroy(unit.gameObject);
         }

@@ -28,7 +28,7 @@ public class Projectile : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Unit unit = other.gameObject.GetComponent<Unit>();
-        if (unit && unit.m_ID != m_senderID && m_senderFaction != unit.m_factionName)
+        if (unit && unit.getID() != m_senderID && m_senderFaction != unit.m_factionName)
         {
             GameManager.Instance.damageUnit(unit, m_damage);
             Destroy(gameObject);

@@ -121,7 +121,7 @@ public class FactionPlayer : Faction
                 UnitStateHandler unitStateHandler = tank.gameObject.GetComponent<UnitStateHandler>();
                 Assert.IsNotNull(unitStateHandler);
 
-                unitStateHandler.switchToState(eUnitState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
+                unitStateHandler.switchToState(eUnitState.MovingToNewPosition, enemy.getID(), enemy.transform.position);
             }
         }
     }

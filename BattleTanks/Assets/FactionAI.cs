@@ -99,7 +99,7 @@ public class FactionAI : Faction
         Unit unit = null;
         foreach (Unit i in m_unit)
         {
-            if (i.m_ID == ID)
+            if (i.getID() == ID)
             {
                 unit = i;
             }

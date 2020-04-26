@@ -240,7 +240,7 @@ public class UnitStateHandler : MonoBehaviour
             Unit enemy = GameManager.Instance.getUnit(closestTargetID);
             Assert.IsNotNull(enemy);
 
-            enemyID = enemy.m_ID;
+            enemyID = enemy.getID();
             enemyPosition = enemy.transform.position;
             return true;
         }
