@@ -138,10 +138,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (Unit unit in faction.m_unit)
             {
-                Vector2Int positionOnGrid = Utilities.convertToGridPosition(unit.transform.position);
-                proximityMaps[(int)unit.m_factionName].createInfluence(positionOnGrid, unit.m_proximityStrength, unit.m_proximityDistance);
-                threatMaps[(int)unit.m_factionName].createThreat(positionOnGrid, unit.m_threatStrength, unit.m_threatDistance,
-                    unit.m_threatFallOffStrength, unit.m_threatFallOffDistance);
+                unit.createInfluence(proximityMaps, threatMaps);
             }
         }
     }

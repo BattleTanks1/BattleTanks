@@ -12,12 +12,18 @@ public enum eUnitType
 public class Unit : MonoBehaviour
 {
     public int m_visibilityDistance;
-    public float m_threatStrength;
-    public int m_threatDistance;
-    public float m_threatFallOffStrength;
-    public int m_threatFallOffDistance;
-    public float m_proximityStrength;
-    public int m_proximityDistance;
+    [SerializeField]
+    private float m_threatStrength;
+    [SerializeField]
+    private int m_threatDistance;
+    [SerializeField]
+    private float m_threatFallOffStrength;
+    [SerializeField]
+    private int m_threatFallOffDistance;
+    [SerializeField]
+    private float m_proximityStrength;
+    [SerializeField]
+    private int m_proximityDistance;
 
     public int m_ID;
 
@@ -65,5 +71,16 @@ public class Unit : MonoBehaviour
     public bool isDead()
     {
         return m_health <= 0;
+    }
+
+    public void createInfluence(FactionInfluenceMap[] proximityMaps, FactionInfluenceMap[] threatMaps)
+    {
+        Assert.IsNotNull(proximityMaps);
+        Assert.IsNotNull(threatMaps);
+
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
+        proximityMaps[(int)m_factionName].createInfluence(positionOnGrid, m_proximityStrength, m_proximityDistance);
+        threatMaps[(int)m_factionName].createThreat(positionOnGrid, m_threatStrength, m_threatDistance,
+            m_threatFallOffStrength, m_threatFallOffDistance);
     }
 }
