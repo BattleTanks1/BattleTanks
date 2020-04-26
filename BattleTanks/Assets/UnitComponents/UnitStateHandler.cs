@@ -10,11 +10,7 @@ public enum eUnitState
     SetAttackDestination,
     ShootingAtEnemy,
     MovingToNewPosition,
-    MovingToHarvestPosition,
-    SetDestinationToSafePosition,
-    Harvest,
-    SetDestinationResourceBuilding,
-    ReturningHarvestedResource
+    SetDestinationToSafePosition
 }
 
 public class UnitStateHandler : MonoBehaviour
@@ -28,7 +24,6 @@ public class UnitStateHandler : MonoBehaviour
     protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
     private bool m_attackMove = false;
-
     protected virtual void Awake()
     {
         m_unit = GetComponent<Unit>();
@@ -127,7 +122,7 @@ public class UnitStateHandler : MonoBehaviour
         }
     }
 
-    public virtual void switchToState(eUnitState state, int targetID, Vector3 position)
+    public void switchToState(eUnitState state, int targetID, Vector3 position)
     {
         switch (state)
         {

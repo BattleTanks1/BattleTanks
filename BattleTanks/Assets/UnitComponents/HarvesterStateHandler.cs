@@ -3,8 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+enum eHarvesterState
+{
+    NotHarvesting = 0,
+    MovingToHarvestPosition,
+    Harvest,
+    SetDestinationResourceBuilding,
+    ReturningHarvestedResource
+}
+
 public class HarvesterStateHandler : UnitStateHandler
 {
+    [SerializeField]
+    private eHarvesterState m_harvesterState;
     private Harvester m_harvester = null;
     private Resource m_resourceToHarvest = null;
 
@@ -12,6 +23,7 @@ public class HarvesterStateHandler : UnitStateHandler
     {
         base.Awake();
 
+        m_harvesterState = eHarvesterState.NotHarvesting;
         m_harvester = GetComponent<Harvester>();
         Assert.IsNotNull(m_harvester);
     }
@@ -20,38 +32,43 @@ public class HarvesterStateHandler : UnitStateHandler
     {
         base.Update();
 
-        switch (m_currentState)
+        if(m_currentState != eUnitState.AwaitingDecision)
         {
-            case eUnitState.MovingToHarvestPosition:
+            m_harvesterState = eHarvesterState.NotHarvesting;
+        }
+
+        switch (m_harvesterState)
+        {
+            case eHarvesterState.MovingToHarvestPosition:
                 {
                     if(m_tankMovement.reachedDestination())
                     {
-                        m_currentState = eUnitState.Harvest;
+                        m_harvesterState = eHarvesterState.Harvest;
                     }
                 }   
                 break;
-            case eUnitState.Harvest:
+            case eHarvesterState.Harvest:
                 {
                     Assert.IsNotNull(m_resourceToHarvest);
 
                     if(m_harvester.extractResource(m_resourceToHarvest))
                     {
-                        m_currentState = eUnitState.SetDestinationResourceBuilding;
+                        m_harvesterState = eHarvesterState.SetDestinationResourceBuilding;
                     }
                 }
                 break;
 
-            case eUnitState.SetDestinationResourceBuilding:
+            case eHarvesterState.SetDestinationResourceBuilding:
                 {
                     Building buildingToReturnResource = m_harvester.getBuildingToReturnResource();
                     if(buildingToReturnResource)
                     {
                         m_tankMovement.moveTo(getReturnPosition(buildingToReturnResource));
-                        m_currentState = eUnitState.ReturningHarvestedResource;
+                        m_harvesterState = eHarvesterState.ReturningHarvestedResource;
                     }
                 }
                 break;
-            case eUnitState.ReturningHarvestedResource:
+            case eHarvesterState.ReturningHarvestedResource:
                 {
                     if(m_tankMovement.reachedDestination() && m_resourceToHarvest)
                     {
@@ -105,24 +122,11 @@ public class HarvesterStateHandler : UnitStateHandler
         Vector3 positionToMoveTo = getHarvestingPosition(resourceToHarvest);
         Assert.IsTrue(positionToMoveTo != Utilities.INVALID_POSITION);
 
-        m_currentState = eUnitState.MovingToHarvestPosition;
+        m_harvesterState = eHarvesterState.MovingToHarvestPosition;
         m_resourceToHarvest = resourceToHarvest;
-        switchToState(eUnitState.MovingToHarvestPosition, Utilities.INVALID_ID, positionToMoveTo);
-    }
 
-    public override void switchToState(eUnitState state, int targetID, Vector3 position)
-    {
-        base.switchToState(state, targetID, position);
-
-        switch(state)
-        {
-            case eUnitState.MovingToHarvestPosition:
-                {
-                    m_targetID = targetID;
-                    m_currentState = state;
-                    m_tankMovement.moveTo(position);
-                }
-                break;
-        }
+        m_targetID = Utilities.INVALID_ID;
+        m_harvesterState = eHarvesterState.MovingToHarvestPosition;
+        m_tankMovement.moveTo(positionToMoveTo);
     }
 }
