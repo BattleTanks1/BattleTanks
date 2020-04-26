@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviour
         if(unit.isDead())
         {
             Map.Instance.clear(unit.transform.position, unit.getID());
-            m_factions[(int)unit.m_factionName].m_unit.Remove(unit);
+            m_factions[(int)unit.getFactionName()].m_unit.Remove(unit);
             Destroy(unit.gameObject);
         }
     }

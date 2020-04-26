@@ -223,7 +223,7 @@ public class UnitStateHandler : MonoBehaviour
                 }
 
                 if (result.sqrMagnitude <= m_unit.getVisibilityDistance() * m_unit.getVisibilityDistance() &&
-                    pointOnMap.isOccupiedByEnemy(m_unit.m_factionName))
+                    pointOnMap.isOccupiedByEnemy(m_unit.getFactionName()))
                 {
                     float d = (positionOnGrid - new Vector2Int(x, y)).magnitude;
                     if (d < distance)

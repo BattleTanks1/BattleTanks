@@ -151,7 +151,7 @@ public class FactionAI : Faction
                 int targetID = Utilities.INVALID_ID;
                 Vector2Int vBetween = Utilities.convertToGridPosition(unit.transform.position) - positionOnGrid;
                 if (vBetween.sqrMagnitude <= unit.getVisibilityDistance() * unit.getVisibilityDistance() &&
-                    Map.Instance.isEnemyOnPosition(positionOnGrid, unit.m_factionName, out targetID))
+                    Map.Instance.isEnemyOnPosition(positionOnGrid, unit.getFactionName(), out targetID))
                 {
                     Debug.Log("Enemy Spotted");
                     Assert.IsTrue(targetID != Utilities.INVALID_ID);

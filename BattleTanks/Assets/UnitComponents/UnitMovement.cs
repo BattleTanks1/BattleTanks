@@ -21,7 +21,7 @@ public class UnitMovement : MonoBehaviour
     {
         if(!m_startingPositionSet)
         {
-            Map.Instance.setStartingPosition(transform.position, m_unit.m_factionName, m_unit.getID());
+            Map.Instance.setStartingPosition(transform.position, m_unit.getFactionName(), m_unit.getID());
             m_startingPositionSet = true;
         }
 
@@ -38,7 +38,7 @@ public class UnitMovement : MonoBehaviour
             //Moving to new grid cell
             else if (!Map.Instance.isPositionOccupied(newPosition))
             { 
-                Map.Instance.updatePositionOnMap(newPosition, transform.position, m_unit.m_factionName, m_unit.getID());
+                Map.Instance.updatePositionOnMap(newPosition, transform.position, m_unit.getFactionName(), m_unit.getID());
                 transform.position = newPosition;
             }
             else

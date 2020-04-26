@@ -257,7 +257,7 @@ public class InfluenceMap : MonoBehaviour
         float threatValue = -1.0f;
         foreach(FactionInfluenceMap threatMap in m_threatMaps)
         {
-            if(threatMap.m_ownerName != unit.m_factionName)
+            if(threatMap.m_ownerName != unit.getFactionName())
             {
                 threatValue += threatMap.getPoint(unit.transform.position).value;
             }

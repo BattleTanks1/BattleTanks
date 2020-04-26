@@ -27,9 +27,8 @@ public class Unit : MonoBehaviour
     private int m_proximityDistance = 0;
     [SerializeField]
     private int m_ID;
-
     [SerializeField]
-    public eFactionName m_factionName;
+    private eFactionName m_factionName;
     [SerializeField]
     private eFactionControllerType m_controllerType;
     [SerializeField]
@@ -72,6 +71,11 @@ public class Unit : MonoBehaviour
     public eFactionControllerType getControllerType()
     {
         return m_controllerType;
+    }
+
+    public eFactionName getFactionName()
+    {
+        return m_factionName;
     }
 
     public void reduceHealth(int amount)
