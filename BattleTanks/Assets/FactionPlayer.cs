@@ -43,7 +43,7 @@ public class FactionPlayer : Faction
         m_building.hideWayPoint();
     }
 
-    public void handleSelectedUnit(Vector3 position)
+    public void handleSelectedUnits(Vector3 position)
     {
         //Handle selected building
         Selection buildingSelection = m_building.GetComponent<Selection>();
@@ -55,25 +55,49 @@ public class FactionPlayer : Faction
         //Handle units
         else
         {
-            foreach (Unit unit in m_unit)
+            Resource resourceAtPosition = GameManager.Instance.getResource(position);
+            if (resourceAtPosition)
             {
-                Selection unitSelection = unit.gameObject.GetComponent<Selection>();
-                Assert.IsNotNull(unitSelection);
-                if (!unitSelection.isSelected())
+                foreach (Unit unit in m_unit)
                 {
-                    continue;
-                }
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    if (!unitSelection.isSelected())
+                    {
+                        continue;
+                    }
 
-                UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
-                Assert.IsNotNull(unitStateHandler);
+                    HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
+                    if (!harvesterStateHandler)
+                    {
+                        continue;
+                    }
 
-                if(m_attackMoveNextSelection)
-                {
-                    unitStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
+                    harvesterStateHandler.harvest(resourceAtPosition);
                 }
-                else
+            }
+            else
+            {
+                foreach (Unit unit in m_unit)
                 {
-                    unitStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    if (!unitSelection.isSelected())
+                    {
+                        continue;
+                    }
+
+                    UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
+                    Assert.IsNotNull(unitStateHandler);
+
+                    if (m_attackMoveNextSelection)
+                    {
+                        unitStateHandler.switchToState(eUnitState.SetAttackDestination, Utilities.INVALID_ID, position);
+                    }
+                    else
+                    {
+                        unitStateHandler.switchToState(eUnitState.SetNewDestination, Utilities.INVALID_ID, position);
+                    }
                 }
             }
         }
@@ -97,7 +121,7 @@ public class FactionPlayer : Faction
                 UnitStateHandler unitStateHandler = tank.gameObject.GetComponent<UnitStateHandler>();
                 Assert.IsNotNull(unitStateHandler);
 
-                unitStateHandler.switchToState(eTankState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
+                unitStateHandler.switchToState(eUnitState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
             }
         }
     }

@@ -83,7 +83,7 @@ public class FactionAI : Faction
                         UnitStateHandler stateHandlerComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<UnitStateHandler>();
                         Assert.IsNotNull(stateHandlerComponent);
 
-                        stateHandlerComponent.switchToState(eTankState.ShootingAtEnemy, receivedMessage.m_targetID, 
+                        stateHandlerComponent.switchToState(eUnitState.ShootingAtEnemy, receivedMessage.m_targetID, 
                             Utilities.convertToWorldPosition(receivedMessage.m_lastTargetPosition));
                     }
                     break;
@@ -118,7 +118,7 @@ public class FactionAI : Faction
 
         Vector2Int senderPositionOnGrid = Utilities.convertToGridPosition(messageSender.transform.position);
         iRectangle searchableRect = new iRectangle(senderPositionOnGrid, messageSender.m_visibilityDistance);
-        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
             {
@@ -143,7 +143,7 @@ public class FactionAI : Faction
     private void assignTankToEnemyInRange(Unit unit)
     {
         iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(unit.transform.position), unit.m_visibilityDistance);
-        for (int y = searchRect.m_top; y <= searchRect.m_bottom; ++y)
+        for (int y = searchRect.m_bottom; y <= searchRect.m_top; ++y)
         {
             for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
             {
@@ -158,7 +158,7 @@ public class FactionAI : Faction
 
                     UnitStateHandler stateHandlerComponent = unit.gameObject.GetComponent<UnitStateHandler>();
                     Assert.IsNotNull(stateHandlerComponent);
-                    stateHandlerComponent.switchToState(eTankState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
+                    stateHandlerComponent.switchToState(eUnitState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
                 }
             }
         }

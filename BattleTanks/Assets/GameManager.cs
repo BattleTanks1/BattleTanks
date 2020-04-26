@@ -5,8 +5,11 @@ using UnityEngine.Assertions;
 
 public class GameManager : MonoBehaviour
 {
-    public Faction[] m_factions;
-
+    [SerializeField]
+    private Faction[] m_factions;
+    [SerializeField]
+    private List<Resource> m_resources;
+    [SerializeField]
     private int m_ID = 0; //Unique ID
 
     private static GameManager _instance;
@@ -27,6 +30,8 @@ public class GameManager : MonoBehaviour
         {
             Assert.IsNotNull(faction);
         }
+
+        m_resources = new List<Resource>();
     }
 
     public Unit getUnit(int ID)
@@ -61,20 +66,6 @@ public class GameManager : MonoBehaviour
         }
 
         return null;
-    }
-
-    public Faction getPlayerFaction()
-    {
-        Faction playerFaction = null;
-        foreach(Faction faction in m_factions)
-        {
-            if(faction.getControllerType() == eFactionControllerType.Human)
-            {
-                playerFaction = faction;
-            }
-        }
-
-        return playerFaction;
     }
 
     public int addUnit()
@@ -113,6 +104,45 @@ public class GameManager : MonoBehaviour
             Map.Instance.clear(unit.transform.position, unit.m_ID);
             m_factions[(int)unit.m_factionName].m_unit.Remove(unit);
             Destroy(unit.gameObject);
+        }
+    }
+
+    public void addResource(Resource newResource)
+    {
+        Assert.IsNotNull(newResource);
+        m_resources.Add(newResource);
+    }
+
+    public Resource getResource(Vector3 position)
+    {
+        foreach (Resource resource in m_resources)
+        {
+            Selection selection = resource.GetComponent<Selection>();
+            Assert.IsNotNull(selection);
+
+            if(selection.contains(position))
+            {
+                return resource;
+            }
+        }
+
+        return null;
+    }
+
+    public void createInfluence(FactionInfluenceMap[] proximityMaps, FactionInfluenceMap[] threatMaps)
+    {
+        Assert.IsNotNull(proximityMaps);
+        Assert.IsNotNull(threatMaps);
+
+        foreach (Faction faction in m_factions)
+        {
+            foreach (Unit unit in faction.m_unit)
+            {
+                Vector2Int positionOnGrid = Utilities.convertToGridPosition(unit.transform.position);
+                proximityMaps[(int)unit.m_factionName].createInfluence(positionOnGrid, unit.m_proximityStrength, unit.m_proximityDistance);
+                threatMaps[(int)unit.m_factionName].createThreat(positionOnGrid, unit.m_threatStrength, unit.m_threatDistance,
+                    unit.m_threatFallOffStrength, unit.m_threatFallOffDistance);
+            }
         }
     }
 }

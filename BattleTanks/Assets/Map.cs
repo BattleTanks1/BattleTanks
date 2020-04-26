@@ -12,7 +12,7 @@ public class PointOnMap
 
     public bool isEmpty()
     {
-        return unitID == Utilities.INVALID_ID;
+        return unitID == Utilities.INVALID_ID && sceneryType == eSceneryType.None;
     }
 
     public void assign(int ID, eFactionName factionName)
@@ -191,10 +191,10 @@ public class Map : MonoBehaviour
         return getPoint(x, y).sceneryType != eSceneryType.None;
     }
 
-    public void clear(Vector3 position, int ID)
+    public void clear(Vector3 position, int senderID)
     {
         Assert.IsTrue(isInBounds(position));
-        Assert.IsTrue(isPositionOccupied(position, ID));
+        Assert.IsTrue(isPositionOccupied(position, senderID));
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
         getPoint(positionOnGrid).reset();

@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+public enum eUnitType
+{
+    Attacker = 0,
+    Harvester
+}
+
 public class Unit : MonoBehaviour
 {
     public int m_visibilityDistance;
@@ -19,6 +25,8 @@ public class Unit : MonoBehaviour
     public eFactionName m_factionName;
     [SerializeField]
     private eFactionControllerType m_controllerType;
+    [SerializeField]
+    private eUnitType m_unitType;
     [SerializeField]
     private int m_health = 1;
 
@@ -37,6 +45,11 @@ public class Unit : MonoBehaviour
         Faction faction = transform.parent.gameObject.GetComponent<Faction>();
         Assert.IsNotNull(faction);
         faction.addUnit(this);
+    }
+
+    public eUnitType getUnitType()
+    {
+        return m_unitType;
     }
 
     public eFactionControllerType getControllerType()

@@ -216,9 +216,9 @@ public class CameraController : MonoBehaviour
             {
                 m_player.targetEnemyAtPosition(hit.point);
             }
-            else if (hit.collider.tag == "Ground" || hit.collider.tag == "PlayerBuilding")
+            else if (hit.collider.tag == "Ground" || hit.collider.tag == "PlayerBuilding" || hit.collider.tag == "Resource")
             {
-                m_player.handleSelectedUnit(hit.point);
+                m_player.handleSelectedUnits(hit.point);
             }
 
             clearSelectionBox();
