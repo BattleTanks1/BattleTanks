@@ -34,8 +34,8 @@ public class iRectangle : Rectangle<int>
 
         m_left = Mathf.Max(position.x - distance, 0);
         m_right = Mathf.Min(position.x + distance, mapSize.x - 1);
-        m_top = Mathf.Max(position.y + distance, mapSize.y - 1);
-        m_bottom = Mathf.Min(position.y - distance, 0);
+        m_top = Mathf.Min(position.y + distance, mapSize.y - 1);
+        m_bottom = Mathf.Max(position.y - distance, 0);
     }
 }
 
