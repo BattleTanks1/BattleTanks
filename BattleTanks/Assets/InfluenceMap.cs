@@ -201,7 +201,9 @@ public class InfluenceMap : MonoBehaviour
 
     //Proximity Map
     [SerializeField]
-    private bool m_renderCubes = false;
+    private bool m_renderProximityMap = false;
+    [SerializeField]
+    private bool m_renderThreatMap = false;
     [SerializeField]
     private FactionInfluenceMap[] m_proximityMaps = new FactionInfluenceMap[(int)eFactionName.Total];
     [SerializeField]
@@ -279,11 +281,6 @@ public class InfluenceMap : MonoBehaviour
         return m_proximityMaps[(int)factionName].getPoint(position);
     }
 
-    private void inverseWorkingMap(Vector2Int position)
-    {
-      
-    }
-
     private IEnumerator resetBaseMaps()
     {
         while(true)
@@ -302,15 +299,28 @@ public class InfluenceMap : MonoBehaviour
 
             GameManager.Instance.createInfluence(m_proximityMaps, m_threatMaps);
 
-            if(m_renderCubes)
+            if(m_renderThreatMap)
+            {
+                Vector2Int mapSize = Map.Instance.m_mapSize;
+                for (int y = 0; y < mapSize.y; ++y)
+                {
+                    for (int x = 0; x < mapSize.x; ++x)
+                    {  
+                        spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
+                        spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
+                    }
+                }
+            }
+            if(m_renderProximityMap)
             {
                 Vector2Int mapSize = Map.Instance.m_mapSize;
                 for (int y = 0; y < mapSize.y; ++y)
                 {
                     for (int x = 0; x < mapSize.x; ++x)
                     {
-                        spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
-                        spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
+
+                        spawnCube(x, y, m_proximityMaps[(int)eFactionName.Red]);
+                        spawnCube(x, y, m_proximityMaps[(int)eFactionName.Blue]);
                     }
                 }
             }
