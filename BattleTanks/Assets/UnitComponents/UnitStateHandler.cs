@@ -53,12 +53,17 @@ public class UnitStateHandler : MonoBehaviour
 
                         int targetID = Utilities.INVALID_ID;
                         Vector3 targetPosition;
-
-                        if (m_unit.getUnitType() == eUnitType.Attacker && getClosestVisibleTarget(out targetID, out targetPosition))
+                        bool enemySpotted = getClosestVisibleTarget(out targetID, out targetPosition);
+                        if (m_unit.getUnitType() == eUnitType.Attacker && enemySpotted)
                         {
                             m_targetID = targetID;
                             m_currentState = eUnitState.MovingToNewPosition;
                             m_tankMovement.moveTo(targetPosition);
+                        }
+                        else if(m_unit.getUnitType() == eUnitType.Harvester && enemySpotted)
+                        {
+                            Debug.Log("Set position to safe area");
+                            m_currentState = eUnitState.SetDestinationToSafePosition;
                         }
                     }
                 }
@@ -129,6 +134,11 @@ public class UnitStateHandler : MonoBehaviour
                     }
                 }
                 break;
+            case eUnitState.SetDestinationToSafePosition:
+                {
+
+                }
+                break;
         }
     }
 
@@ -165,7 +175,7 @@ public class UnitStateHandler : MonoBehaviour
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.m_visibilityDistance);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.getVisibilityDistance());
 
         for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
         {
@@ -179,7 +189,7 @@ public class UnitStateHandler : MonoBehaviour
                 }
 
                 if (pointOnMap.unitID == m_targetID &&
-                    result.sqrMagnitude <= m_unit.m_visibilityDistance * m_unit.m_visibilityDistance)
+                    result.sqrMagnitude <= m_unit.getVisibilityDistance() * m_unit.getVisibilityDistance())
                 {
                     Unit unit = GameManager.Instance.getUnit(m_targetID);
                     Assert.IsNotNull(unit);
@@ -197,7 +207,7 @@ public class UnitStateHandler : MonoBehaviour
     private bool getClosestVisibleTarget(out int enemyID, out Vector3 enemyPosition)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.m_visibilityDistance);
+        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.getVisibilityDistance());
         int closestTargetID = Utilities.INVALID_ID;
         float distance = float.MaxValue;
 
@@ -212,7 +222,7 @@ public class UnitStateHandler : MonoBehaviour
                     continue;
                 }
 
-                if (result.sqrMagnitude <= m_unit.m_visibilityDistance * m_unit.m_visibilityDistance &&
+                if (result.sqrMagnitude <= m_unit.getVisibilityDistance() * m_unit.getVisibilityDistance() &&
                     pointOnMap.isOccupiedByEnemy(m_unit.m_factionName))
                 {
                     float d = (positionOnGrid - new Vector2Int(x, y)).magnitude;

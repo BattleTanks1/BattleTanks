@@ -11,19 +11,20 @@ public enum eUnitType
 
 public class Unit : MonoBehaviour
 {
-    public int m_visibilityDistance;
     [SerializeField]
-    private float m_threatStrength;
+    private int m_visibilityDistance = 0;
     [SerializeField]
-    private int m_threatDistance;
+    private float m_threatStrength = 0.0f;
     [SerializeField]
-    private float m_threatFallOffStrength;
+    private int m_threatDistance = 0;
     [SerializeField]
-    private int m_threatFallOffDistance;
+    private float m_threatFallOffStrength = 0.0f;
     [SerializeField]
-    private float m_proximityStrength;
+    private int m_threatFallOffDistance = 0;
     [SerializeField]
-    private int m_proximityDistance;
+    private float m_proximityStrength = 0.0f;
+    [SerializeField]
+    private int m_proximityDistance = 0;
 
     public int m_ID;
 
@@ -51,6 +52,11 @@ public class Unit : MonoBehaviour
         Faction faction = transform.parent.gameObject.GetComponent<Faction>();
         Assert.IsNotNull(faction);
         faction.addUnit(this);
+    }
+
+    public int getVisibilityDistance()
+    {
+        return m_visibilityDistance;
     }
 
     public eUnitType getUnitType()

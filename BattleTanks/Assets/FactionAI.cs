@@ -117,7 +117,7 @@ public class FactionAI : Faction
         }
 
         Vector2Int senderPositionOnGrid = Utilities.convertToGridPosition(messageSender.transform.position);
-        iRectangle searchableRect = new iRectangle(senderPositionOnGrid, messageSender.m_visibilityDistance);
+        iRectangle searchableRect = new iRectangle(senderPositionOnGrid, messageSender.getVisibilityDistance());
         for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
         {
             for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
@@ -130,7 +130,7 @@ public class FactionAI : Faction
                 }
 
                 if (pointOnMap.unitID == receivedMessage.m_targetID &&
-                    vBetween.sqrMagnitude <= messageSender.m_visibilityDistance * messageSender.m_visibilityDistance)
+                    vBetween.sqrMagnitude <= messageSender.getVisibilityDistance() * messageSender.getVisibilityDistance())
                 {
                     return true;
                 }
@@ -142,7 +142,7 @@ public class FactionAI : Faction
 
     private void assignTankToEnemyInRange(Unit unit)
     {
-        iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(unit.transform.position), unit.m_visibilityDistance);
+        iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(unit.transform.position), unit.getVisibilityDistance());
         for (int y = searchRect.m_bottom; y <= searchRect.m_top; ++y)
         {
             for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
@@ -150,7 +150,7 @@ public class FactionAI : Faction
                 Vector2Int positionOnGrid = new Vector2Int(x, y);
                 int targetID = Utilities.INVALID_ID;
                 Vector2Int vBetween = Utilities.convertToGridPosition(unit.transform.position) - positionOnGrid;
-                if (vBetween.sqrMagnitude <= unit.m_visibilityDistance * unit.m_visibilityDistance &&
+                if (vBetween.sqrMagnitude <= unit.getVisibilityDistance() * unit.getVisibilityDistance() &&
                     Map.Instance.isEnemyOnPosition(positionOnGrid, unit.m_factionName, out targetID))
                 {
                     Debug.Log("Enemy Spotted");
