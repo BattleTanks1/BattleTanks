@@ -2,11 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GraphNode
-{
-    public bool visited = false;
-}
-
 public class PathFinding : MonoBehaviour
 {
     private Vector2Int[] m_directions2D = new Vector2Int[4]
@@ -19,7 +14,7 @@ public class PathFinding : MonoBehaviour
 
     List<Vector2Int> m_adjacentPositions = new List<Vector2Int>();
 
-    private GraphNode[,] m_graph;
+    private bool[,] m_graph;
 
     private static PathFinding _instance;
     public static PathFinding Instance { get { return _instance; } }
@@ -40,12 +35,12 @@ public class PathFinding : MonoBehaviour
     void Start()
     {
         Vector2Int mapSize = Map.Instance.m_mapSize;
-        m_graph = new GraphNode[mapSize.y, mapSize.x];
+        m_graph = new bool[mapSize.y, mapSize.x];
         for (int y = 0; y < mapSize.y; ++y)
         {
             for (int x = 0; x < mapSize.x; ++x)
             {
-                m_graph[y, x] = new GraphNode();
+                m_graph[y, x] = false;
             }
         }
     }
@@ -57,44 +52,13 @@ public class PathFinding : MonoBehaviour
         {
             for (int x = 0; x < mapSize.x; ++x)
             {
-                m_graph[y, x].visited = false;
+                m_graph[y, x] = false;
             }
         }
 
         m_adjacentPositions.Clear();
     }
 
-    public void getDiagonalAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position, Point[,] map)
-    {
-        Vector2Int mapSize = Map.Instance.m_mapSize;
-        foreach(Vector2Int direction in Utilities.getDiagonalDirections2D())
-        {
-            Vector2Int positionOnGrid = position + direction;
-            if (positionOnGrid.x >= 0 && positionOnGrid.x < mapSize.x &&
-                positionOnGrid.y >= 0 && positionOnGrid.y < mapSize.y &&
-                !map[positionOnGrid.y, positionOnGrid.x].visited &&
-                Map.Instance.isPointOnScenery(positionOnGrid))
-            {
-                adjacentPositions.Add(positionOnGrid);
-            }
-        }
-    }
-
-    public void getAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position, Point[,] map)
-    {
-        Vector2Int mapSize = Map.Instance.m_mapSize;
-        foreach (Vector2Int direction in m_directions2D)
-        {
-            Vector2Int positionOnGrid = position + direction;
-            if (positionOnGrid.x >= 0 && positionOnGrid.x < mapSize.x &&
-                positionOnGrid.y >= 0 && positionOnGrid.y < mapSize.y &&
-                !map[positionOnGrid.y, positionOnGrid.x].visited &&
-                Map.Instance.isPointOnScenery(positionOnGrid))
-            {
-                adjacentPositions.Add(positionOnGrid);
-            }
-        }
-    }
         
     public void getAdjacentPositions(List<Vector2Int> adjacentPositions, Vector2Int position)
     {
@@ -125,12 +89,12 @@ public class PathFinding : MonoBehaviour
             getAdjacentPositions(m_adjacentPositions, lastPosition.position);
             foreach (Vector2Int adjacentPosition in m_adjacentPositions)
             {
-                if (m_graph[adjacentPosition.y, adjacentPosition.x].visited)
+                if (m_graph[adjacentPosition.y, adjacentPosition.x])
                 {
                     continue;
                 }
 
-                m_graph[adjacentPosition.y, adjacentPosition.x].visited = true;
+                m_graph[adjacentPosition.y, adjacentPosition.x] = true;
                 frontier.Enqueue(new FrontierNode(adjacentPosition));
 
                 if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), tank.transform.position) >= Mathf.Abs(minDistance) &&
