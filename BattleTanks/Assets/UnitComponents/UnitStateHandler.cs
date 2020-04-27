@@ -99,6 +99,7 @@ public class UnitStateHandler : MonoBehaviour
                         {
                             m_tankMovement.stop();
                             m_targetID = Utilities.INVALID_ID;
+                            m_currentState = eUnitState.AwaitingDecision;
                         }
                         else
                         {

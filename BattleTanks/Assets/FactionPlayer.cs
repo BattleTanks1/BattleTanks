@@ -62,18 +62,11 @@ public class FactionPlayer : Faction
                 {
                     Selection unitSelection = unit.gameObject.GetComponent<Selection>();
                     Assert.IsNotNull(unitSelection);
-                    if (!unitSelection.isSelected())
-                    {
-                        continue;
-                    }
-
                     HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
-                    if (!harvesterStateHandler)
+                    if (unitSelection.isSelected() && harvesterStateHandler)
                     {
-                        continue;
+                        harvesterStateHandler.switchToState(eHarvesterState.MovingToHarvestPosition, resourceAtPosition);
                     }
-
-                    harvesterStateHandler.harvest(resourceAtPosition);
                 }
             }
             else

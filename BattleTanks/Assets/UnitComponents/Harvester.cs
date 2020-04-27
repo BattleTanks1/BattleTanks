@@ -30,6 +30,7 @@ public class Harvester : MonoBehaviour
 
     public bool extractResource(Resource resourceToHarvest)
     {
+        Assert.IsNotNull(resourceToHarvest);
         if(m_elaspedTime >= m_timeBetweenExtract)
         {
             resourceToHarvest.extractResource(m_extractAmount);
