@@ -6,15 +6,14 @@ using UnityEngine.Assertions;
 public class Harvester : MonoBehaviour
 {
     [SerializeField]
-    private int m_extractAmount = 0;
+    private int m_extractedResources = 0;
     [SerializeField]
-    private int m_maxExtractAmount = 0;
+    private int m_maximumExtractableAmount = 1;
     [SerializeField]
     private float m_timeBetweenExtract = 0.0f;
     [SerializeField]
     private Building m_buildingToReturnResource = null;
 
-    private int m_currentResourcesExtracted = 0;
     private float m_elaspedTime = 0.0f;
 
     private void Awake()
@@ -28,18 +27,28 @@ public class Harvester : MonoBehaviour
         m_elaspedTime += Time.deltaTime;
     }
 
-    public bool extractResource(Resource resourceToHarvest)
+    public bool extractResource(Resource resourceToHarvest, out bool maximumExtracted)
     {
         Assert.IsNotNull(resourceToHarvest);
         if(m_elaspedTime >= m_timeBetweenExtract)
         {
-            resourceToHarvest.extractResource(m_extractAmount);
             m_elaspedTime = 0.0f;
+            m_extractedResources += resourceToHarvest.extractResource();
+            if(m_extractedResources >= m_maximumExtractableAmount)
+            {
+                maximumExtracted = true;
+                m_extractedResources = 0;
+            }
+            else
+            {
+                maximumExtracted = false;
+            }
 
             return true;
         }
         else
         {
+            maximumExtracted = false;
             return false;
         }
     }

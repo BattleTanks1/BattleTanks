@@ -50,7 +50,8 @@ public class HarvesterStateHandler : UnitStateHandler
                 break;
             case eHarvesterState.Harvest:
                 {
-                    if(m_harvester.extractResource(m_resourceToHarvest))
+                    bool maximumExtracted = false;
+                    if(m_harvester.extractResource(m_resourceToHarvest, out maximumExtracted) && maximumExtracted)
                     {
                         switchToState(eHarvesterState.MovingToResourceBuilding);
                     }

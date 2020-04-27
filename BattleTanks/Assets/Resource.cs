@@ -5,7 +5,7 @@ using UnityEngine;
 public class Resource : MonoBehaviour
 {
     [SerializeField]
-    private int m_resourceCount = 10;
+    private int m_resourceAmount = 1000;
 
     // Start is called before the first frame update
     private void Start()
@@ -13,10 +13,9 @@ public class Resource : MonoBehaviour
         GameManager.Instance.addResource(this);   
     }
 
-    public int extractResource(int extractAmount)
+    public int extractResource()
     {
-        --m_resourceCount;
-
-        return extractAmount;
+        --m_resourceAmount;
+        return 1;
     }
 }
