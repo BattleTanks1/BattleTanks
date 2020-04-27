@@ -25,7 +25,7 @@ abstract public class Faction : MonoBehaviour
     protected eFactionControllerType m_controllerType;
 
     [SerializeField]
-    private int m_resourceCount;
+    private int m_resourceCount = 0;
 
     public eFactionControllerType getControllerType()
     {
@@ -39,7 +39,8 @@ abstract public class Faction : MonoBehaviour
 
     public void addResources(Harvester harvester)
     {
-
+        Assert.IsNotNull(harvester);
+        m_resourceCount += harvester.extractResources();
     }
 
     public void addUnit(Unit newUnit)

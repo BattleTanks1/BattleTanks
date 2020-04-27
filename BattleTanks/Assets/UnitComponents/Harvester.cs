@@ -34,15 +34,7 @@ public class Harvester : MonoBehaviour
         {
             m_elaspedTime = 0.0f;
             m_extractedResources += resourceToHarvest.extractResource();
-            if(m_extractedResources >= m_maximumExtractableAmount)
-            {
-                maximumExtracted = true;
-                m_extractedResources = 0;
-            }
-            else
-            {
-                maximumExtracted = false;
-            }
+            maximumExtracted = m_extractedResources >= m_maximumExtractableAmount;
 
             return true;
         }
@@ -58,5 +50,13 @@ public class Harvester : MonoBehaviour
         Assert.IsNotNull(m_buildingToReturnResource);
 
         return m_buildingToReturnResource;
+    }
+
+    public int extractResources()
+    {
+        int resources = m_extractedResources;
+        m_extractedResources = 0;
+
+        return resources;
     }
 }

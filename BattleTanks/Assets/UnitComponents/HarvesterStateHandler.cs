@@ -18,6 +18,7 @@ public class HarvesterStateHandler : UnitStateHandler
     private eHarvesterState m_harvesterState;
     private Harvester m_harvester = null;
     private Resource m_resourceToHarvest = null;
+    private Faction m_owningFaction = null;
 
     protected override void Awake()
     {
@@ -27,6 +28,9 @@ public class HarvesterStateHandler : UnitStateHandler
         Harvester harvesterComponent = GetComponent<Harvester>();
         Assert.IsNotNull(harvesterComponent);
         m_harvester = harvesterComponent;
+
+        Assert.IsNotNull(gameObject.transform.parent.GetComponent<Faction>());
+        m_owningFaction = gameObject.transform.parent.GetComponent<Faction>();
     }
 
     protected override void Update()
@@ -61,6 +65,7 @@ public class HarvesterStateHandler : UnitStateHandler
                 {
                     if (m_tankMovement.reachedDestination() && m_resourceToHarvest)
                     {
+                        m_owningFaction.addResources(m_harvester);
                         switchToState(eHarvesterState.MovingToHarvestPosition);
                     }
                 }
