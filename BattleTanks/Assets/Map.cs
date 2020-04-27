@@ -12,7 +12,7 @@ public class PointOnMap
 
     public bool isEmpty()
     {
-        return unitID == Utilities.INVALID_ID && sceneryType == eSceneryType.None;
+        return unitID == Utilities.INVALID_ID && !scenery;
     }
 
     public void assign(int ID, eFactionName factionName)
@@ -23,11 +23,11 @@ public class PointOnMap
 
     public void reset()
     {
-        sceneryType = eSceneryType.None;
+        scenery = false;
         unitID = Utilities.INVALID_ID;
     }
 
-    public eSceneryType sceneryType;
+    public bool scenery = false;
     public int unitID = Utilities.INVALID_ID;
     public eFactionName unitFactionName;
 }
@@ -142,8 +142,7 @@ public class Map : MonoBehaviour
         Assert.IsTrue(isInBounds(position));
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        return getPoint(positionOnGrid).sceneryType != eSceneryType.None ||
-             getPoint(positionOnGrid).unitID != Utilities.INVALID_ID;
+        return !getPoint(positionOnGrid).isEmpty();
     }
 
     public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
@@ -164,7 +163,7 @@ public class Map : MonoBehaviour
     public bool isPointOnScenery(Vector2Int position)
     {
         Assert.IsTrue(isInBounds(position));
-        return getPoint(position).sceneryType != eSceneryType.None;
+        return getPoint(position).scenery;
     }
 
     public PointOnMap getPoint(int x, int y)
@@ -173,14 +172,14 @@ public class Map : MonoBehaviour
         return m_map[y, x];
     }
 
-    public void addScenery(iRectangle rect, eSceneryType sceneryType)
+    public void addScenery(iRectangle rect)
     {
-        for (int y = rect.m_top; y <= rect.m_bottom; ++y)
+        for (int y = rect.m_bottom; y <= rect.m_top; ++y)
         {
             for (int x = rect.m_left; x <= rect.m_right; ++x)
             {
                 Assert.IsTrue(isInBounds(x, y));
-                getPoint(x, y).sceneryType = sceneryType;
+                getPoint(x, y).scenery = true;
             }
         }
     }
@@ -188,7 +187,7 @@ public class Map : MonoBehaviour
     public bool isPositionScenery(int x, int y)
     {
         Assert.IsTrue(isInBounds(x, y));
-        return getPoint(x, y).sceneryType != eSceneryType.None;
+        return getPoint(x, y).scenery;
     }
 
     public void clear(Vector3 position, int senderID)

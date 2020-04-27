@@ -34,7 +34,7 @@ public class UnitMovement : MonoBehaviour
             if (Map.Instance.isPositionOnOccupiedCell(newPosition, transform.position))
             {   
                 transform.position = newPosition;
-            }
+            }   
             //Moving to new grid cell
             else if (!Map.Instance.isPositionOccupied(newPosition))
             { 
