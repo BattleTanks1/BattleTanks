@@ -65,7 +65,7 @@ public class FactionPlayer : Faction
                     HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
                     if (unitSelection.isSelected() && harvesterStateHandler)
                     {
-                        harvesterStateHandler.switchToState(eHarvesterState.MovingToHarvestPosition, resourceAtPosition);
+                        harvesterStateHandler.switchToState(eHarvesterState.SetDestinationHarvest, resourceAtPosition);
                     }
                 }
             }
@@ -78,7 +78,7 @@ public class FactionPlayer : Faction
                     HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
                     if (unitSelection.isSelected() && harvesterStateHandler)
                     {
-                        harvesterStateHandler.switchToState(eHarvesterState.MovingToResourceBuilding, null);
+                        harvesterStateHandler.switchToState(eHarvesterState.SetDestinationResourceBuilding, null);
                     }
                 }
             }

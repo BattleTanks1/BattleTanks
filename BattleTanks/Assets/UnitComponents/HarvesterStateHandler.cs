@@ -6,6 +6,8 @@ using UnityEngine.Assertions;
 public enum eHarvesterState
 {
     NotHarvesting = 0,
+    SetDestinationHarvest,
+    SetDestinationResourceBuilding,
     MovingToHarvestPosition,
     MovingToResourceBuilding,
     Harvest,
@@ -57,7 +59,7 @@ public class HarvesterStateHandler : UnitStateHandler
                     bool maximumExtracted = false;
                     if(m_harvester.extractResource(m_resourceToHarvest, out maximumExtracted) && maximumExtracted)
                     {
-                        switchToState(eHarvesterState.MovingToResourceBuilding);
+                        switchToState(eHarvesterState.SetDestinationResourceBuilding);
                     }
                 }
                 break;
@@ -66,7 +68,7 @@ public class HarvesterStateHandler : UnitStateHandler
                     if (m_tankMovement.reachedDestination() && m_resourceToHarvest)
                     {
                         m_owningFaction.addResources(m_harvester);
-                        switchToState(eHarvesterState.MovingToHarvestPosition);
+                        switchToState(eHarvesterState.SetDestinationHarvest);
                     }
                 }
                 break;
@@ -81,7 +83,7 @@ public class HarvesterStateHandler : UnitStateHandler
 
         switch (newState)
         {
-            case eHarvesterState.MovingToHarvestPosition:
+            case eHarvesterState.SetDestinationHarvest:
                 {
                     if (resource)
                     {
@@ -89,12 +91,14 @@ public class HarvesterStateHandler : UnitStateHandler
                     }
 
                     m_tankMovement.moveTo(getHarvestingPosition());
+                    m_harvesterState = eHarvesterState.MovingToHarvestPosition;
                 }
                 break;
-            case eHarvesterState.MovingToResourceBuilding:
+            case eHarvesterState.SetDestinationResourceBuilding:
                 {
                     Assert.IsNotNull(m_harvester.getBuildingToReturnResource());
                     m_tankMovement.moveTo(getReturnPosition(m_harvester.getBuildingToReturnResource()));
+                    m_harvesterState = eHarvesterState.MovingToResourceBuilding;
                 }
                 break;
         }
