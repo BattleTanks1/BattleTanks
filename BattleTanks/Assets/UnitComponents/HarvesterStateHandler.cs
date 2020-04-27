@@ -69,6 +69,10 @@ public class HarvesterStateHandler : UnitStateHandler
 
     public void switchToState(eHarvesterState newState, Resource resource = null)
     {
+        m_harvesterState = newState;
+        m_currentState = eUnitState.InUseBySecondaryState;
+        m_targetID = Utilities.INVALID_ID;
+
         switch (newState)
         {
             case eHarvesterState.MovingToHarvestPosition:
@@ -83,16 +87,11 @@ public class HarvesterStateHandler : UnitStateHandler
                 break;
             case eHarvesterState.MovingToResourceBuilding:
                 {
-                    Building buildingToReturnResource = m_harvester.getBuildingToReturnResource();
-                    Assert.IsNotNull(buildingToReturnResource);
-                    m_tankMovement.moveTo(getReturnPosition(buildingToReturnResource));
+                    Assert.IsNotNull(m_harvester.getBuildingToReturnResource());
+                    m_tankMovement.moveTo(getReturnPosition(m_harvester.getBuildingToReturnResource()));
                 }
                 break;
         }
-
-        m_harvesterState = newState;
-        m_currentState = eUnitState.InUseBySecondaryState;
-        m_targetID = Utilities.INVALID_ID;
     }
 
     private Vector3 getReturnPosition(Building building)

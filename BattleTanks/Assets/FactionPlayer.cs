@@ -89,7 +89,7 @@ public class FactionPlayer : Faction
                     }
                     else
                     {
-                        unitStateHandler.switchToState(eUnitState.SetNewDestination, Utilities.INVALID_ID, position);
+                        unitStateHandler.switchToState(eUnitState.SetDestination, Utilities.INVALID_ID, position);
                     }
                 }
             }

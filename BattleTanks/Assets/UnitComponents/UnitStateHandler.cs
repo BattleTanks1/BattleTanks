@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 public enum eUnitState
 {
     AwaitingDecision = 0,
-    SetNewDestination,
+    SetDestination,
     SetAttackDestination,
     ShootingAtEnemy,
     MovingToNewPosition,
@@ -57,13 +57,11 @@ public class UnitStateHandler : MonoBehaviour
                         bool enemySpotted = getClosestVisibleTarget(out targetID, out targetPosition);
                         if (m_unit.getUnitType() == eUnitType.Attacker && enemySpotted)
                         {
-                            m_targetID = targetID;
-                            m_currentState = eUnitState.MovingToNewPosition;
-                            m_tankMovement.moveTo(targetPosition);
+                            switchToState(eUnitState.MovingToNewPosition, targetID, targetPosition);
                         }
                         else if(m_unit.getUnitType() == eUnitType.Harvester && enemySpotted)
                         {
-                            m_currentState = eUnitState.SetDestinationToSafePosition;
+                            switchToState(eUnitState.SetDestinationToSafePosition);
                         }
                     }
                 }
@@ -78,10 +76,7 @@ public class UnitStateHandler : MonoBehaviour
 
                         if (getClosestVisibleTarget(out targetID, out targetPosition))
                         {
-                            m_attackMove = false;
-                            m_targetID = targetID;
-                            m_currentState = eUnitState.MovingToNewPosition;
-                            m_tankMovement.moveTo(targetPosition);
+                            switchToState(eUnitState.SetDestination, targetID, targetPosition);
                         }
                     }
                     else
@@ -92,21 +87,18 @@ public class UnitStateHandler : MonoBehaviour
 
                             if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                             {
-                                m_tankMovement.stop();
-                                m_currentState = eUnitState.ShootingAtEnemy;
+                                switchToState(eUnitState.ShootingAtEnemy, m_targetID);
                             }
                         }
                         else if (m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
                         {
-                            m_tankMovement.stop();
-                            m_targetID = Utilities.INVALID_ID;
-                            m_currentState = eUnitState.AwaitingDecision;
+                            switchToState(eUnitState.AwaitingDecision);
                         }
                         else
                         {
                             if (m_tankMovement.reachedDestination())
                             {
-                                m_currentState = eUnitState.AwaitingDecision;
+                                switchToState(eUnitState.AwaitingDecision);
                             }
                         }
                     }
@@ -129,47 +121,45 @@ public class UnitStateHandler : MonoBehaviour
                     }
                     else
                     {
-                        m_tankMovement.stop();
-                        m_targetID = Utilities.INVALID_ID;
-                        m_currentState = eUnitState.AwaitingDecision;
+                        switchToState(eUnitState.AwaitingDecision);
                     }
-                }
-                break;
-            case eUnitState.SetDestinationToSafePosition:
-                {
-                    m_targetID = Utilities.INVALID_ID;
-                    m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_unit));
-                    m_currentState = eUnitState.MovingToNewPosition;
                 }
                 break;
         }
     }
 
-    public void switchToState(eUnitState state, int targetID, Vector3 position)
+    public void switchToState(eUnitState newState, int targetID = Utilities.INVALID_ID, Vector3 position = new Vector3())
     {
-        switch (state)
+        m_targetID = targetID;
+        m_currentState = newState;
+
+        switch (newState)
         {
+            case eUnitState.AwaitingDecision:
             case eUnitState.ShootingAtEnemy:
-            case eUnitState.MovingToNewPosition:
-                {
-                    m_targetID = targetID;
-                    m_currentState = state;
-                    m_tankMovement.moveTo(position);
-                }
+                m_tankMovement.stop();
                 break;
-            case eUnitState.SetNewDestination:
+            case eUnitState.MovingToNewPosition:
+                m_tankMovement.moveTo(position);
+                break;
+            case eUnitState.SetDestination:
                 {
-                    m_targetID = targetID;
                     m_currentState = eUnitState.MovingToNewPosition;
                     m_tankMovement.moveTo(position);
+                    m_attackMove = false;
                 }
                 break;
             case eUnitState.SetAttackDestination:
                 {
-                    m_targetID = targetID;
                     m_currentState = eUnitState.MovingToNewPosition;
                     m_tankMovement.moveTo(position);
                     m_attackMove = true;
+                }
+                break;
+            case eUnitState.SetDestinationToSafePosition:
+                {
+                    m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_unit));
+                    m_currentState = eUnitState.MovingToNewPosition;
                 }
                 break;
         }
