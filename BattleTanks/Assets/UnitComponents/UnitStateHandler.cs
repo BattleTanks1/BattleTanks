@@ -10,7 +10,8 @@ public enum eUnitState
     SetAttackDestination,
     ShootingAtEnemy,
     MovingToNewPosition,
-    SetDestinationToSafePosition
+    SetDestinationToSafePosition,
+    InUseBySecondaryState
 }
 
 public class UnitStateHandler : MonoBehaviour

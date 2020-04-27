@@ -33,8 +33,7 @@ public class HarvesterStateHandler : UnitStateHandler
     {
         base.Update();
 
-        //Assert.IsTrue(m_currentState != eUnitState.AwaitingDecision && m_harvesterState == eHarvesterState.NotHarvesting);
-        if(m_currentState != eUnitState.AwaitingDecision)
+        if (m_currentState != eUnitState.InUseBySecondaryState)
         {
             m_harvesterState = eHarvesterState.NotHarvesting;
         }
@@ -79,21 +78,20 @@ public class HarvesterStateHandler : UnitStateHandler
                         m_resourceToHarvest = resource;
                     }
 
-                    m_tankMovement.moveTo(getHarvestingPosition(m_resourceToHarvest));
+                    m_tankMovement.moveTo(getHarvestingPosition());
                 }
                 break;
             case eHarvesterState.MovingToResourceBuilding:
                 {
                     Building buildingToReturnResource = m_harvester.getBuildingToReturnResource();
-                    if (buildingToReturnResource)
-                    {
-                        m_tankMovement.moveTo(getReturnPosition(buildingToReturnResource));
-                    }
+                    Assert.IsNotNull(buildingToReturnResource);
+                    m_tankMovement.moveTo(getReturnPosition(buildingToReturnResource));
                 }
                 break;
         }
 
         m_harvesterState = newState;
+        m_currentState = eUnitState.InUseBySecondaryState;
         m_targetID = Utilities.INVALID_ID;
     }
 
@@ -115,17 +113,17 @@ public class HarvesterStateHandler : UnitStateHandler
         return position;
     }
 
-    private Vector3 getHarvestingPosition(Resource resource)
+    private Vector3 getHarvestingPosition()
     {
-        Assert.IsNotNull(resource);
-        Selection resoureceSelection = resource.GetComponent<Selection>();
+        Assert.IsNotNull(m_resourceToHarvest);
+        Selection resoureceSelection = m_resourceToHarvest.GetComponent<Selection>();
         Assert.IsNotNull(resoureceSelection);
 
         int distance = 1;
         Vector3 position = Utilities.INVALID_POSITION;
         do
         {
-            position = resource.transform.position + (transform.position - resource.transform.position).normalized * distance;
+            position = m_resourceToHarvest.transform.position + (transform.position - m_resourceToHarvest.transform.position).normalized * distance;
             ++distance;
 
         } while (resoureceSelection.contains(position));
