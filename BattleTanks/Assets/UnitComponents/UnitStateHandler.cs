@@ -73,7 +73,6 @@ public class UnitStateHandler : MonoBehaviour
                     {
                         int targetID = Utilities.INVALID_ID;
                         Vector3 targetPosition;
-
                         if (getClosestVisibleTarget(out targetID, out targetPosition))
                         {
                             switchToState(eUnitState.SetDestination, targetID, targetPosition);
@@ -111,12 +110,11 @@ public class UnitStateHandler : MonoBehaviour
                     {
                         if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
-                            m_tankMovement.stop();
                             m_tankShooting.attackPosition(enemyPosition);
                         }
                         else
                         {
-                            m_tankMovement.moveTo(enemyPosition);
+                            switchToState(eUnitState.SetAttackDestination, m_targetID, enemyPosition);
                         }
                     }
                     else
