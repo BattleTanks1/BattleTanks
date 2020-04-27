@@ -55,7 +55,7 @@ public class CameraController : MonoBehaviour
         }
         else if(Input.GetKeyDown(KeyCode.A))
         {
-            m_player.turnOnAttackMove();
+            m_player.setAttackMove(true);
         }
     }
 
@@ -252,7 +252,7 @@ public class CameraController : MonoBehaviour
     private void clearSelectionBox()
     {
         m_leftButtonHeld = false;
-        m_player.turnOffAttackMove();
+        m_player.setAttackMove(false);
 
         if(m_selectionBoxClone)
         {

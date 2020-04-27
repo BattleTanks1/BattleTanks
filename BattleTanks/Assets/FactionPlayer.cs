@@ -144,13 +144,8 @@ public class FactionPlayer : Faction
         }
     }
 
-    public void turnOnAttackMove()
+    public void setAttackMove(bool attackMove)
     {
-        m_attackMoveNextSelection = true;
-    }
-
-    public void turnOffAttackMove()
-    {
-        m_attackMoveNextSelection = false;
+        m_attackMoveNextSelection = attackMove;
     }
 }
