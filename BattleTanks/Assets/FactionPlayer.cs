@@ -69,6 +69,19 @@ public class FactionPlayer : Faction
                     }
                 }
             }
+            else if(buildingSelection.contains(position))
+            {
+                foreach (Unit unit in m_unit)
+                {
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
+                    if (unitSelection.isSelected() && harvesterStateHandler)
+                    {
+                        harvesterStateHandler.switchToState(eHarvesterState.MovingToResourceBuilding, null);
+                    }
+                }
+            }
             else
             {
                 foreach (Unit unit in m_unit)
