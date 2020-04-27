@@ -8,7 +8,7 @@ public enum eUnitState
     AwaitingDecision = 0,
     SetDestination,
     SetAttackDestination,
-    ShootingAtEnemy,
+    AttackingEnemy,
     MovingToNewPosition,
     SetDestinationToSafePosition,
     InUseBySecondaryState
@@ -86,7 +86,7 @@ public class UnitStateHandler : MonoBehaviour
 
                             if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                             {
-                                switchToState(eUnitState.ShootingAtEnemy, m_targetID);
+                                switchToState(eUnitState.AttackingEnemy, m_targetID);
                             }
                         }
                         else if (m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
@@ -103,7 +103,7 @@ public class UnitStateHandler : MonoBehaviour
                     }
                 }
                 break;
-            case eUnitState.ShootingAtEnemy:
+            case eUnitState.AttackingEnemy:
                 {
                     Vector3 enemyPosition = new Vector3();
                     if (isTargetInVisibleSight(out enemyPosition))
@@ -134,7 +134,7 @@ public class UnitStateHandler : MonoBehaviour
         switch (newState)
         {
             case eUnitState.AwaitingDecision:
-            case eUnitState.ShootingAtEnemy:
+            case eUnitState.AttackingEnemy:
                 m_tankMovement.stop();
                 break;
             case eUnitState.MovingToNewPosition:

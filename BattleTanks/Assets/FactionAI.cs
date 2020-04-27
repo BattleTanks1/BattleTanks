@@ -83,7 +83,7 @@ public class FactionAI : Faction
                         UnitStateHandler stateHandlerComponent = getTank(receivedMessage.m_senderID).gameObject.GetComponent<UnitStateHandler>();
                         Assert.IsNotNull(stateHandlerComponent);
 
-                        stateHandlerComponent.switchToState(eUnitState.ShootingAtEnemy, receivedMessage.m_targetID, 
+                        stateHandlerComponent.switchToState(eUnitState.AttackingEnemy, receivedMessage.m_targetID, 
                             Utilities.convertToWorldPosition(receivedMessage.m_lastTargetPosition));
                     }
                     break;
