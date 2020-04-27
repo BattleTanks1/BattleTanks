@@ -27,10 +27,10 @@ public class Boid : MonoBehaviour
     }
 
     //Adds a vector to another, capping the length of the second such that the result's length is 1 or less
-    void accumulate(Vector3 acc, Vector3 add)
+    Vector3 accumulate(Vector3 acc, Vector3 add)
     {
         if (acc.magnitude == 1.0f)
-            return;
+            return acc;
 
         float dot = Vector3.Dot(acc, add);
         float root = Mathf.Sqrt((dot * dot) - (add.sqrMagnitude * (acc.sqrMagnitude - 1)));
@@ -42,15 +42,16 @@ public class Boid : MonoBehaviour
             A = Mathf.Min(1.0f, A);
             acc = acc + (add * A);
             acc = acc.normalized;
-            return;
+            return acc;
         }
         else if (B >= 0.0f)
         {
             B = Mathf.Min(1.0f, B);
             acc = acc + (add * B);
             acc = acc.normalized;
-            return;
+            return acc;
         }
+        return acc;
     }
 
     //Vector3 collisionAvoidance(std::vector<Vector3> obstacles, Vector3 pos, float avoidDist)
@@ -120,18 +121,19 @@ public class Boid : MonoBehaviour
 
         //Accumulate
         m_acceleration = collision;
-        accumulate(m_acceleration, stayHome);
-        accumulate(m_acceleration, matchVel);
-        accumulate(m_acceleration, matchPos);
-        accumulate(m_acceleration, randmotion);
+        m_acceleration = accumulate(m_acceleration, stayHome);
+        m_acceleration = accumulate(m_acceleration, matchVel);
+        m_acceleration = accumulate(m_acceleration, matchPos);
+        m_acceleration = accumulate(m_acceleration, randmotion);
 
-        //Actually interacting with normalizedy
+        //Actually interacting with stuff
         m_velocity += m_acceleration * m_maxAcceleration * Time.deltaTime;
         //Temp code capping velocity in place of drag
-        float magnitude = Mathf.Min(m_velocity.Magnitude, 5.0f);
+        float magnitude = Mathf.Min(m_velocity.magnitude, 5.0f);
         m_velocity = m_velocity.normalized * magnitude;
 
         m_position += m_velocity * Time.deltaTime;
+        transform.position = m_position;
     }
 
     //void simulate(float Time.deltaTime)
