@@ -33,11 +33,9 @@ public class Harvester : MonoBehaviour
 
             return true;
         }
-        else
-        {
-            maximumExtracted = false;
-            return false;
-        }
+
+        maximumExtracted = false;
+        return false;
     }
 
     public Building getBuildingToReturnResource()

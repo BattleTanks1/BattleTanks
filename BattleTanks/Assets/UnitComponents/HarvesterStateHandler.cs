@@ -10,7 +10,7 @@ public enum eHarvesterState
     SetDestinationResourceBuilding,
     MovingToHarvestPosition,
     MovingToResourceBuilding,
-    Harvest,
+    Harvesting,
     ReturningHarvestedResource
 }
 
@@ -46,11 +46,11 @@ public class HarvesterStateHandler : UnitStateHandler
                 {
                     if(m_tankMovement.reachedDestination())
                     {
-                        switchToState(eHarvesterState.Harvest);
+                        switchToState(eHarvesterState.Harvesting);
                     }
                 }   
                 break;
-            case eHarvesterState.Harvest:
+            case eHarvesterState.Harvesting:
                 {
                     Assert.IsNotNull(m_resourceToHarvest);
                     bool maximumExtracted = false;
