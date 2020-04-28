@@ -64,30 +64,6 @@ public class PointOnInfluenceMap
     public bool visited = false;
 }
 
-public class WorkingMap
-{ 
-    public WorkingMap()
-    {
-        m_workingMap = new PointOnInfluenceMap[40, 40];
-        for(int y = 0; y < 40; ++y)
-        {
-            for(int x = 0; x < 40; ++x)
-            {
-                m_workingMap[y, x] = new PointOnInfluenceMap();
-            }
-        }
-    }
-
-    public void reset(Vector2Int position, int distance)
-    {
-        m_searchableArea.reset(position, distance);
-    }
-
-    private iRectangle m_searchableArea;
-    [SerializeField]
-    public PointOnInfluenceMap[,] m_workingMap { get; private set; }
-}
-
 public class FactionInfluenceMap
 {
     public PointOnInfluenceMap[,] m_map { get; private set; }
@@ -120,10 +96,10 @@ public class FactionInfluenceMap
                     continue;
                 }
 
-                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
-                if (distance <= maxDistance)
+                float sqrDistance = (new Vector2Int(x, y) - position).sqrMagnitude;
+                if (sqrDistance <= maxDistance * maxDistance)
                 {
-                    m_map[y, x].value += strength - (strength * (distance / maxDistance));
+                    m_map[y, x].value += strength - (strength * (sqrDistance / (maxDistance * maxDistance)));
                 }
             }
         }
@@ -142,16 +118,16 @@ public class FactionInfluenceMap
                     continue;
                 }
 
-                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
-                if (distance <= maxDistance)
+                float sqrDistance = (new Vector2Int(x, y) - position).sqrMagnitude;
+                if (sqrDistance <= maxDistance * maxDistance)
                 {
                     m_map[y, x].value += strength;
                     //m_map[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
                 }
-                else if(distance <= maxDistance + fallOfDistance)
+                else if(sqrDistance <= maxDistance * maxDistance + fallOfDistance * fallOfDistance)
                 {
                     //m_map[y, x].value += strength - (strength * (distance / maxDistance));
-                    m_map[y, x].value += fallOfStrength - (fallOfStrength * (distance / totalDistance));
+                    m_map[y, x].value += fallOfStrength - (fallOfStrength * (sqrDistance / (totalDistance * totalDistance)));
                 }
             }
         }
@@ -308,7 +284,6 @@ public class InfluenceMap : MonoBehaviour
                 {
                     for (int x = 0; x < mapSize.x; ++x)
                     {
-
                         spawnCube(x, y, m_proximityMaps[(int)eFactionName.Red]);
                         spawnCube(x, y, m_proximityMaps[(int)eFactionName.Blue]);
                     }
