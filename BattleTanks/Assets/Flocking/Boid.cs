@@ -88,7 +88,7 @@ public class Boid : MonoBehaviour
             return sum;
     }
 
-    void update()
+    void Update()
     {
         Vector3 oldAcc = m_acceleration;
         //Find "flock" data
