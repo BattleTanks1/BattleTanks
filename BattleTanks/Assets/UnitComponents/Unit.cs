@@ -94,7 +94,7 @@ public class Unit : MonoBehaviour
         Assert.IsNotNull(threatMaps);
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        proximityMaps[(int)m_factionName].createInfluence(positionOnGrid, m_proximityStrength, m_proximityDistance);
+        proximityMaps[(int)m_factionName].createProximity(positionOnGrid, m_proximityStrength, m_proximityDistance);
         threatMaps[(int)m_factionName].createThreat(positionOnGrid, m_threatStrength, m_threatDistance,
             m_threatFallOffStrength, m_threatFallOffDistance);
     }

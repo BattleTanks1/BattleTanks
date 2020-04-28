@@ -84,7 +84,7 @@ public class FactionInfluenceMap
         }
     }
 
-    public void createInfluence(Vector2Int position, float strength, int maxDistance)
+    public void createProximity(Vector2Int position, float strength, int maxDistance)
     {
         iRectangle searchableRect = new iRectangle(position, maxDistance);
         for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
