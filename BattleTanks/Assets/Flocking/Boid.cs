@@ -65,14 +65,32 @@ public class Boid : MonoBehaviour
     //            sum = sum + diff.normalized;
     //        }
     //    }
-    //    if (sum.mag() > 1)
+    //    if (sum.magnitude > 1)
     //        return sum.normalized;
     //    else
     //        return sum;
     //}
 
+    Vector3 collisionAvoidance(Boid[] boids, Vector3 pos, float avoidDist)
+    {
+        Vector3 sum = Vector3.zero;
+        foreach (Boid boid in boids)
+        {
+            Vector3 diff = pos - boid.m_position;
+            if (diff.magnitude < avoidDist)
+            {
+                sum += diff - (diff / avoidDist);
+            }
+        }
+        if (sum.magnitude > 1)
+            return sum.normalized;
+        else
+            return sum;
+    }
+
     void update()
     {
+        Vector3 oldAcc = m_acceleration;
         //Find "flock" data
         Boid[] boids = GameObject.FindObjectsOfType<Boid>();//TEMP!! Inefficient to call each frame
         Vector3 sumPos = Vector3.zero;
@@ -81,56 +99,66 @@ public class Boid : MonoBehaviour
         {
             //rather than creating the flock store the average of nearby velocities and positions simultaneously as it saves on temp data
             Vector3 diff = m_position - boid.m_position;
-            if (diff.sqrMagnitude < m_detectionDistance)
+            if (diff.magnitude < m_detectionDistance)
             {
                 if (diff == Vector3.zero)
                     continue;
-
+                if (m_velocity != Vector3.zero)
+                {
+                    float sigma = Vector3.Dot(m_velocity, diff) / (diff.magnitude * m_velocity.magnitude);
+                    if (Mathf.Acos(sigma) > Mathf.PI * 0.75)
+                        continue;
+                }
                 sumPos += boid.m_position;
                 sumVel += boid.m_velocity;
             }
         }
-        sumPos = sumPos.normalized;
 
         //Collision avoidance
-        Vector3 collision = Vector3.zero;//collisionAvoidance(obstacles, m_position, m_avoidanceDistance);
+        m_acceleration = collisionAvoidance(boids, m_position, m_avoidanceDistance);
 
-        //Move toward home point
-        Vector3 relativePos = m_position - m_homePos;
-        Vector3 stayHome = Vector3.zero;
-        if (relativePos.magnitude > m_homeBounds)
+        //Home towards 0, 0
+        Vector3 homeVec = m_homePos - m_position;
+        if (homeVec.magnitude > m_homeBounds)
         {
-            float intensity = (relativePos.magnitude - m_homeBounds) / m_homeBounds;
-            stayHome = -relativePos * intensity;
+            float mult = (homeVec.magnitude - m_homeBounds) / m_homeBounds;
+            m_acceleration = accumulate(m_acceleration, homeVec.normalized * mult);
         }
 
         //Match velocity with flock
-        sumVel = sumVel.normalized;
-        Vector3 matchVel = (sumVel - m_velocity) / m_maxAcceleration;
+        if (sumVel != Vector3.zero)
+        {
+            if (sumVel.magnitude > 1.0f)
+                sumVel = sumVel.normalized;
+            Vector3 matchVel = (sumVel - m_velocity) * m_maxAcceleration;
+            m_acceleration = accumulate(m_acceleration, matchVel);
+        }
 
         //Move toward flock centre
-        sumPos = sumPos.normalized;
-        Vector3 matchPos = (sumPos - m_position) / m_detectionDistance;
+        if (sumPos != Vector3.zero)
+        {
+            if (sumPos.magnitude > 1.0f)
+                sumPos = sumPos.normalized;
+            Vector3 matchPos = sumPos / m_detectionDistance;
+            m_acceleration = accumulate(m_acceleration, matchPos);
+        }
 
         //Random acceleration
-        Vector3 randmotion = new Vector3(
-            Random.Range(-10.0f, 10.0f),
-            Random.Range(-10.0f, 10.0f),
-            Random.Range(-10.0f, 10.0f));
-        randmotion = randmotion.normalized;
+        //Vector3 randmotion = Vector3(rand() % 21 - 10, rand() % 21 - 10, 0.0f);
+        //randmotion = randmotion.normalized;
+        //accumulate(m_acceleration, randmotion * 0.5f);
 
-        //Accumulate
-        m_acceleration = collision;
-        m_acceleration = accumulate(m_acceleration, stayHome);
-        m_acceleration = accumulate(m_acceleration, matchVel);
-        m_acceleration = accumulate(m_acceleration, matchPos);
-        m_acceleration = accumulate(m_acceleration, randmotion);
+        //Continue on current path
+        m_acceleration = accumulate(m_acceleration, m_velocity);
+
+        //Damping
+        m_acceleration = (m_acceleration + oldAcc) / 2;
 
         //Actually interacting with stuff
         m_velocity += m_acceleration * m_maxAcceleration * Time.deltaTime;
-        //Temp code capping velocity in place of drag
-        float magnitude = Mathf.Min(m_velocity.magnitude, 5.0f);
-        m_velocity = m_velocity.normalized * magnitude;
+
+        float drag = m_velocity.sqrMagnitude * m_dragEffect;
+        m_velocity -= m_velocity * drag * Time.deltaTime;
 
         m_position += m_velocity * Time.deltaTime;
         transform.position = m_position;
@@ -140,7 +168,7 @@ public class Boid : MonoBehaviour
     //{
     //    m_velocity += m_acceleration * m_maxAcceleration * Time.deltaTime;
     //    //Temp code capping velocity in place of drag
-    //    float magnitude = std::min(m_velocity.mag(), 5.0f);
+    //    float magnitude = std::min(m_velocity.magnitude, 5.0f);
     //    m_velocity = m_velocity.normalized * magnitude;
 
     //    m_position += m_velocity * Time.deltaTime;
