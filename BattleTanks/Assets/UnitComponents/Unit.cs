@@ -46,10 +46,6 @@ public class Unit : MonoBehaviour
     private void Start()
     {
         m_ID = GameManager.Instance.addUnit();
-
-        Faction faction = transform.parent.gameObject.GetComponent<Faction>();
-        Assert.IsNotNull(faction);
-        faction.addUnit(this);
     }
 
     public int getVisibilityDistance()

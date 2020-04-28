@@ -1,12 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Assertions;
 
 public class Building : MonoBehaviour
 {
     [SerializeField]
-    private GameObject m_spawnableUnit = null;
+    private Unit m_tankToSpawn = null;
+    [SerializeField]
+    private Unit m_harvesterToSpawn = null;
     [SerializeField]
     private GameObject m_wayPointPrefab = null;
 
@@ -15,7 +15,8 @@ public class Building : MonoBehaviour
 
     private void Awake()
     {
-        Assert.IsNotNull(m_spawnableUnit);
+        Assert.IsNotNull(m_tankToSpawn);
+        Assert.IsNotNull(m_harvesterToSpawn);
         Assert.IsNotNull(m_wayPointPrefab);
 
         m_selectionComponent = GetComponent<Selection>();
@@ -73,26 +74,36 @@ public class Building : MonoBehaviour
         m_wayPointClone.SetActive(false);
     }
 
-    public GameObject spawnUnit()
+    public Unit spawnUnit(eUnitType unitType)
     {
-        GameObject newTank = null;
+        Unit newUnit = null;
         Vector3 spawnPosition = getSpawnPosition();
         
         if (!Map.Instance.isPositionOccupied(spawnPosition))
         {
-            newTank = Instantiate(m_spawnableUnit, spawnPosition, Quaternion.identity);
-            newTank.transform.parent = transform.parent;
+            if(unitType == eUnitType.Harvester)
+            {
+                newUnit = Instantiate(m_harvesterToSpawn, spawnPosition, Quaternion.identity);
+                Harvester harvester = newUnit.GetComponent<Harvester>();
+                Assert.IsNotNull(harvester);
+                harvester.setBuildingToReturnResource(this);
+            }
+            else if(unitType == eUnitType.Attacker)
+            {
+                newUnit = Instantiate(m_tankToSpawn, spawnPosition, Quaternion.identity);
+            }
+            Assert.IsNotNull(newUnit);
 
             if (m_wayPointClone.transform.position != transform.position)
             {
                 Assert.IsTrue(m_wayPointClone.activeSelf);
-                UnitStateHandler stateHandlerComponent = newTank.GetComponent<UnitStateHandler>();
+                UnitStateHandler stateHandlerComponent = newUnit.GetComponent<UnitStateHandler>();
                 Assert.IsNotNull(stateHandlerComponent);
 
                 stateHandlerComponent.switchToState(eUnitState.MovingToNewPosition, Utilities.INVALID_ID, m_wayPointClone.transform.position);
             }
 
-            return newTank;
+            return newUnit;
         }
         else
         {

@@ -16,11 +16,6 @@ public class Harvester : MonoBehaviour
 
     private float m_elaspedTime = 0.0f;
 
-    private void Awake()
-    {
-        Assert.IsNotNull(m_buildingToReturnResource);
-    }
-
     // Update is called once per frame
     private void Update()
     {
@@ -58,5 +53,12 @@ public class Harvester : MonoBehaviour
         m_extractedResources = 0;
 
         return resources;
+    }
+
+    public void setBuildingToReturnResource(Building building)
+    {
+        Assert.IsNotNull(building);
+
+        m_buildingToReturnResource = building;
     }
 }

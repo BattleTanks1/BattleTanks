@@ -51,7 +51,11 @@ public class CameraController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.F))
         {
-            m_player.spawnUnit();
+            m_player.spawnUnit(eUnitType.Attacker);
+        }
+        else if(Input.GetKeyDown(KeyCode.E))
+        {
+            m_player.spawnUnit(eUnitType.Harvester);
         }
         else if(Input.GetKeyDown(KeyCode.A))
         {

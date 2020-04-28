@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     {
         foreach (Faction faction in m_factions)
         {
-            foreach (Unit unit in faction.m_unit)
+            foreach (Unit unit in faction.m_units)
             {
                 if(unit.getID() == ID)
                 {
@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
     {
         foreach(Faction faction in m_factions)
         {
-            foreach(Unit unit in faction.m_unit)
+            foreach(Unit unit in faction.m_units)
             {
                 Selection tankSelection = unit.GetComponent<Selection>();
                 Assert.IsNotNull(tankSelection);
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
 
         foreach (Faction faction in m_factions)
         {
-            foreach(Unit unit in faction.m_unit)
+            foreach(Unit unit in faction.m_units)
             {
                 if(unit.getID() == tankID)
                 {
@@ -101,9 +101,7 @@ public class GameManager : MonoBehaviour
         
         if(unit.isDead())
         {
-            Map.Instance.clear(unit.transform.position, unit.getID());
-            m_factions[(int)unit.getFactionName()].m_unit.Remove(unit);
-            Destroy(unit.gameObject);
+            m_factions[(int)unit.getFactionName()].removeUnit(unit);
         }
     }
 
@@ -136,10 +134,18 @@ public class GameManager : MonoBehaviour
 
         foreach (Faction faction in m_factions)
         {
-            foreach (Unit unit in faction.m_unit)
+            foreach (Unit unit in faction.m_units)
             {
                 unit.createInfluence(proximityMaps, threatMaps);
             }
         }
+    }
+
+    public void addResourcesToFaction(Harvester harvester)
+    {
+        Unit unit = harvester.GetComponent<Unit>();
+        Assert.IsNotNull(unit);
+
+        m_factions[(int)unit.getFactionName()].addResources(harvester);
     }
 }

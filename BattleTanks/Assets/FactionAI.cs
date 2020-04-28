@@ -97,7 +97,7 @@ public class FactionAI : Faction
     private Unit getTank(int ID)
     {
         Unit unit = null;
-        foreach (Unit i in m_unit)
+        foreach (Unit i in m_units)
         {
             if (i.getID() == ID)
             {

@@ -18,7 +18,7 @@ public class FactionPlayer : Faction
 
     public void selectUnits(fRectangle selectionBox)
     {
-        foreach (Unit unit in m_unit)
+        foreach (Unit unit in m_units)
         {
             Selection unitSelection = unit.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(unitSelection);
@@ -29,7 +29,7 @@ public class FactionPlayer : Faction
 
     public void deselectAllUnits()
     { 
-        foreach (Unit unit in m_unit)
+        foreach (Unit unit in m_units)
         {
             Selection unitSelection = unit.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(unitSelection);
@@ -58,7 +58,7 @@ public class FactionPlayer : Faction
             Resource resourceAtPosition = GameManager.Instance.getResource(position);
             if (resourceAtPosition)
             {
-                foreach (Unit unit in m_unit)
+                foreach (Unit unit in m_units)
                 {
                     Selection unitSelection = unit.gameObject.GetComponent<Selection>();
                     Assert.IsNotNull(unitSelection);
@@ -71,7 +71,7 @@ public class FactionPlayer : Faction
             }
             else if(buildingSelection.contains(position))
             {
-                foreach (Unit unit in m_unit)
+                foreach (Unit unit in m_units)
                 {
                     Selection unitSelection = unit.gameObject.GetComponent<Selection>();
                     Assert.IsNotNull(unitSelection);
@@ -84,7 +84,7 @@ public class FactionPlayer : Faction
             }
             else
             {
-                foreach (Unit unit in m_unit)
+                foreach (Unit unit in m_units)
                 {
                     Selection unitSelection = unit.gameObject.GetComponent<Selection>();
                     Assert.IsNotNull(unitSelection);
@@ -117,7 +117,7 @@ public class FactionPlayer : Faction
             return;
         }
         
-        foreach (Unit tank in m_unit)
+        foreach (Unit tank in m_units)
         {
             Selection selectionComponent = tank.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(selectionComponent);
@@ -141,18 +141,17 @@ public class FactionPlayer : Faction
         buildingSelection.select(position);
     }
 
-    public void spawnUnit()
+    public void spawnUnit(eUnitType unitType)
     {
         Selection buildingSelection = m_building.GetComponent<Selection>();
         Assert.IsNotNull(buildingSelection);
 
         if(buildingSelection.isSelected())
         {
-            GameObject newGameObject = m_building.spawnUnit();
-            if(newGameObject)
+            Unit newUnit = m_building.spawnUnit(unitType);
+            if(newUnit)
             {
-                Unit unit = newGameObject.GetComponent<Unit>();
-                m_unit.Add(unit);
+                addUnit(newUnit);
             }
         }
     }

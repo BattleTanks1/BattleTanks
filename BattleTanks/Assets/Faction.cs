@@ -18,7 +18,7 @@ public enum eFactionControllerType
 
 abstract public class Faction : MonoBehaviour
 {
-    public List<Unit> m_unit;
+    public List<Unit> m_units;
 
     [SerializeField]
     protected eFactionName m_factionName;
@@ -26,6 +26,11 @@ abstract public class Faction : MonoBehaviour
 
     [SerializeField]
     private int m_resourceCount = 0;
+
+    private void Awake()
+    {
+        m_units = new List<Unit>();
+    }
 
     public eFactionControllerType getControllerType()
     {
@@ -44,15 +49,22 @@ abstract public class Faction : MonoBehaviour
     }
 
     public void addUnit(Unit newUnit)
-    {
+    { 
         Assert.IsNotNull(newUnit);
-        m_unit.Add(newUnit);
+        Assert.IsTrue(newUnit.getID() == Utilities.INVALID_ID);
+
+        m_units.Add(newUnit);
     }
 
-    public void removeTank(Unit unit)
+    public void removeUnit(Unit unit)
     {
-        m_unit.Remove(unit);
+        Assert.IsNotNull(unit);
+
+        Map.Instance.clear(unit.transform.position, unit.getID());
         
+        bool removed = m_units.Remove(unit);
+        Assert.IsTrue(removed);
+
         Destroy(unit.gameObject);
     }
 }
