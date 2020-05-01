@@ -162,6 +162,9 @@ public class Boid : MonoBehaviour
 
         m_position += m_velocity * Time.deltaTime;
         transform.position = m_position;
+
+        //Rotate towards the new velocity
+        transform.rotation = Quaternion.LookRotation(m_velocity, Vector3.up);
     }
 
     //void simulate(float Time.deltaTime)
