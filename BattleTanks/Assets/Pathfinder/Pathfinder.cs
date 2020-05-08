@@ -114,6 +114,7 @@ public class Pathfinder : MonoBehaviour
             if (exploreTile(tile.Value, start, faction, dangerAvoidance, usageAvoidance))
                 break;
         }
+        //TODO trace the exploration list and smooth path list
     }
 
     // Start is called before the first frame update
