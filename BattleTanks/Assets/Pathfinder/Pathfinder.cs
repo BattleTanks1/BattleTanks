@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Tilemaps;
 
 //Thoughts: should be using a single map to reduce cache bouncing
@@ -18,22 +19,22 @@ public struct Node
 
 public struct ExplorationNode
 {
+    public bool obstructed;
     public bool explored;
     public Vector2Int parent;
 }
 
 public class Pathfinder : MonoBehaviour
 {
-    private bool[,] m_validTiles;
     public ExplorationNode[,] m_exploredTiles;
-    public Vector2Int m_mapSize;
+    public Vector2Int m_mapSize = new Vector2Int(250, 250);
     public SortedList<float, Vector2Int> m_searchList;
 
     private bool isTileValid(Vector2Int pos)
     {
         if (pos.x < 0 || pos.y < 0 || pos.x >= m_mapSize.x || pos.y >= m_mapSize.y)
             return false;
-        return m_validTiles[pos.x, pos.y];
+        return !m_exploredTiles[pos.x, pos.y].obstructed;
     }
 
     private float getDistance(Vector2Int a, Vector2Int b)
@@ -54,6 +55,18 @@ public class Pathfinder : MonoBehaviour
         //Tile usage amount TODO
 
         return weight;
+    }
+
+    private bool isInline(Vector2Int a, Vector2Int b, Vector2Int c)
+    {
+        UnityEngine.Vector2 ab = b - a;
+        UnityEngine.Vector2 ac = c - a;
+
+        if (ab.magnitude == 0.0f || ac.magnitude == 0.0f)
+            return false;
+
+        float product = UnityEngine.Vector2.Dot(ab, ac) / (ab.magnitude * ac.magnitude);
+        return (product == 1.0f);
     }
 
     private bool exploreTile(Vector2Int location, Vector2Int goal, 
@@ -92,7 +105,18 @@ public class Pathfinder : MonoBehaviour
         return false;
     }
 
-    Queue<UnityEngine.Vector2> findPath(Vector2Int start, Vector2Int destination, int faction, float dangerAvoidance, float usageAvoidance)
+    public void updateObstructions(in bool[,] obstructions)
+    {
+        for (int i = 0; i < m_mapSize.x; ++i)
+        {
+            for (int j = 0; j < m_mapSize.y; ++j)
+            {
+                m_exploredTiles[i, j].obstructed = obstructions[i, j];
+            }
+        }
+    }
+
+    public Queue<Vector2Int> findPath(Vector2Int start, Vector2Int destination, int faction, float dangerAvoidance, float usageAvoidance)
     {
         //Clear exploration map
         for (int i = 0; i < m_mapSize.x; ++i)
@@ -106,30 +130,60 @@ public class Pathfinder : MonoBehaviour
         //Start recursive search
         m_searchList.Clear();
         m_searchList.Add(0, destination);
+        bool success = false;
         while (m_searchList.Count != 0)
         {
             //Run search on tile
             KeyValuePair<float, Vector2Int> tile = m_searchList.First();
             m_searchList.RemoveAt(0);
             if (exploreTile(tile.Value, start, faction, dangerAvoidance, usageAvoidance))
+            {
+                success = true;
                 break;
+            }
         }
-        //TODO trace the exploration list and smooth path list
+
+        //Create the list of points the unit must travel through
+        Queue<Vector2Int> path = new Queue<Vector2Int>();
+        if (success)
+        {
+            Vector2Int currentLoc = start;
+            Vector2Int lastLoc = new Vector2Int(-1, -1);
+            Vector2Int secondLastLoc = start;
+            //Loop creating path
+            while (currentLoc != destination)
+            {
+                currentLoc = m_exploredTiles[currentLoc.x, currentLoc.y].parent;
+
+                //Check for a linear streak, and cull unnecessary path points
+                if (isInline(secondLastLoc, lastLoc, currentLoc))
+                    path.Dequeue();
+
+                //Set up for next search
+                lastLoc = currentLoc;
+                if (path.Count != 0)
+                    secondLastLoc = path.Peek();
+
+                path.Enqueue(currentLoc);
+            }
+        }
+        return path;
     }
 
     // Start is called before the first frame update
     void Awake()
     {
-        //Create obstruction map and high level map
+        //Create exploration map
+        m_exploredTiles = new ExplorationNode[250, 250];
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Update macro map with influence maps
+        //Update exploration map with influence maps
 
-        //Remove items from the pathing queue up to a limit
+        //Remove items from the pathing queue up to a limit TODO: create a pathing queue
 
-        //Decay danger and usage levels
+        //Decay usage level
     }
 }
