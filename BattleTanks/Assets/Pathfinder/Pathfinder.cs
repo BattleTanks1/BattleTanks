@@ -22,6 +22,8 @@ public struct ExplorationNode
     public bool obstructed;
     public bool explored;
     public Vector2Int parent;
+    public float dangerInfluence;
+    public float usageInfluence;
 }
 
 public class Pathfinder : MonoBehaviour
@@ -51,8 +53,9 @@ public class Pathfinder : MonoBehaviour
         //Distance to the destination
         weight += getDistance(tile, dest);
         //Danger amount TODO
-
+        weight += m_exploredTiles[tile.x, tile.y].dangerInfluence * faction * dangerAvoidance;
         //Tile usage amount TODO
+        weight += m_exploredTiles[tile.x, tile.y].usageInfluence * usageAvoidance;
 
         return weight;
     }
