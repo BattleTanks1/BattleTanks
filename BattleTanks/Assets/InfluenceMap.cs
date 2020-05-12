@@ -293,5 +293,6 @@ public class InfluenceMap : MonoBehaviour
             }
         }
         //TODO update pathfinding map
+        //Pathfinder.Instance
     }
 }
