@@ -160,6 +160,7 @@ public class FactionInfluenceMap
 
 public class InfluenceMap : MonoBehaviour
 {
+    //Visual aides
     List<GameObject> m_boxes;
     public GameObject m_redBox;
     public GameObject m_blueBox;
@@ -180,6 +181,7 @@ public class InfluenceMap : MonoBehaviour
 
     private void Awake()
     {
+        //Prevents more than one instance existing in the scene
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
@@ -290,5 +292,6 @@ public class InfluenceMap : MonoBehaviour
                 }
             }
         }
+        //TODO update pathfinding map
     }
 }

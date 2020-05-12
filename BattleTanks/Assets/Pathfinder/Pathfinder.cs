@@ -32,6 +32,9 @@ public class Pathfinder : MonoBehaviour
     public Vector2Int m_mapSize = new Vector2Int(250, 250);
     public SortedList<float, Vector2Int> m_searchList;
 
+    private static Pathfinder _instance;
+    public static Pathfinder Instance { get { return _instance; } }
+
     private bool isTileValid(Vector2Int pos)
     {
         if (pos.x < 0 || pos.y < 0 || pos.x >= m_mapSize.x || pos.y >= m_mapSize.y)
@@ -52,9 +55,9 @@ public class Pathfinder : MonoBehaviour
         float weight = getDistance(tile, from);
         //Distance to the destination
         weight += getDistance(tile, dest);
-        //Danger amount TODO
+        //Danger amount
         weight += m_exploredTiles[tile.x, tile.y].dangerInfluence * faction * dangerAvoidance;
-        //Tile usage amount TODO
+        //Tile usage amount
         weight += m_exploredTiles[tile.x, tile.y].usageInfluence * usageAvoidance;
 
         return weight;
@@ -119,6 +122,9 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
+    public void updateDangerMap(int faction, int)
+    }
+
     public Queue<Vector2Int> findPath(Vector2Int start, Vector2Int destination, int faction, float dangerAvoidance, float usageAvoidance)
     {
         //Clear exploration map
@@ -176,6 +182,15 @@ public class Pathfinder : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        //Prevents more than one instance existing in the scene
+        if (_instance != null && _instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            _instance = this;
+        }
         //Create exploration map
         m_exploredTiles = new ExplorationNode[250, 250];
     }
