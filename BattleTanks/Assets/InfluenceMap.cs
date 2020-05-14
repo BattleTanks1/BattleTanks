@@ -205,7 +205,7 @@ public class InfluenceMap : MonoBehaviour
         m_threatMaps[(int)eFactionName.Red] = new FactionInfluenceMap(eFactionName.Red);
         m_threatMaps[(int)eFactionName.Blue] = new FactionInfluenceMap(eFactionName.Blue);
 
-        IEnumerator coroutine = resetBaseMaps();
+        IEnumerator coroutine = updateBaseMaps();
         StartCoroutine(coroutine);
     }
 
