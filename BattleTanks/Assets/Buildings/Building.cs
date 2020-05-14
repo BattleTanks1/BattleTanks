@@ -41,12 +41,11 @@ public class Building : MonoBehaviour
 
         Vector3 spawnPosition = transform.position;
         int distance = 1;
-        do
+        while(m_selectionComponent.contains(spawnPosition))
         {
             spawnPosition += spawnDirection * distance;
             ++distance;
         }
-        while (m_selectionComponent.contains(spawnPosition));
 
         spawnPosition += spawnDirection * m_spawnOffSet; 
 
