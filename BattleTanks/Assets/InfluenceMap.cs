@@ -249,7 +249,7 @@ public class InfluenceMap : MonoBehaviour
         return m_proximityMaps[(int)factionName].getPoint(position);
     }
 
-    private IEnumerator resetBaseMaps()
+    private IEnumerator updateBaseMaps()
     {
         while(true)
         {
@@ -291,9 +291,8 @@ public class InfluenceMap : MonoBehaviour
                     }
                 }
             }
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Red, m_threatMaps[(int)eFactionName.Red].m_map);
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Blue, m_threatMaps[(int)eFactionName.Blue].m_map);
         }
-        //TODO update pathfinding map
-        Pathfinder.Instance.updateDangerMap((int)eFactionName.Red, m_threatMaps[(int)eFactionName.Red].m_map);
-        Pathfinder.Instance.updateDangerMap((int)eFactionName.Blue, m_threatMaps[(int)eFactionName.Blue].m_map);
     }
 }
