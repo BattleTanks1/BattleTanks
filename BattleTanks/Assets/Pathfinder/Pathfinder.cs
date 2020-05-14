@@ -87,6 +87,7 @@ public class Pathfinder : MonoBehaviour
         m_searchList.Clear();
         m_searchList.Add(0, destination);
         bool success = false;
+        Debug.Log("Starting path recursion");
         while (m_searchList.Count != 0)
         {
             //Run search on tile
@@ -98,16 +99,18 @@ public class Pathfinder : MonoBehaviour
                 break;
             }
         }
-
+        Debug.Log("Starting queue creation");
         //Create the list of points the unit must travel through
         Queue<Vector2Int> path = new Queue<Vector2Int>();
         if (success)
         {
+            Debug.Log("Path DOES exist");
             Vector2Int currentLoc = start;
             Vector2Int lastLoc = new Vector2Int(-1, -1);
             Vector2Int secondLastLoc = start;
             //Loop creating path
-            while (currentLoc != destination)
+            int maxExploreCount = 10000;
+            while (currentLoc != destination && maxExploreCount != 0)
             {
                 currentLoc = m_exploredTiles[currentLoc.x, currentLoc.y].parent;
 
@@ -121,8 +124,11 @@ public class Pathfinder : MonoBehaviour
                     secondLastLoc = path.Peek();
 
                 path.Enqueue(currentLoc);
+                ++maxExploreCount;
             }
+
         }
+        Debug.Log("Pathing finished");
         return path;
     }
 

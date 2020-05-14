@@ -36,9 +36,12 @@ public class UnitMovement : MonoBehaviour
         {
             Vector3 newPosition = Vector3.MoveTowards(
                 transform.position, new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y), m_movementSpeed * Time.deltaTime);
+            transform.position = newPosition;
 
             if (reachedDestination())
+            {
                 m_positionToMoveTo.Dequeue();
+            }
 
             ////Movement on current grid cell
             //if (Map.Instance.isPositionOnOccupiedCell(newPosition, transform.position))
