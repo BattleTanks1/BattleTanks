@@ -4,6 +4,8 @@ using UnityEngine.Assertions;
 public class Building : MonoBehaviour
 {
     [SerializeField]
+    private float m_spawnOffSet = 0.0f;
+    [SerializeField]
     private Unit m_tankToSpawn = null;
     [SerializeField]
     private Unit m_harvesterToSpawn = null;
@@ -27,24 +29,25 @@ public class Building : MonoBehaviour
 
     private Vector3 getSpawnPosition()
     {
-        Vector3 startingPosition;
+        Vector3 spawnDirection;
         if(m_wayPointClone.transform.position != transform.position)
         {
-            startingPosition = (m_wayPointClone.transform.position - transform.position).normalized;
+            spawnDirection = (m_wayPointClone.transform.position - transform.position).normalized;
         }
         else
         {
-            startingPosition = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f));
+            spawnDirection = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f)).normalized;
         }
 
-        Vector3 spawnPosition;
+        Vector3 spawnPosition = transform.position;
         int distance = 1;
-        do
+        while(m_selectionComponent.contains(spawnPosition))
         {
-            spawnPosition = transform.position + startingPosition.normalized * distance;
+            spawnPosition += spawnDirection * distance;
             ++distance;
         }
-        while (m_selectionComponent.contains(spawnPosition));
+
+        spawnPosition += spawnDirection * m_spawnOffSet; 
 
         return new Vector3(spawnPosition.x, 1, spawnPosition.z);
     }
