@@ -183,6 +183,7 @@ public class Map : MonoBehaviour
                 getPoint(x, y).scenery = true;
             }
         }
+        Pathfinder.Instance.updateObstructions(m_map);
     }
 
     public bool isPositionScenery(int x, int y)

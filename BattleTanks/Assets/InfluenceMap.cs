@@ -160,6 +160,7 @@ public class FactionInfluenceMap
 
 public class InfluenceMap : MonoBehaviour
 {
+    //Visual aides
     List<GameObject> m_boxes;
     public GameObject m_redBox;
     public GameObject m_blueBox;
@@ -180,6 +181,7 @@ public class InfluenceMap : MonoBehaviour
 
     private void Awake()
     {
+        //Prevents more than one instance existing in the scene
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
@@ -203,7 +205,7 @@ public class InfluenceMap : MonoBehaviour
         m_threatMaps[(int)eFactionName.Red] = new FactionInfluenceMap(eFactionName.Red);
         m_threatMaps[(int)eFactionName.Blue] = new FactionInfluenceMap(eFactionName.Blue);
 
-        IEnumerator coroutine = resetBaseMaps();
+        IEnumerator coroutine = updateBaseMaps();
         StartCoroutine(coroutine);
     }
 
@@ -247,7 +249,7 @@ public class InfluenceMap : MonoBehaviour
         return m_proximityMaps[(int)factionName].getPoint(position);
     }
 
-    private IEnumerator resetBaseMaps()
+    private IEnumerator updateBaseMaps()
     {
         while(true)
         {
@@ -289,6 +291,8 @@ public class InfluenceMap : MonoBehaviour
                     }
                 }
             }
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Red, m_threatMaps[(int)eFactionName.Red].m_map);
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Blue, m_threatMaps[(int)eFactionName.Blue].m_map);
         }
     }
 }
