@@ -47,13 +47,13 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
-    public void updateDangerMap(int faction, in float[,] dangerVals)
+    public void updateDangerMap(int faction, in PointOnInfluenceMap[,] dangerVals)
     {
         for (int i = 0; i < m_mapSize.x; ++i)
         {
             for (int j = 0; j < m_mapSize.y; ++j)
             {
-                m_exploredTiles[i, j].dangerInfluence[faction] = dangerVals[i, j];
+                m_exploredTiles[i, j].dangerInfluence[faction] = dangerVals[i, j].value;
             }
         }
     }
@@ -214,7 +214,6 @@ public class Pathfinder : MonoBehaviour
         int count = 0;
         foreach (Vector2Int option in options)
         {
-            //TODO special cases for diagonals?
             if (isTileValid(option) && !m_exploredTiles[option.x, option.y].explored)
             {
                 m_exploredTiles[options[count].x, options[count].y].explored = true;

@@ -293,6 +293,7 @@ public class InfluenceMap : MonoBehaviour
             }
         }
         //TODO update pathfinding map
-        //Pathfinder.Instance
+        Pathfinder.Instance.updateDangerMap((int)eFactionName.Red, m_threatMaps[(int)eFactionName.Red].m_map);
+        Pathfinder.Instance.updateDangerMap((int)eFactionName.Blue, m_threatMaps[(int)eFactionName.Blue].m_map);
     }
 }
