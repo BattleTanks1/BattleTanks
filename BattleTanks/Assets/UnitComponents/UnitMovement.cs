@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -10,7 +11,7 @@ public class UnitMovement : MonoBehaviour
     [SerializeField]
     private float m_maxAcceleration = 5.0f;
     [SerializeField]
-    private Vector3 m_velocity;
+    private UnityEngine.Vector3 m_velocity;
     [SerializeField]
     private float m_mass;
 
@@ -29,19 +30,40 @@ public class UnitMovement : MonoBehaviour
 
     private void Update()
     {
+        UnityEngine.Vector3 currentPosition = transform.position;
+        Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(currentPosition.x), Mathf.RoundToInt(currentPosition.z));
+
+        //Bumping goes here
+        UnityEngine.Vector3 bumpingResult = new UnityEngine.Vector3();
+        //Find objects that are too close
+        for (int x = -1; x < 2; ++x)
+        {
+            for (int y = -1; y < 2; ++y)
+            {
+                if (Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
+                {
+                    UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
+                    UnityEngine.Vector3 diff = currentPosition - obstPosition;
+                    bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
+                }
+            }
+        }
+        //TODO accumulate
+        //TODO unit bumping
+        //Accumulate velocity change
+
+        //Unit movement attempt
         if (m_positionToMoveTo.Count != 0)
         {
-            Vector3 newHeading = Vector3.MoveTowards(transform.position, 
-                new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y), 
+            UnityEngine.Vector3 newHeading = UnityEngine.Vector3.MoveTowards(currentPosition,
+                new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
                 m_maxAcceleration * Time.deltaTime);
 
-            Vector3 acceleration = (newHeading - transform.position).normalized * m_maxVelocity - m_velocity;
+            UnityEngine.Vector3 acceleration = (newHeading - currentPosition).normalized * m_maxVelocity - m_velocity;
 
             if (acceleration.magnitude > m_maxAcceleration)
                 acceleration = acceleration.normalized * m_maxAcceleration;
         }
-
-        //Bumping goes here
 
         //Apply acceleration to velocity and velocity to position
 
@@ -54,7 +76,7 @@ public class UnitMovement : MonoBehaviour
         }
     } 
 
-    public void moveTo(Vector3 position)
+    public void moveTo(UnityEngine.Vector3 position)
     {
         if(Map.Instance.isInBounds(position))
         {
@@ -69,7 +91,7 @@ public class UnitMovement : MonoBehaviour
     {
         if (m_positionToMoveTo.Count == 0)
             return true;
-        return (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).magnitude < 0.2f;
+        return (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).magnitude < 0.2f;
     }
 
     public void stop()
