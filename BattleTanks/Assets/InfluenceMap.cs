@@ -291,8 +291,9 @@ public class InfluenceMap : MonoBehaviour
                     }
                 }
             }
-            Pathfinder.Instance.updateDangerMap((int)eFactionName.Red, m_threatMaps[(int)eFactionName.Red].m_map);
-            Pathfinder.Instance.updateDangerMap((int)eFactionName.Blue, m_threatMaps[(int)eFactionName.Blue].m_map);
+            //Feeding opposite teams threat maps in
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Blue, m_threatMaps[(int)eFactionName.Red].m_map);
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Red, m_threatMaps[(int)eFactionName.Blue].m_map);
         }
     }
 }

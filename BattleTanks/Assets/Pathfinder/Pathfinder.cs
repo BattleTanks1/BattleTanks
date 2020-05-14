@@ -82,7 +82,10 @@ public class Pathfinder : MonoBehaviour
                 m_exploredTiles[i, j].explored = false;
             }
         }
-        
+
+        //Ensure position to search back to is accessible (can still fail if a unit is deeply stuck in a wall)
+        start = findClosestPos(start);
+
         //Start recursive search
         m_searchList.Clear();
         m_searchList.Add(0, destination);
@@ -158,6 +161,32 @@ public class Pathfinder : MonoBehaviour
 
     //Private helper functions
 
+    private Vector2Int findClosestPos(Vector2Int start)
+    {
+        if (!m_exploredTiles[start.x, start.y].obstructed)
+            return start;
+
+        Vector2Int[] options = {
+            new Vector2Int(start.x, start.y - 1),       //North
+            new Vector2Int(start.x + 1, start.y),       //East
+            new Vector2Int(start.x, start.y + 1),       //South
+            new Vector2Int(start.x - 1, start.y),       //West
+            new Vector2Int(start.x + 1, start.y - 1),   //NorthEast
+            new Vector2Int(start.x + 1, start.y + 1),   //SouthEast
+            new Vector2Int(start.x - 1, start.y + 1),   //SouthWest
+            new Vector2Int(start.x - 1, start.y - 1),   //NorthWest
+        };
+        foreach (Vector2Int option in options)
+        {
+            if (!m_exploredTiles[option.x, option.y].obstructed)
+            {
+                start = option;
+                break;
+            }
+        }
+        return start;
+    }
+
     private bool isTileValid(Vector2Int pos)
     {
         if (pos.x < 0 || pos.y < 0 || pos.x >= m_mapSize.x || pos.y >= m_mapSize.y)
@@ -180,7 +209,7 @@ public class Pathfinder : MonoBehaviour
         //Distance to the destination
         weight += getDistance(tile, dest);
         //Danger amount
-        weight += m_exploredTiles[tile.x, tile.y].dangerInfluence[faction] * faction * dangerAvoidance;
+        weight += m_exploredTiles[tile.x, tile.y].dangerInfluence[faction] * dangerAvoidance;
         //Tile usage amount
         weight += m_exploredTiles[tile.x, tile.y].usageInfluence * usageAvoidance;
 
