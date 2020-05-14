@@ -6,7 +6,14 @@ using UnityEngine.Assertions;
 public class UnitMovement : MonoBehaviour
 {
     [SerializeField]
-    private float m_movementSpeed = 0.0f;
+    private float m_maxVelocity = 1.0f;
+    [SerializeField]
+    private float m_maxAcceleration = 5.0f;
+    [SerializeField]
+    private Vector3 m_velocity;
+    [SerializeField]
+    private float m_mass;
+
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Unit m_unit = null;
     private bool m_startingPositionSet = false;
@@ -22,44 +29,28 @@ public class UnitMovement : MonoBehaviour
 
     private void Update()
     {
-        //if(!m_startingPositionSet)
-        //{
-        //    Map.Instance.setStartingPosition(transform.position, m_unit.getFactionName(), m_unit.getID());
-        //    m_startingPositionSet = true;
-        //}
-
-        //Assert.IsTrue(Map.Instance.isPositionOccupied(transform.position, m_unit.getID()));
         if (m_positionToMoveTo.Count != 0)
         {
-            Vector3 newPosition = Vector3.MoveTowards(
-                transform.position, new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y), m_movementSpeed * Time.deltaTime);
-            transform.position = newPosition;
+            Vector3 newHeading = Vector3.MoveTowards(transform.position, 
+                new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y), 
+                m_maxAcceleration * Time.deltaTime);
 
+            Vector3 acceleration = (newHeading - transform.position).normalized * m_maxVelocity - m_velocity;
+
+            if (acceleration.magnitude > m_maxAcceleration)
+                acceleration = acceleration.normalized * m_maxAcceleration;
+        }
+
+        //Bumping goes here
+
+        //Apply acceleration to velocity and velocity to position
+
+        if (m_positionToMoveTo.Count != 0)
+        {
             if (reachedDestination())
             {
                 m_positionToMoveTo.Dequeue();
             }
-
-            ////Movement on current grid cell
-            //if (Map.Instance.isPositionOnOccupiedCell(newPosition, transform.position))
-            //{   
-            //    transform.position = newPosition;
-            //}   
-            ////Moving to new grid cell
-            //else if (!Map.Instance.isPositionOccupied(newPosition))
-            //{ 
-            //    Map.Instance.updatePositionOnMap(newPosition, transform.position, m_unit.getFactionName(), m_unit.getID());
-            //    transform.position = newPosition;
-            //}
-            //else
-            //{
-            //    //Grid cell to move to is occupied
-            //    if (!Map.Instance.isPositionOnOccupiedCell(newPosition, transform.position) &&
-            //        Map.Instance.isPositionOccupied(newPosition))
-            //    {
-            //        stop();
-            //    }
-            //}
         }
     } 
 
