@@ -36,13 +36,13 @@ public class Pathfinder : MonoBehaviour
     public static Pathfinder Instance { get { return _instance; } }
 
     //The following 3 functions are called by the influence map system to update the pathfinding's exploration map variables
-    public void updateObstructions(in bool[,] obstructions)
+    public void updateObstructions(in PointOnMap[,] obstructions)
     {
         for (int i = 0; i < m_mapSize.x; ++i)
         {
             for (int j = 0; j < m_mapSize.y; ++j)
             {
-                m_exploredTiles[i, j].obstructed = obstructions[i, j];
+                m_exploredTiles[i, j].obstructed = obstructions[i, j].scenery;
             }
         }
     }
@@ -145,8 +145,6 @@ public class Pathfinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Update exploration map with influence maps
-
         //Remove items from the pathing queue up to a limit TODO: create a pathing queue
 
         //Decay usage level
@@ -168,7 +166,8 @@ public class Pathfinder : MonoBehaviour
         return Mathf.Sqrt(((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y)));
     }
 
-    private float findWeight(Vector2Int tile, Vector2Int from, Vector2Int dest, int faction, float dangerAvoidance, float usageAvoidance)
+    private float findWeight(Vector2Int tile, Vector2Int from, 
+        Vector2Int dest, int faction, float dangerAvoidance, float usageAvoidance)
     {
         //Cost to get there
         float weight = getDistance(tile, from);
