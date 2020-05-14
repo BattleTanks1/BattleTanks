@@ -82,7 +82,7 @@ public class Pathfinder : MonoBehaviour
                 m_exploredTiles[i, j].explored = false;
             }
         }
-
+        
         //Start recursive search
         m_searchList.Clear();
         m_searchList.Add(0, destination);

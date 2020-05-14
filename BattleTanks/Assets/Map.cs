@@ -53,12 +53,12 @@ public class Map : MonoBehaviour
         }
 
         m_mapSize = new Vector2Int(250, 250);
-        m_map = new PointOnMap[m_mapSize.y, m_mapSize.x];
-        for (int y = 0; y < m_mapSize.y; ++y)
+        m_map = new PointOnMap[m_mapSize.x, m_mapSize.y];
+        for (int x = 0; x < m_mapSize.x; ++x)
         {
-            for (int x = 0; x < m_mapSize.x; ++x)
+            for (int y = 0; y < m_mapSize.y; ++y)
             {
-                m_map[y, x] = new PointOnMap();
+                m_map[x, y] = new PointOnMap();
             }
         }
     }
@@ -66,7 +66,7 @@ public class Map : MonoBehaviour
     private PointOnMap getPoint(Vector2Int position)
     {
         Assert.IsTrue(isInBounds(position));
-        return m_map[position.y, position.x];
+        return m_map[position.x, position.y];
     }
 
     public bool isInBounds(int x, int y)
@@ -169,14 +169,14 @@ public class Map : MonoBehaviour
     public PointOnMap getPoint(int x, int y)
     {
         Assert.IsTrue(isInBounds(x, y));
-        return m_map[y, x];
+        return m_map[x, y];
     }
 
     public void addScenery(iRectangle rect)
     {
-        for (int y = rect.m_bottom; y <= rect.m_top; ++y)
+        for (int x = rect.m_left; x <= rect.m_right; ++x)
         {
-            for (int x = rect.m_left; x <= rect.m_right; ++x)
+            for (int y = rect.m_bottom; y <= rect.m_top; ++y)
             {
                 Assert.IsTrue(isInBounds(x, y));
                 Assert.IsTrue(getPoint(x, y).isEmpty());

@@ -35,18 +35,18 @@ public class PathFinding : MonoBehaviour
     void Start()
     {
         Vector2Int mapSize = Map.Instance.m_mapSize;
-        m_graph = new bool[mapSize.y, mapSize.x];
+        m_graph = new bool[mapSize.x, mapSize.y];
         reset();
     }
 
     private void reset()
     {
         Vector2Int mapSize = Map.Instance.m_mapSize;
-        for (int y = 0; y < mapSize.y; ++y)
+        for (int x = 0; x < mapSize.x; ++x)
         {
-            for (int x = 0; x < mapSize.x; ++x)
+            for (int y = 0; y < mapSize.y; ++y)
             {
-                m_graph[y, x] = false;
+                m_graph[x, y] = false;
             }
         }
 
@@ -84,12 +84,12 @@ public class PathFinding : MonoBehaviour
             foreach (Vector2Int adjacentPosition in m_adjacentPositions)
             {
                 //Visited
-                if (m_graph[adjacentPosition.y, adjacentPosition.x])
+                if (m_graph[adjacentPosition.x, adjacentPosition.y])
                 {
                     continue;
                 }
 
-                m_graph[adjacentPosition.y, adjacentPosition.x] = true;
+                m_graph[adjacentPosition.x, adjacentPosition.y] = true;
                 frontier.Enqueue(adjacentPosition);
 
                 if (Vector3.Distance(new Vector3(adjacentPosition.x, 0, adjacentPosition.y), unit.transform.position) >= minDistance &&
