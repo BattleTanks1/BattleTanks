@@ -7,8 +7,6 @@ public class UnitMovement : MonoBehaviour
 {
     [SerializeField]
     private float m_movementSpeed = 0.0f;
-    [SerializeField]
-    Vector2Int TEMPnextPos = new Vector2Int();
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Unit m_unit = null;
     private bool m_startingPositionSet = false;
@@ -29,8 +27,7 @@ public class UnitMovement : MonoBehaviour
         //    Map.Instance.setStartingPosition(transform.position, m_unit.getFactionName(), m_unit.getID());
         //    m_startingPositionSet = true;
         //}
-        if (m_positionToMoveTo.Count != 0)
-            TEMPnextPos = m_positionToMoveTo.Peek();
+
         //Assert.IsTrue(Map.Instance.isPositionOccupied(transform.position, m_unit.getID()));
         if (m_positionToMoveTo.Count != 0)
         {
