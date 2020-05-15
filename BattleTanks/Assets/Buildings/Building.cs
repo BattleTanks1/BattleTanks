@@ -27,31 +27,6 @@ public class Building : MonoBehaviour
         m_wayPointClone = Instantiate(m_wayPointPrefab, transform.position, Quaternion.identity);
     }
 
-    private Vector3 getSpawnPosition()
-    {
-        Vector3 spawnDirection;
-        if(m_wayPointClone.transform.position != transform.position)
-        {
-            spawnDirection = (m_wayPointClone.transform.position - transform.position).normalized;
-        }
-        else
-        {
-            spawnDirection = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f)).normalized;
-        }
-
-        Vector3 spawnPosition = transform.position;
-        int distance = 1;
-        while(m_selectionComponent.contains(spawnPosition))
-        {
-            spawnPosition += spawnDirection * distance;
-            ++distance;
-        }
-
-        spawnPosition += spawnDirection * m_spawnOffSet; 
-
-        return new Vector3(spawnPosition.x, 1, spawnPosition.z);
-    }
-
     public void setWayPoint(Vector3 position)
     {
         if(m_selectionComponent.contains(position))
@@ -80,7 +55,17 @@ public class Building : MonoBehaviour
     public Unit spawnUnit(eUnitType unitType)
     {
         Unit newUnit = null;
-        Vector3 spawnPosition = getSpawnPosition();
+        Vector3 spawnPosition;
+        if (m_wayPointClone.transform.position != transform.position)
+        {
+            spawnPosition = Utilities.getClosestPositionOutsideAABB(m_selectionComponent.getAABB(),
+                m_wayPointClone.transform.position, transform.position, m_spawnOffSet);
+        }
+        else
+        {
+            spawnPosition = Utilities.getRandomPositionOutsideAABB(m_selectionComponent.getAABB(), 
+                transform.position, m_spawnOffSet);
+        }
         
         if (!Map.Instance.isPositionOccupied(spawnPosition))
         {

@@ -42,6 +42,22 @@ public static class Utilities
         return diagonaldirections2D;
     }
 
+    static public Vector3 getRandomPositionOutsideAABB(fRectangle AABB, Vector3 centrePosition, float offSet = 0.0f)
+    {
+        Assert.IsNotNull(AABB);
+
+        Vector3 direction = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f)).normalized;
+        Vector3 position = centrePosition;
+        int distance = 1;
+        while (AABB.contains(position))
+        {
+            position += direction * distance;
+        }
+        position += direction * offSet;
+
+        return new Vector3(position.x, 1, position.z);
+    }
+
     static public Vector3 getClosestPositionOutsideAABB(fRectangle AABB, Vector3 unitPosition, Vector3 centrePosition, float offSet = 0.0f)
     {
         Assert.IsNotNull(AABB);
@@ -55,7 +71,7 @@ public static class Utilities
         }
         position += direction * offSet;
 
-        return position;
+        return new Vector3(position.x, 1, position.z);
     }
 
     static public Vector2Int convertToGridPosition(Vector3 position)
