@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
@@ -81,6 +81,18 @@ public class GameManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void getFactionUnitsInRange(ref List<int> output,Vector3 position, float range, int faction)
+    {
+        for (int i = 0; i < m_factions[faction].m_units.Count; ++i)
+        {
+            Vector3 diff = m_factions[faction].m_units[i].getPosition() - position;
+            if (diff.sqrMagnitude <= range * range && diff.sqrMagnitude != 0)
+            {
+                output.Add(m_factions[faction].m_units[i].getID());
+            }
+        }
     }
 
     public int addUnit()
