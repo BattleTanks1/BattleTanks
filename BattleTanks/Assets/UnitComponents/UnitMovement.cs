@@ -9,11 +9,11 @@ public class UnitMovement : MonoBehaviour
     [SerializeField]
     private float m_maxVelocity = 10.0f;
     [SerializeField]
-    private float m_maxAcceleration = 10.0f;
-    [SerializeField]
     private UnityEngine.Vector3 m_velocity;
     [SerializeField]
     private float m_mass = 1.0f;
+    [SerializeField]
+    private bool m_bumping = true;
     [SerializeField]
     private float m_unitBumpRange = 0.7f;
     [SerializeField]
@@ -49,59 +49,10 @@ public class UnitMovement : MonoBehaviour
         Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(currentPosition.x), Mathf.RoundToInt(currentPosition.z));
         UnityEngine.Vector3 oldVelocity = m_velocity;
 
-        //Scenery bumping
-        UnityEngine.Vector3 bumpingResult = new UnityEngine.Vector3();
-        //Find objects that are too close
-        for (int x = -1; x < 2; ++x)
-        {
-            for (int y = -1; y < 2; ++y)
-            {
-                if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y))
-                {
-                    UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
-                    UnityEngine.Vector3 diff = currentPosition - obstPosition;
-                    bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
-                }
-                else if (Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
-                {
-                    UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
-                    UnityEngine.Vector3 diff = currentPosition - obstPosition;
-                    if (diff.sqrMagnitude < 0.6f)
-                        bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
-                }
-            }
-        }
-        if (bumpingResult != new UnityEngine.Vector3())
-        {
-            if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
-            {
-                moveTo(m_finalDestination);
-            }
-        }
-
-        //Unit bumping
-        UnityEngine.Vector3 unitResult = new UnityEngine.Vector3();
-        List<int> closeUnits = new List<int>();
-        GameManager.Instance.getFactionUnitsInRange(ref closeUnits, currentPosition, m_unitBumpRange, (int)m_unit.getFactionName());
-        foreach (int id in closeUnits)
-        {
-            UnityEngine.Vector3 diff = currentPosition - GameManager.Instance.getUnit(id).getPosition();
-            unitResult += diff.normalized * m_unitBumpRange / ((diff.sqrMagnitude + 0.01f) * m_mass);
-        }
-        //Can't access waypoint case
-        if (unitResult != new UnityEngine.Vector3())
-        {
-            if ((new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 3.0f)
-                m_positionToMoveTo.Dequeue();
-
-            if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
-            {
-                moveTo(m_finalDestination);
-            }
-            
-        }
-
-        //Stop moving objects if path has finished
+        UnityEngine.Vector3 finalMovement = new UnityEngine.Vector3();
+        UnityEngine.Vector3 pathingMovement = new UnityEngine.Vector3();
+        //Unit movement attempt
+        //Note this is only actually added to the next velocity last but the value is used by subsequent parts to estimate next location
         if (m_positionToMoveTo.Count != 0)
         {
             //m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / m_dragStrength) - 0.01f) * Time.deltaTime;
@@ -109,35 +60,86 @@ public class UnitMovement : MonoBehaviour
             {
                 m_positionToMoveTo.Dequeue();
             }
-        }
-        else
-        {
-            //m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / (m_dragStrength * 10.0f)) - 1.0f) * Time.deltaTime;
-            m_velocity = new UnityEngine.Vector3();
-        }
-        
-
-        UnityEngine.Vector3 pathingMovement = new UnityEngine.Vector3();
-        //Unit movement attempt
-        if (m_positionToMoveTo.Count != 0)
-        {
             UnityEngine.Vector3 newHeading = UnityEngine.Vector3.MoveTowards(currentPosition,
                 new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
                 m_maxVelocity);
 
             pathingMovement = (newHeading - currentPosition).normalized;
         }
+        else
+        {
+            //m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / (m_dragStrength * 10.0f)) - 1.0f) * Time.deltaTime;
+            m_velocity = new UnityEngine.Vector3();
+        }
 
-        //Debug.Log("bumping then pathingMovement");
-        //Debug.Log(bumpingResult);
-        //Debug.Log(pathingMovement);
+        if (m_bumping)
+        {
+            //Scenery bumping
+            UnityEngine.Vector3 bumpingResult = new UnityEngine.Vector3();
+            //Find objects that are too close
+            for (int x = -1; x < 2; ++x)
+            {
+                for (int y = -1; y < 2; ++y)
+                {
+                    if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y))
+                    {
+                        UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
+                        UnityEngine.Vector3 diff = currentPosition - obstPosition;
+                        bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
+                    }
+                    else if (Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
+                    {
+                        UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
+                        UnityEngine.Vector3 diff = currentPosition - obstPosition;
+                        if (diff.sqrMagnitude < 0.6f)
+                            bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
+                    }
+                }
+            }
+            if (bumpingResult != new UnityEngine.Vector3())
+            {
+                if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
+                {
+                    moveTo(m_finalDestination);
+                }
+            }
 
-        //Accumulate velocity change
-        accumulate(ref bumpingResult, unitResult);
-        accumulate(ref bumpingResult, pathingMovement);
+            //Unit bumping
+            UnityEngine.Vector3 unitResult = new UnityEngine.Vector3();
+            List<int> closeUnits = new List<int>();
+            GameManager.Instance.getFactionUnitsInRange(ref closeUnits, currentPosition, m_unitBumpRange, (int)m_unit.getFactionName());
+            foreach (int id in closeUnits)
+            {
+                UnityEngine.Vector3 diff = currentPosition - GameManager.Instance.getUnit(id).getPosition();
+                unitResult += diff.normalized * m_unitBumpRange / ((diff.sqrMagnitude + 0.01f) * m_mass);
+            }
+            //Can't access waypoint case
+            if (unitResult != new UnityEngine.Vector3())
+            {
+                if ((new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 3.0f)
+                    m_positionToMoveTo.Dequeue();
+
+                if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
+                {
+                    moveTo(m_finalDestination);
+                }
+
+            }
+
+            //Debug.Log("bumping then pathingMovement");
+            //Debug.Log(bumpingResult);
+            //Debug.Log(pathingMovement);
+
+            //Accumulate velocity change
+            accumulate(ref bumpingResult, unitResult);
+            accumulate(ref bumpingResult, pathingMovement);
+            finalMovement = bumpingResult;
+        }
+        else
+            finalMovement = pathingMovement;
 
         //Apply pathingMovement to velocity and velocity to position
-        m_velocity = bumpingResult * m_maxVelocity;
+        m_velocity = finalMovement * m_maxVelocity;
         m_velocity.y = 0.0f;
         
         transform.position += m_velocity * Time.deltaTime;

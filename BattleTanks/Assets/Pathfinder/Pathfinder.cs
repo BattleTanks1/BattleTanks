@@ -117,7 +117,7 @@ public class Pathfinder : MonoBehaviour
             while (currentLoc != destination && maxExploreCount != 0)
             {
                 currentLoc = m_exploredTiles[currentLoc.x, currentLoc.y].parent;
-                m_exploredTiles[currentLoc.x, currentLoc.y].usageInfluence += 0.5f;
+                m_exploredTiles[currentLoc.x, currentLoc.y].usageInfluence += 0.2f;
                 //Check for a linear streak, and cull unnecessary path points
                 if (isInline(secondLastLoc, lastLoc, currentLoc))
                     path.Dequeue();
