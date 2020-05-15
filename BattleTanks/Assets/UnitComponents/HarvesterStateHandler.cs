@@ -17,6 +17,10 @@ public enum eHarvesterState
 public class HarvesterStateHandler : UnitStateHandler
 {
     [SerializeField]
+    private float m_destinationOffSetResource = 1.0f;
+    [SerializeField]
+    private float m_destinationOffSetHQ = 1.0f;
+    [SerializeField]
     private eHarvesterState m_harvesterState;
     private Harvester m_harvester = null;
     private Resource m_resourceToHarvest = null;
@@ -87,53 +91,25 @@ public class HarvesterStateHandler : UnitStateHandler
                         m_resourceToHarvest = resource;
                     }
 
-                    m_tankMovement.moveTo(getHarvestingPosition());
+                    Assert.IsNotNull(m_resourceToHarvest);
+                    fRectangle AABB = m_resourceToHarvest.GetComponent<Selection>().getAABB();
+                    m_tankMovement.moveTo(
+                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_resourceToHarvest.transform.position, m_destinationOffSetResource));
+                    
                     m_harvesterState = eHarvesterState.MovingToHarvestPosition;
                 }
                 break;
             case eHarvesterState.SetDestinationResourceBuilding:
                 {
                     Assert.IsNotNull(m_harvester.getBuildingToReturnResource());
-                    m_tankMovement.moveTo(getReturnPosition(m_harvester.getBuildingToReturnResource()));
+                    
+                    fRectangle AABB = m_harvester.getBuildingToReturnResource().GetComponent<Selection>().getAABB();
+                    m_tankMovement.moveTo(
+                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_harvester.getBuildingToReturnResource().transform.position, m_destinationOffSetHQ));
+                    
                     m_harvesterState = eHarvesterState.MovingToResourceBuilding;
                 }
                 break;
         }
-    }
-
-    private Vector3 getReturnPosition(Building building)
-    {
-        Assert.IsNotNull(building);
-        Selection resoureceSelection = building.GetComponent<Selection>();
-        Assert.IsNotNull(resoureceSelection);
-
-        int distance = 1;
-        Vector3 position = Utilities.INVALID_POSITION;
-        do
-        {
-            position = building.transform.position + (transform.position - building.transform.position).normalized * distance;
-            ++distance;
-
-        } while (resoureceSelection.contains(position));
-
-        return position;
-    }
-
-    private Vector3 getHarvestingPosition()
-    {
-        Assert.IsNotNull(m_resourceToHarvest);
-        Selection resoureceSelection = m_resourceToHarvest.GetComponent<Selection>();
-        Assert.IsNotNull(resoureceSelection);
-
-        int distance = 1;
-        Vector3 position = Utilities.INVALID_POSITION;
-        do
-        {
-            position = m_resourceToHarvest.transform.position + (transform.position - m_resourceToHarvest.transform.position).normalized * distance;
-            ++distance;
-
-        } while (resoureceSelection.contains(position));
-
-        return position;
     }
 }

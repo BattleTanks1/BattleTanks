@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public enum eDirection2D
 {
@@ -39,6 +40,38 @@ public static class Utilities
         };
 
         return diagonaldirections2D;
+    }
+
+    static public Vector3 getRandomPositionOutsideAABB(fRectangle AABB, Vector3 centrePosition, float offSet)
+    {
+        Assert.IsNotNull(AABB);
+
+        Vector3 direction = new Vector3(Random.Range(-1.0f, 1.0f), 1, Random.Range(-1.0f, 1.0f)).normalized;
+        Vector3 position = centrePosition;
+        int distance = 1;
+        while (AABB.contains(position))
+        {
+            position += direction * distance;
+        }
+        position += direction * offSet;
+
+        return new Vector3(position.x, 1, position.z);
+    }
+
+    static public Vector3 getClosestPositionOutsideAABB(fRectangle AABB, Vector3 unitPosition, Vector3 centrePosition, float offSet)
+    {
+        Assert.IsNotNull(AABB);
+
+        Vector3 direction = (unitPosition - centrePosition).normalized;
+        Vector3 position = centrePosition;
+        int distance = 1;
+        while(AABB.contains(position))
+        {
+            position += direction * distance;
+        }
+        position += direction * offSet;
+
+        return new Vector3(position.x, 1, position.z);
     }
 
     static public Vector2Int convertToGridPosition(Vector3 position)

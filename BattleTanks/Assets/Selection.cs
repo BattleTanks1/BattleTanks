@@ -26,6 +26,11 @@ public class Selection : MonoBehaviour
         m_AABB.reset(transform.position, transform.localScale);
     }
 
+    public fRectangle getAABB()
+    {
+        return m_AABB;
+    }
+
     public bool contains(Vector3 position)
     {
         return m_AABB.contains(Utilities.convertToGridPosition(position));

@@ -21,15 +21,31 @@ abstract public class Faction : MonoBehaviour
     public List<Unit> m_units;
 
     [SerializeField]
+    protected Building m_building = null;
+    [SerializeField]
     protected eFactionName m_factionName;
     protected eFactionControllerType m_controllerType;
-
     [SerializeField]
     private int m_resourceCount = 0;
 
     private void Awake()
     {
         m_units = new List<Unit>();
+    }
+
+    public void spawnUnit(eUnitType unitType)
+    {
+        Selection buildingSelection = m_building.GetComponent<Selection>();
+        Assert.IsNotNull(buildingSelection);
+
+        if (buildingSelection.isSelected())
+        {
+            Unit newUnit = m_building.spawnUnit(unitType);
+            if (newUnit)
+            {
+                addUnit(newUnit);
+            }
+        }
     }
 
     public eFactionControllerType getControllerType()
@@ -60,8 +76,6 @@ abstract public class Faction : MonoBehaviour
     {
         Assert.IsNotNull(unit);
 
-        Map.Instance.clear(unit.transform.position, unit.getID());
-        
         bool removed = m_units.Remove(unit);
         Assert.IsTrue(removed);
 
