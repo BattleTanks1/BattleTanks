@@ -117,7 +117,7 @@ public class Pathfinder : MonoBehaviour
             while (currentLoc != destination && maxExploreCount != 0)
             {
                 currentLoc = m_exploredTiles[currentLoc.x, currentLoc.y].parent;
-
+                m_exploredTiles[currentLoc.x, currentLoc.y].usageInfluence += 0.5f;
                 //Check for a linear streak, and cull unnecessary path points
                 if (isInline(secondLastLoc, lastLoc, currentLoc))
                     path.Dequeue();
@@ -161,9 +161,24 @@ public class Pathfinder : MonoBehaviour
         //Decay usage level
     }
 
-    //Private helper functions
+    private IEnumerator decayUsageLevel()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(1.0f);
+            for (int i = 0; i < m_mapSize.x; ++i)
+            {
+                for (int j = 0; j < m_mapSize.y; ++j)
+                {
+                    m_exploredTiles[i, j].usageInfluence = Mathf.Max(m_exploredTiles[i, j].usageInfluence * 0.5f - 0.1f, 0.0f);
+                }
+            }
+        }
+    }
 
-    private Vector2Int findClosestPos(Vector2Int start)
+        //Private helper functions
+
+        private Vector2Int findClosestPos(Vector2Int start)
     {
         start.x = Mathf.Clamp(start.x, 0, m_mapSize.x);
         start.y = Mathf.Clamp(start.y, 0, m_mapSize.y);

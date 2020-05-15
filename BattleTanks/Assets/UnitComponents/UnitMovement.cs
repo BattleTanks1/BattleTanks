@@ -15,7 +15,7 @@ public class UnitMovement : MonoBehaviour
     [SerializeField]
     private float m_mass = 1.0f;
     [SerializeField]
-    private float m_unitBumpRange = 2.0f;
+    private float m_unitBumpRange = 0.7f;
     [SerializeField]
     private float m_dragStrength = 4.0f;
     //Just for viewing purposes
@@ -23,7 +23,9 @@ public class UnitMovement : MonoBehaviour
     public int m_count = 0;
 
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
+    private Vector2Int m_finalDestination = new Vector2Int();
     private Unit m_unit = null;
+    private float m_timeOfLastPath;
     private bool m_startingPositionSet = false;
 
     public float dangerAvoid = 0.5f;
@@ -54,13 +56,26 @@ public class UnitMovement : MonoBehaviour
         {
             for (int y = -1; y < 2; ++y)
             {
-                if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y)
-                    || Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
+                if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y))
                 {
                     UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
                     UnityEngine.Vector3 diff = currentPosition - obstPosition;
                     bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
                 }
+                else if (Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
+                {
+                    UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
+                    UnityEngine.Vector3 diff = currentPosition - obstPosition;
+                    if (diff.sqrMagnitude < 0.6f)
+                        bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
+                }
+            }
+        }
+        if (bumpingResult != new UnityEngine.Vector3())
+        {
+            if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
+            {
+                moveTo(m_finalDestination);
             }
         }
 
@@ -73,14 +88,23 @@ public class UnitMovement : MonoBehaviour
             UnityEngine.Vector3 diff = currentPosition - GameManager.Instance.getUnit(id).getPosition();
             unitResult += diff.normalized * m_unitBumpRange / ((diff.sqrMagnitude + 0.01f) * m_mass);
         }
+        //Can't access waypoint case
+        if (unitResult != new UnityEngine.Vector3())
+        {
+            if ((new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 3.0f)
+                m_positionToMoveTo.Dequeue();
 
-        //Accumulate velocity change
-        accumulate(ref bumpingResult, unitResult);
+            if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
+            {
+                moveTo(m_finalDestination);
+            }
+            
+        }
 
-        //Drag effect to stop moving objects 
+        //Stop moving objects if path has finished
         if (m_positionToMoveTo.Count != 0)
         {
-            m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / m_dragStrength) - 0.01f) * Time.deltaTime;
+            //m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / m_dragStrength) - 0.01f) * Time.deltaTime;
             if (reachedWaypoint())
             {
                 m_positionToMoveTo.Dequeue();
@@ -93,28 +117,27 @@ public class UnitMovement : MonoBehaviour
         }
         
 
-        UnityEngine.Vector3 acceleration = new UnityEngine.Vector3();
+        UnityEngine.Vector3 pathingMovement = new UnityEngine.Vector3();
         //Unit movement attempt
         if (m_positionToMoveTo.Count != 0)
         {
             UnityEngine.Vector3 newHeading = UnityEngine.Vector3.MoveTowards(currentPosition,
                 new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
-                m_maxAcceleration * Time.deltaTime);
+                m_maxVelocity);
 
-            acceleration = (newHeading - currentPosition).normalized * m_maxVelocity - m_velocity;
-
-            if (acceleration.magnitude > m_maxAcceleration)
-                acceleration = acceleration.normalized * m_maxAcceleration;
+            pathingMovement = (newHeading - currentPosition).normalized;
         }
 
-        //Debug.Log("bumping then acceleration");
+        //Debug.Log("bumping then pathingMovement");
         //Debug.Log(bumpingResult);
-        //Debug.Log(acceleration);
+        //Debug.Log(pathingMovement);
 
-        //Apply acceleration to velocity and velocity to position
-        m_velocity += bumpingResult + acceleration * Time.deltaTime;
-        if (m_velocity.sqrMagnitude > m_maxVelocity * m_maxVelocity)
-            m_velocity = m_velocity.normalized * m_maxVelocity;
+        //Accumulate velocity change
+        accumulate(ref bumpingResult, unitResult);
+        accumulate(ref bumpingResult, pathingMovement);
+
+        //Apply pathingMovement to velocity and velocity to position
+        m_velocity = bumpingResult * m_maxVelocity;
         m_velocity.y = 0.0f;
         
         transform.position += m_velocity * Time.deltaTime;
@@ -149,6 +172,7 @@ public class UnitMovement : MonoBehaviour
 
     public void moveTo(UnityEngine.Vector3 position)
     {
+        m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
         if(Map.Instance.isInBounds(position))
         {
@@ -156,6 +180,23 @@ public class UnitMovement : MonoBehaviour
             Vector2Int end = new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.z));
 
             m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), dangerAvoid, usageAvoid);
+            if (m_positionToMoveTo.Count != 0)
+                m_finalDestination = end;
+        }
+    }
+
+    public void moveTo(Vector2Int position)
+    {
+        m_timeOfLastPath = Time.time;
+        m_positionToMoveTo.Clear();
+        if (Map.Instance.isInBounds(position))
+        {
+            Vector2Int start = new Vector2Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z));
+            Vector2Int end = position;
+
+            m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), dangerAvoid, usageAvoid);
+            if (m_positionToMoveTo.Count != 0)
+                m_finalDestination = end;
         }
     }
 
