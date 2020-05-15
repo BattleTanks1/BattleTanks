@@ -46,13 +46,14 @@ public static class Utilities
     {
         Assert.IsNotNull(AABB);
 
+        Vector3 direction = (unitPosition - centrePosition).normalized;
         Vector3 position = centrePosition;
         int distance = 1;
         while(AABB.contains(position))
         {
-            position += (unitPosition - centrePosition).normalized * distance;
+            position += direction * distance;
         }
-        position += (unitPosition - centrePosition).normalized * offSet;
+        position += direction * offSet;
 
         return position;
     }
