@@ -60,11 +60,14 @@ public class UnitMovement : MonoBehaviour
             {
                 m_positionToMoveTo.Dequeue();
             }
-            UnityEngine.Vector3 newHeading = UnityEngine.Vector3.MoveTowards(currentPosition,
-                new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
-                m_maxVelocity);
+            else
+            {
+                UnityEngine.Vector3 newHeading = UnityEngine.Vector3.MoveTowards(currentPosition,
+                    new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
+                    m_maxVelocity);
 
-            pathingMovement = (newHeading - currentPosition).normalized;
+                pathingMovement = (newHeading - currentPosition).normalized;
+            }
         }
         else
         {
