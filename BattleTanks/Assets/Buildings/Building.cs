@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 public class Building : MonoBehaviour
 {
     [SerializeField]
-    private float m_spawnOffSet = 0.0f;
+    private float m_spawnOffSet = 1.0f;
     [SerializeField]
     private Unit m_tankToSpawn = null;
     [SerializeField]

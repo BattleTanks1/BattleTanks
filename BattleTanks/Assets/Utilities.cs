@@ -42,7 +42,7 @@ public static class Utilities
         return diagonaldirections2D;
     }
 
-    static public Vector3 getRandomPositionOutsideAABB(fRectangle AABB, Vector3 centrePosition, float offSet = 0.0f)
+    static public Vector3 getRandomPositionOutsideAABB(fRectangle AABB, Vector3 centrePosition, float offSet)
     {
         Assert.IsNotNull(AABB);
 
@@ -58,7 +58,7 @@ public static class Utilities
         return new Vector3(position.x, 1, position.z);
     }
 
-    static public Vector3 getClosestPositionOutsideAABB(fRectangle AABB, Vector3 unitPosition, Vector3 centrePosition, float offSet = 0.0f)
+    static public Vector3 getClosestPositionOutsideAABB(fRectangle AABB, Vector3 unitPosition, Vector3 centrePosition, float offSet)
     {
         Assert.IsNotNull(AABB);
 
