@@ -83,8 +83,9 @@ public class Pathfinder : MonoBehaviour
             }
         }
 
-        //Ensure position to search back to is accessible (can still fail if a unit is deeply stuck in a wall)
+        //Ensure position to search are accessible (can still fail if a unit is deeply stuck in a wall)
         start = findClosestPos(start);
+        destination = findClosestPos(destination);
 
         //Start recursive search
         m_searchList.Clear();
@@ -163,6 +164,8 @@ public class Pathfinder : MonoBehaviour
 
     private Vector2Int findClosestPos(Vector2Int start)
     {
+        start.x = Mathf.Clamp(start.x, 0, m_mapSize.x);
+        start.y = Mathf.Clamp(start.y, 0, m_mapSize.y);
         if (!m_exploredTiles[start.x, start.y].obstructed)
             return start;
 

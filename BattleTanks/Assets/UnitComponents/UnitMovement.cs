@@ -7,15 +7,15 @@ using UnityEngine.Assertions;
 public class UnitMovement : MonoBehaviour
 {
     [SerializeField]
-    private float m_maxVelocity = 1.0f;
+    private float m_maxVelocity = 10.0f;
     [SerializeField]
-    private float m_maxAcceleration = 5.0f;
+    private float m_maxAcceleration = 10.0f;
     [SerializeField]
     private UnityEngine.Vector3 m_velocity;
     [SerializeField]
     private float m_mass;
     [SerializeField]
-    private float m_unitBumpRange = 1.0f;
+    private float m_unitBumpRange = 2.0f;
 
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Unit m_unit = null;
@@ -83,6 +83,7 @@ public class UnitMovement : MonoBehaviour
         m_velocity += bumpingResult + acceleration * Time.deltaTime;
         if (m_velocity.sqrMagnitude > m_maxVelocity)
             m_velocity = m_velocity.normalized * m_maxVelocity;
+        m_velocity.y = 0.0f;
 
         transform.position += 0.5f * (m_velocity + oldVelocity) * Time.deltaTime;
 
