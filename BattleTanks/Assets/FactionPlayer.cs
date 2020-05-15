@@ -5,9 +5,6 @@ using UnityEngine.Assertions;
 
 public class FactionPlayer : Faction
 {
-    [SerializeField]
-    private Building m_building = null;
-
     private bool m_attackMoveNextSelection = false;
 
     private void Awake()
@@ -139,21 +136,6 @@ public class FactionPlayer : Faction
 
         m_building.showWayPoint();
         buildingSelection.select(position);
-    }
-
-    public void spawnUnit(eUnitType unitType)
-    {
-        Selection buildingSelection = m_building.GetComponent<Selection>();
-        Assert.IsNotNull(buildingSelection);
-
-        if(buildingSelection.isSelected())
-        {
-            Unit newUnit = m_building.spawnUnit(unitType);
-            if(newUnit)
-            {
-                addUnit(newUnit);
-            }
-        }
     }
 
     public void setAttackMove(bool attackMove)
