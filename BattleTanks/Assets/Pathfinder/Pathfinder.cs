@@ -132,7 +132,8 @@ public class Pathfinder : MonoBehaviour
             }
 
         }
-        //Debug.Log("Pathing finished");
+        Debug.Log("Pathing finished");
+        Debug.Log(path.Count);
         return path;
     }
 

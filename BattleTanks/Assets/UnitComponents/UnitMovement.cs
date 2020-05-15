@@ -17,7 +17,10 @@ public class UnitMovement : MonoBehaviour
     [SerializeField]
     private float m_unitBumpRange = 2.0f;
     [SerializeField]
-    private float m_dragStrength = 2.0f;
+    private float m_dragStrength = 4.0f;
+    //Just for viewing purposes
+    public Vector2Int m_nextPos = new Vector2Int();
+    public int m_count = 0;
 
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Unit m_unit = null;
@@ -34,6 +37,12 @@ public class UnitMovement : MonoBehaviour
 
     private void Update()
     {
+        m_count = m_positionToMoveTo.Count;
+        if (m_positionToMoveTo.Count != 0)
+            m_nextPos = m_positionToMoveTo.Peek();
+        else
+            m_nextPos = new Vector2Int(-1, -1);
+
         UnityEngine.Vector3 currentPosition = transform.position;
         Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(currentPosition.x), Mathf.RoundToInt(currentPosition.z));
         UnityEngine.Vector3 oldVelocity = m_velocity;
@@ -45,7 +54,7 @@ public class UnitMovement : MonoBehaviour
         {
             for (int y = -1; y < 2; ++y)
             {
-                if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y) 
+                if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y)
                     || Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
                 {
                     UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
@@ -68,6 +77,22 @@ public class UnitMovement : MonoBehaviour
         //Accumulate velocity change
         accumulate(ref bumpingResult, unitResult);
 
+        //Drag effect to stop moving objects 
+        if (m_positionToMoveTo.Count != 0)
+        {
+            m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / m_dragStrength) - 0.01f) * Time.deltaTime;
+            if (reachedWaypoint())
+            {
+                m_positionToMoveTo.Dequeue();
+            }
+        }
+        else
+        {
+            //m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / (m_dragStrength * 10.0f)) - 1.0f) * Time.deltaTime;
+            m_velocity = new UnityEngine.Vector3();
+        }
+        
+
         UnityEngine.Vector3 acceleration = new UnityEngine.Vector3();
         //Unit movement attempt
         if (m_positionToMoveTo.Count != 0)
@@ -82,27 +107,16 @@ public class UnitMovement : MonoBehaviour
                 acceleration = acceleration.normalized * m_maxAcceleration;
         }
 
+        //Debug.Log("bumping then acceleration");
+        //Debug.Log(bumpingResult);
+        //Debug.Log(acceleration);
+
         //Apply acceleration to velocity and velocity to position
         m_velocity += bumpingResult + acceleration * Time.deltaTime;
-        if (m_velocity.sqrMagnitude > m_maxVelocity)
+        if (m_velocity.sqrMagnitude > m_maxVelocity * m_maxVelocity)
             m_velocity = m_velocity.normalized * m_maxVelocity;
         m_velocity.y = 0.0f;
-
-        //If destination reached 
-        if (m_positionToMoveTo.Count != 0)
-        {
-            if (reachedDestination())
-            {
-                m_positionToMoveTo.Dequeue();
-            }
-        }
-        else
-        {
-            //Drag effect to stop moving objects
-            m_velocity = m_velocity.normalized * Mathf.Floor((m_velocity.magnitude / m_dragStrength) - 0.01f);
-        }
-
-        //transform.position += 0.5f * (m_velocity + oldVelocity) * Time.deltaTime;
+        
         transform.position += m_velocity * Time.deltaTime;
     }
 
@@ -147,9 +161,14 @@ public class UnitMovement : MonoBehaviour
 
     public bool reachedDestination()
     {
+        return m_positionToMoveTo.Count == 0;
+    }
+
+    public bool reachedWaypoint()
+    {
         if (m_positionToMoveTo.Count == 0)
             return true;
-        return (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).magnitude < 0.2f;
+        return (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.3f;
     }
 
     public void stop()
