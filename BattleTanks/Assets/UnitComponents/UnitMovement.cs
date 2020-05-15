@@ -67,8 +67,8 @@ public class UnitMovement : MonoBehaviour
     {
         if(Map.Instance.isInBounds(position))
         {
-            Vector2Int start = new Vector2Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z));
-            Vector2Int end = new Vector2Int(Mathf.FloorToInt(position.x), Mathf.FloorToInt(position.z));
+            Vector2Int start = Utilities.convertToGridPosition(transform.position);
+            Vector2Int end = Utilities.convertToGridPosition(position);
 
             m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), dangerAvoid, usageAvoid);
         }
