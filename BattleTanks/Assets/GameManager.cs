@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -32,6 +33,19 @@ public class GameManager : MonoBehaviour
         }
 
         m_resources = new List<Resource>();
+    }
+
+    public List<Unit> getOpposingFactionUnits(eFactionName sendingFaction)
+    {
+        switch (sendingFaction)
+        {
+            case eFactionName.Red:
+                return m_factions[(int)eFactionName.Blue].m_units;
+            case eFactionName.Blue:
+                return m_factions[(int)eFactionName.Red].m_units;
+            default:
+                return null;
+        }
     }
 
     public Unit getUnit(int ID)
