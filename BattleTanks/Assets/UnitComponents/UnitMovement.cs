@@ -50,6 +50,7 @@ public class UnitMovement : MonoBehaviour
         }
         //TODO accumulate
         //TODO unit bumping
+        GameManager.Instance.
         //Accumulate velocity change
 
         //Unit movement attempt
