@@ -10,6 +10,7 @@ public enum eUnitState
     SetAttackDestination,
     AttackingEnemy,
     MovingToNewPosition,
+    AttackMovingToNewPosition,
     SetDestinationToSafePosition,
     InUseBySecondaryState
 }
@@ -24,7 +25,6 @@ public class UnitStateHandler : MonoBehaviour
     private Unit m_unit = null;
     protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
-    private bool m_attackMove = false;
 
     protected virtual void Awake()
     {
@@ -66,37 +66,35 @@ public class UnitStateHandler : MonoBehaviour
             case eUnitState.MovingToNewPosition:
                 {
                     Vector3 enemyPosition = new Vector3();
-                    if(m_attackMove)
+                    if (m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
                     {
-                        int targetID = Utilities.INVALID_ID;
-                        Vector3 targetPosition;
-                        if (getClosestVisibleTarget(out targetID, out targetPosition))
+                        m_tankMovement.moveTo(enemyPosition);
+
+                        if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
-                            switchToState(eUnitState.SetDestination, targetID, targetPosition);
+                            switchToState(eUnitState.AttackingEnemy, m_targetID);
                         }
+                    }
+                    else if (m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
+                    {
+                        switchToState(eUnitState.AwaitingDecision);
                     }
                     else
                     {
-                        if (m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
-                        {
-                            m_tankMovement.moveTo(enemyPosition);
-
-                            if (m_tankShooting.isTargetInAttackRange(enemyPosition))
-                            {
-                                switchToState(eUnitState.AttackingEnemy, m_targetID);
-                            }
-                        }
-                        else if (m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
+                        if (m_tankMovement.reachedDestination())
                         {
                             switchToState(eUnitState.AwaitingDecision);
                         }
-                        else
-                        {
-                            if (m_tankMovement.reachedDestination())
-                            {
-                                switchToState(eUnitState.AwaitingDecision);
-                            }
-                        }
+                    }
+                }
+                break;
+            case eUnitState.AttackMovingToNewPosition:
+                {
+                    int targetID = Utilities.INVALID_ID;
+                    Vector3 targetPosition;
+                    if (getClosestVisibleTarget(out targetID, out targetPosition))
+                    {
+                        switchToState(eUnitState.SetDestination, targetID, targetPosition);
                     }
                 }
                 break;
@@ -141,14 +139,12 @@ public class UnitStateHandler : MonoBehaviour
                 {
                     m_currentState = eUnitState.MovingToNewPosition;
                     m_tankMovement.moveTo(position);
-                    m_attackMove = false;
                 }
                 break;
             case eUnitState.SetAttackDestination:
                 {
-                    m_currentState = eUnitState.MovingToNewPosition;
+                    m_currentState = eUnitState.AttackMovingToNewPosition;
                     m_tankMovement.moveTo(position);
-                    m_attackMove = true;
                 }
                 break;
             case eUnitState.SetDestinationToSafePosition:
@@ -182,12 +178,12 @@ public class UnitStateHandler : MonoBehaviour
 
     private bool getClosestVisibleTarget(out int enemyID, out Vector3 enemyPosition)
     {
-        Unit targetUnit = null;
-        float closestUnitDistance = float.MaxValue;
         List<Unit> opposingFactionUnits = GameManager.Instance.getOpposingFactionUnits(m_unit.getFactionName());
         Assert.IsNotNull(opposingFactionUnits);
+        Unit targetUnit = null;
+        float closestUnitDistance = float.MaxValue;
 
-        foreach(Unit unit in opposingFactionUnits)
+        foreach (Unit unit in opposingFactionUnits)
         {
             float distanceToUnit = (unit.transform.position - transform.position).sqrMagnitude;
             if (distanceToUnit <= Mathf.Pow(m_unit.getVisibilityDistance(), 2) && distanceToUnit < closestUnitDistance)
