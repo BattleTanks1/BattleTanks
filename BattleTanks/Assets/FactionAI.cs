@@ -47,6 +47,8 @@ public class FactionAI : Faction
     private void Start()
     {
         m_controllerType = eFactionControllerType.AI;
+        m_building.setWayPoint(new Vector3(110, 1, 70));
+        m_building.spawnUnit(eUnitType.Attacker);
     }
 
     private void Update() 
@@ -58,7 +60,7 @@ public class FactionAI : Faction
         //    TankStateHandler stateHandlerComponent = tank.gameObject.GetComponent<TankStateHandler>();
         //    Assert.IsNotNull(stateHandlerComponent);
 
-        //    if (stateHandlerComponent.m_currentState == eAIState.AwaitingDecision)
+        //    if (stateHandlerComponent.m_currentState == eAIState.AwaitingDecission)
         //    {
         //        assignTankToEnemyInRange(tank);
         //    }
