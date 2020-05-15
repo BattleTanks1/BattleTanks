@@ -20,14 +20,11 @@ public class UnitStateHandler : MonoBehaviour
     protected eUnitState m_currentState = eUnitState.AwaitingDecision;
     [SerializeField]
     protected int m_targetID = Utilities.INVALID_ID;
-    [SerializeField]
-    private float m_timeBetweenIdleCheck = 0.0f;
 
     private Unit m_unit = null;
     protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
     private bool m_attackMove = false;
-    private float m_elaspedTime = 0.0f;
 
     protected virtual void Awake()
     {
@@ -47,21 +44,21 @@ public class UnitStateHandler : MonoBehaviour
         {
             case eUnitState.AwaitingDecision:
                 {
-                    m_elaspedTime += Time.deltaTime;
-                    if(m_elaspedTime >= m_timeBetweenIdleCheck)
+                    int targetID = Utilities.INVALID_ID;
+                    Vector3 targetPosition;
+                    if (getClosestVisibleTarget(out targetID, out targetPosition))
                     {
-                        m_elaspedTime = 0.0f;
-
-                        int targetID = Utilities.INVALID_ID;
-                        Vector3 targetPosition;
-                        bool enemySpotted = getClosestVisibleTarget(out targetID, out targetPosition);
-                        if (m_unit.getUnitType() == eUnitType.Attacker && enemySpotted)
+                        switch (m_unit.getUnitType())
                         {
-                            switchToState(eUnitState.MovingToNewPosition, targetID, targetPosition);
-                        }
-                        else if(m_unit.getUnitType() == eUnitType.Harvester && enemySpotted)
-                        {
-                            switchToState(eUnitState.SetDestinationToSafePosition);
+                            case eUnitType.Attacker:
+                                switchToState(eUnitState.SetDestination, targetID, targetPosition);
+                                break;
+                            case eUnitType.Harvester:
+                                switchToState(eUnitState.SetDestinationToSafePosition);
+                                break;
+                            default:
+                                Assert.IsTrue(false);
+                                break;
                         }
                     }
                 }
@@ -165,74 +162,45 @@ public class UnitStateHandler : MonoBehaviour
 
     private bool isTargetInVisibleSight(out Vector3 enemyPosition)
     {
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.getVisibilityDistance());
+        Assert.IsTrue(m_targetID != Utilities.INVALID_ID);
+        List<Unit> opposingFactionUnits = GameManager.Instance.getOpposingFactionUnits(m_unit.getFactionName());
+        Assert.IsNotNull(opposingFactionUnits);
 
-        for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
+        foreach (Unit unit in opposingFactionUnits)
         {
-            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            if(unit.getID() == m_targetID &&
+                (unit.transform.position - transform.position).sqrMagnitude <= Mathf.Pow(m_unit.getVisibilityDistance(), 2))
             {
-                Vector2Int result = positionOnGrid - new Vector2Int(x, y);
-                PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
-                if (pointOnMap == null)
-                {
-                    continue;
-                }
-
-                if (pointOnMap.unitID == m_targetID &&
-                    result.sqrMagnitude <= m_unit.getVisibilityDistance() * m_unit.getVisibilityDistance())
-                {
-                    Unit unit = GameManager.Instance.getUnit(m_targetID);
-                    Assert.IsNotNull(unit);
-
-                    enemyPosition = new Vector3(unit.transform.position.x, 0, unit.transform.position.z);
-                    return true;
-                }
+                enemyPosition = unit.transform.position;
+                return true;
             }
         }
 
-        enemyPosition = new Vector3();
+        enemyPosition = Utilities.INVALID_POSITION;
         return false;
     }
 
     private bool getClosestVisibleTarget(out int enemyID, out Vector3 enemyPosition)
     {
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(transform.position);
-        iRectangle searchableRect = new iRectangle(positionOnGrid, m_unit.getVisibilityDistance());
-        int closestTargetID = Utilities.INVALID_ID;
-        float distance = float.MaxValue;
+        Unit targetUnit = null;
+        float closestUnitDistance = float.MaxValue;
+        List<Unit> opposingFactionUnits = GameManager.Instance.getOpposingFactionUnits(m_unit.getFactionName());
+        Assert.IsNotNull(opposingFactionUnits);
 
-        for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
+        foreach(Unit unit in opposingFactionUnits)
         {
-            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            float distanceToUnit = (unit.transform.position - transform.position).sqrMagnitude;
+            if (distanceToUnit <= Mathf.Pow(m_unit.getVisibilityDistance(), 2) && distanceToUnit < closestUnitDistance)
             {
-                Vector2Int result = positionOnGrid - new Vector2Int(x, y);
-                PointOnMap pointOnMap = Map.Instance.getPoint(x, y);
-                if (pointOnMap == null)
-                {
-                    continue;
-                }
-
-                if (result.sqrMagnitude <= m_unit.getVisibilityDistance() * m_unit.getVisibilityDistance() &&
-                    pointOnMap.isOccupiedByEnemy(m_unit.getFactionName()))
-                {
-                    float d = (positionOnGrid - new Vector2Int(x, y)).magnitude;
-                    if (d < distance)
-                    {
-                        closestTargetID = pointOnMap.unitID;
-                        distance = d;
-                    }
-                }
+                targetUnit = unit;
+                closestUnitDistance = distanceToUnit;
             }
         }
 
-        if (closestTargetID != Utilities.INVALID_ID)
+        if(targetUnit)
         {
-            Unit enemy = GameManager.Instance.getUnit(closestTargetID);
-            Assert.IsNotNull(enemy);
-
-            enemyID = enemy.getID();
-            enemyPosition = enemy.transform.position;
+            enemyID = targetUnit.getID();
+            enemyPosition = targetUnit.transform.position;
             return true;
         }
         else

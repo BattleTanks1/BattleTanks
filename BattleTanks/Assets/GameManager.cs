@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
             case eFactionName.Blue:
                 return m_factions[(int)eFactionName.Red].m_units;
             default:
+                Assert.IsTrue(false);
                 return null;
         }
     }
