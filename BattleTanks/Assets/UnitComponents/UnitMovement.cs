@@ -36,14 +36,15 @@ public class UnitMovement : MonoBehaviour
         Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(currentPosition.x), Mathf.RoundToInt(currentPosition.z));
         UnityEngine.Vector3 oldVelocity = m_velocity;
 
-        //Bumping goes here
+        //Scenery bumping
         UnityEngine.Vector3 bumpingResult = new UnityEngine.Vector3();
         //Find objects that are too close
         for (int x = -1; x < 2; ++x)
         {
             for (int y = -1; y < 2; ++y)
             {
-                if (Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
+                if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y) 
+                    || Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
                 {
                     UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
                     UnityEngine.Vector3 diff = currentPosition - obstPosition;
