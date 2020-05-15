@@ -14,6 +14,8 @@ public class UnitMovement : MonoBehaviour
     private UnityEngine.Vector3 m_velocity;
     [SerializeField]
     private float m_mass;
+    [SerializeField]
+    private float m_unitBumpRange = 1.0f;
 
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Unit m_unit = null;
@@ -32,6 +34,7 @@ public class UnitMovement : MonoBehaviour
     {
         UnityEngine.Vector3 currentPosition = transform.position;
         Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(currentPosition.x), Mathf.RoundToInt(currentPosition.z));
+        UnityEngine.Vector3 oldVelocity = m_velocity;
 
         //Bumping goes here
         UnityEngine.Vector3 bumpingResult = new UnityEngine.Vector3();
@@ -48,11 +51,21 @@ public class UnitMovement : MonoBehaviour
                 }
             }
         }
-        //TODO accumulate
-        //TODO unit bumping
-        GameManager.Instance.
-        //Accumulate velocity change
 
+        //Unit bumping
+        UnityEngine.Vector3 unitResult = new UnityEngine.Vector3();
+        List<int> closeUnits = new List<int>();
+        GameManager.Instance.getFactionUnitsInRange(ref closeUnits, currentPosition, m_unitBumpRange, (int)m_unit.getFactionName());
+        foreach (int id in closeUnits)
+        {
+            UnityEngine.Vector3 diff = currentPosition - GameManager.Instance.getUnit(id).getPosition();
+            unitResult += diff.normalized * m_unitBumpRange / ((diff.sqrMagnitude + 0.01f) * m_mass);
+        }
+
+        //Accumulate velocity change
+        accumulate(ref bumpingResult, unitResult);
+
+        UnityEngine.Vector3 acceleration = new UnityEngine.Vector3();
         //Unit movement attempt
         if (m_positionToMoveTo.Count != 0)
         {
@@ -60,14 +73,20 @@ public class UnitMovement : MonoBehaviour
                 new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
                 m_maxAcceleration * Time.deltaTime);
 
-            UnityEngine.Vector3 acceleration = (newHeading - currentPosition).normalized * m_maxVelocity - m_velocity;
+            acceleration = (newHeading - currentPosition).normalized * m_maxVelocity - m_velocity;
 
             if (acceleration.magnitude > m_maxAcceleration)
                 acceleration = acceleration.normalized * m_maxAcceleration;
         }
 
         //Apply acceleration to velocity and velocity to position
+        m_velocity += bumpingResult + acceleration * Time.deltaTime;
+        if (m_velocity.sqrMagnitude > m_maxVelocity)
+            m_velocity = m_velocity.normalized * m_maxVelocity;
 
+        transform.position += 0.5f * (m_velocity + oldVelocity) * Time.deltaTime;
+
+        //If destination reached 
         if (m_positionToMoveTo.Count != 0)
         {
             if (reachedDestination())
@@ -75,7 +94,34 @@ public class UnitMovement : MonoBehaviour
                 m_positionToMoveTo.Dequeue();
             }
         }
-    } 
+    }
+
+    //Adds a vector to another, capping the length of the second such that the result's length is 1 or less
+    private void accumulate(ref UnityEngine.Vector3 acc, UnityEngine.Vector3 add)
+    {
+        if (acc.magnitude == 1.0f)
+            return;
+
+        float dot = UnityEngine.Vector3.Dot(acc, add);
+        float root = Mathf.Sqrt((dot * dot) - (add.sqrMagnitude * (acc.sqrMagnitude - 1)));
+        float A = (-dot + root) / (acc.sqrMagnitude - 1);
+        float B = (-dot - root) / (acc.sqrMagnitude - 1);
+
+        if (A >= 0.0f)
+        {
+            A = Mathf.Min(1.0f, A);
+            acc = acc + (add * A);
+            acc = acc.normalized;
+            return;
+        }
+        else if (B >= 0.0f)
+        {
+            B = Mathf.Min(1.0f, B);
+            acc = acc + (add * B);
+            acc = acc.normalized;
+            return;
+        }
+    }
 
     public void moveTo(UnityEngine.Vector3 position)
     {
