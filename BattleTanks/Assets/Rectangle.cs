@@ -66,6 +66,14 @@ public class fRectangle : Rectangle<float>
             position.y <= m_top;
     }
 
+    public bool contains(Vector3 position)
+    {
+        return position.x >= m_left &&
+            position.x <= m_right &&
+            position.z >= m_bottom &&
+            position.z <= m_top;
+    }
+
     public void reset(Vector3 position, Vector3 localScale)
     {
         Vector3 scale = new Vector3(localScale.x / 2.0f, 0, localScale.z / 2.0f);
