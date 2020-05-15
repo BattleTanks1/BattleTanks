@@ -76,8 +76,6 @@ abstract public class Faction : MonoBehaviour
     {
         Assert.IsNotNull(unit);
 
-        Map.Instance.clear(unit.transform.position, unit.getID());
-        
         bool removed = m_units.Remove(unit);
         Assert.IsTrue(removed);
 
