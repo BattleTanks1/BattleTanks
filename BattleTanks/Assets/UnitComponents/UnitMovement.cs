@@ -13,9 +13,11 @@ public class UnitMovement : MonoBehaviour
     [SerializeField]
     private UnityEngine.Vector3 m_velocity;
     [SerializeField]
-    private float m_mass;
+    private float m_mass = 1.0f;
     [SerializeField]
     private float m_unitBumpRange = 2.0f;
+    [SerializeField]
+    private float m_dragStrength = 2.0f;
 
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Unit m_unit = null;
@@ -86,8 +88,6 @@ public class UnitMovement : MonoBehaviour
             m_velocity = m_velocity.normalized * m_maxVelocity;
         m_velocity.y = 0.0f;
 
-        transform.position += 0.5f * (m_velocity + oldVelocity) * Time.deltaTime;
-
         //If destination reached 
         if (m_positionToMoveTo.Count != 0)
         {
@@ -96,6 +96,14 @@ public class UnitMovement : MonoBehaviour
                 m_positionToMoveTo.Dequeue();
             }
         }
+        else
+        {
+            //Drag effect to stop moving objects
+            m_velocity = m_velocity.normalized * Mathf.Floor((m_velocity.magnitude / m_dragStrength) - 0.01f);
+        }
+
+        //transform.position += 0.5f * (m_velocity + oldVelocity) * Time.deltaTime;
+        transform.position += m_velocity * Time.deltaTime;
     }
 
     //Adds a vector to another, capping the length of the second such that the result's length is 1 or less
@@ -127,6 +135,7 @@ public class UnitMovement : MonoBehaviour
 
     public void moveTo(UnityEngine.Vector3 position)
     {
+        m_positionToMoveTo.Clear();
         if(Map.Instance.isInBounds(position))
         {
             Vector2Int start = new Vector2Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z));
