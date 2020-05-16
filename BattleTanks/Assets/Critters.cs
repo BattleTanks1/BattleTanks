@@ -26,7 +26,7 @@ public class Critters : MonoBehaviour
         int critterCount = Random.Range(GameConstants.MIN_CRITTER_COUNT, GameConstants.MAX_CRITTER_COUNT);
         for(int i = 0; i < critterCount; ++i)
         {
-            Instantiate()
+           // Instantiate()
         }
     }
 }

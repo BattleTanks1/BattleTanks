@@ -27,7 +27,6 @@ public class Building : MonoBehaviour
         Assert.IsNotNull(m_tankToSpawn);
         Assert.IsNotNull(m_harvesterToSpawn);
         Assert.IsNotNull(m_wayPointPrefab);
-        Assert.IsNotNull(m_critterPrefab);
 
         m_selectionComponent = GetComponent<Selection>();
         Assert.IsNotNull(m_selectionComponent);
