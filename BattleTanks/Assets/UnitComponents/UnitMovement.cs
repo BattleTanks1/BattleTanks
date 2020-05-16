@@ -23,8 +23,8 @@ public class UnitMovement : MonoBehaviour
     private float m_timeOfLastPath;
     private bool m_startingPositionSet = false;
 
-    public float dangerAvoid = 0.5f;
-    public float usageAvoid = 1.0f;
+    public float m_defaultDangerAvoid = 0.5f;
+    public float m_defaultUsageAvoid = 1.0f;
 
     private void Awake()
     {
@@ -144,7 +144,7 @@ public class UnitMovement : MonoBehaviour
             {
                 if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
                 {
-                    moveTo(m_finalDestination);
+                    moveTo(m_finalDestination, m_defaultDangerAvoid, m_defaultUsageAvoid);
                 }
             }
 
@@ -190,7 +190,7 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
-    public void moveTo(Vector3 position)
+    public void moveTo(Vector3 position, float dangerAvoid, float usageAvoid)
     {
         m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
@@ -205,7 +205,7 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
-    public void moveTo(Vector2Int position)
+    public void moveTo(Vector2Int position, float dangerAvoid, float usageAvoid)
     {
         m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
