@@ -78,6 +78,11 @@ public class Unit : MonoBehaviour
         return m_scaredValue;
     }
 
+    public Vector3 getPosition()
+    {
+        return transform.position;
+    }
+
     public void reduceHealth(int amount)
     {
         m_health -= amount;

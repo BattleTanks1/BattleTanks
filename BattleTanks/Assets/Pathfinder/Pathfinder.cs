@@ -83,8 +83,9 @@ public class Pathfinder : MonoBehaviour
             }
         }
 
-        //Ensure position to search back to is accessible (can still fail if a unit is deeply stuck in a wall)
+        //Ensure position to search are accessible (can still fail if a unit is deeply stuck in a wall)
         start = findClosestPos(start);
+        destination = findClosestPos(destination);
 
         //Start recursive search
         m_searchList.Clear();
@@ -116,7 +117,7 @@ public class Pathfinder : MonoBehaviour
             while (currentLoc != destination && maxExploreCount != 0)
             {
                 currentLoc = m_exploredTiles[currentLoc.x, currentLoc.y].parent;
-
+                m_exploredTiles[currentLoc.x, currentLoc.y].usageInfluence += 0.2f;
                 //Check for a linear streak, and cull unnecessary path points
                 if (isInline(secondLastLoc, lastLoc, currentLoc))
                     path.Dequeue();
@@ -131,7 +132,8 @@ public class Pathfinder : MonoBehaviour
             }
 
         }
-        //Debug.Log("Pathing finished");
+        Debug.Log("Pathing finished");
+        Debug.Log(path.Count);
         return path;
     }
 
@@ -159,10 +161,27 @@ public class Pathfinder : MonoBehaviour
         //Decay usage level
     }
 
-    //Private helper functions
-
-    private Vector2Int findClosestPos(Vector2Int start)
+    private IEnumerator decayUsageLevel()
     {
+        while (true)
+        {
+            yield return new WaitForSeconds(1.0f);
+            for (int i = 0; i < m_mapSize.x; ++i)
+            {
+                for (int j = 0; j < m_mapSize.y; ++j)
+                {
+                    m_exploredTiles[i, j].usageInfluence = Mathf.Max(m_exploredTiles[i, j].usageInfluence * 0.5f - 0.1f, 0.0f);
+                }
+            }
+        }
+    }
+
+        //Private helper functions
+
+        private Vector2Int findClosestPos(Vector2Int start)
+    {
+        start.x = Mathf.Clamp(start.x, 0, m_mapSize.x);
+        start.y = Mathf.Clamp(start.y, 0, m_mapSize.y);
         if (!m_exploredTiles[start.x, start.y].obstructed)
             return start;
 
