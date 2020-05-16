@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
+using System.Data;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -8,16 +8,13 @@ public class UnitMovement : MonoBehaviour
 {
     [SerializeField]
     private float m_maxVelocity = 10.0f;
-    [SerializeField]
-    private UnityEngine.Vector3 m_velocity;
+    public Vector3 m_velocity { get; private set; }
     [SerializeField]
     private float m_mass = 1.0f;
     [SerializeField]
     private bool m_bumping = true;
     [SerializeField]
     private float m_bumpRange = 0.7f;
-    [SerializeField]
-    private float m_dragStrength = 4.0f;
     //Just for viewing purposes
     public Vector2Int m_nextPos = new Vector2Int();
     public int m_count = 0;
@@ -45,13 +42,13 @@ public class UnitMovement : MonoBehaviour
         else
             m_nextPos = new Vector2Int(-1, -1);
 
-        UnityEngine.Vector3 currentPosition = transform.position;
+        Vector3 currentPosition = transform.position;
         Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(currentPosition.x), Mathf.RoundToInt(currentPosition.z));
-        UnityEngine.Vector3 oldVelocity = m_velocity;
+        Vector3 oldVelocity = m_velocity;
 
-        UnityEngine.Vector3 finalMovement = UnityEngine.Vector3.zero;
-        UnityEngine.Vector3 potentialFinalMovement = UnityEngine.Vector3.zero;
-        UnityEngine.Vector3 pathingMovement = UnityEngine.Vector3.zero;
+        Vector3 finalMovement = Vector3.zero;
+        Vector3 potentialFinalMovement = Vector3.zero;
+        Vector3 pathingMovement = Vector3.zero;
         //Unit movement attempt
         //Note this is only actually added to the next velocity last but the value is used by subsequent parts to estimate next location
         if (m_positionToMoveTo.Count != 0)
@@ -63,8 +60,8 @@ public class UnitMovement : MonoBehaviour
             }
             else
             {
-                UnityEngine.Vector3 newHeading = UnityEngine.Vector3.MoveTowards(currentPosition,
-                    new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
+                Vector3 newHeading = Vector3.MoveTowards(currentPosition,
+                    new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y),
                     m_maxVelocity);
 
                 pathingMovement = (newHeading - currentPosition).normalized;
@@ -72,17 +69,17 @@ public class UnitMovement : MonoBehaviour
         }
         else
         {
-            //m_velocity -= m_velocity.normalized * Mathf.Max(0.0f, (m_velocity.magnitude / (m_dragStrength * 10.0f)) - 1.0f) * Time.deltaTime;
-            m_velocity = UnityEngine.Vector3.zero;
+            m_velocity = Vector3.zero;
         }
 
-        UnityEngine.Vector3 potentialPosition = currentPosition + pathingMovement * m_maxVelocity * Time.deltaTime;
+        Vector3 potentialPosition = currentPosition + pathingMovement * m_maxVelocity * Time.deltaTime;
 
         if (m_bumping)
         {
             //Scenery bumping
-            UnityEngine.Vector3 bumpingResult = UnityEngine.Vector3.zero;
-            UnityEngine.Vector3 potentialBumpingResult = UnityEngine.Vector3.zero;
+            Vector3 bumpingResult = Vector3.zero;
+            Vector3 potentialBumpingResult = Vector3.zero;
+            bool wallsNearby = false;
             //Find objects that are too close
             for (int x = -1; x < 2; ++x)
             {
@@ -90,9 +87,10 @@ public class UnitMovement : MonoBehaviour
                 {
                     if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y))
                     {
-                        UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
+                        wallsNearby = true;
+                        Vector3 obstPosition = new Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
 
-                        UnityEngine.Vector3 diff = currentPosition - obstPosition;
+                        Vector3 diff = currentPosition - obstPosition;
                         if (diff.sqrMagnitude < m_bumpRange * m_bumpRange)
                             bumpingResult += diff.normalized / (diff.sqrMagnitude + 0.01f);
 
@@ -102,9 +100,10 @@ public class UnitMovement : MonoBehaviour
                     }
                     else if (Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
                     {
-                        UnityEngine.Vector3 obstPosition = new UnityEngine.Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
+                        wallsNearby = true;
+                        Vector3 obstPosition = new Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
 
-                        UnityEngine.Vector3 diff = currentPosition - obstPosition;
+                        Vector3 diff = currentPosition - obstPosition;
                         if (diff.sqrMagnitude < m_bumpRange * m_bumpRange)
                             bumpingResult += diff.normalized * m_bumpRange / (diff.sqrMagnitude + 0.01f);
 
@@ -116,13 +115,13 @@ public class UnitMovement : MonoBehaviour
             }
 
             //Unit bumping
-            UnityEngine.Vector3 unitResult = UnityEngine.Vector3.zero;
-            UnityEngine.Vector3 potentialUnitResult = UnityEngine.Vector3.zero;
+            Vector3 unitResult = Vector3.zero;
+            Vector3 potentialUnitResult = Vector3.zero;
             List<int> closeUnits = new List<int>();
             GameManager.Instance.getFactionUnitsInRange(ref closeUnits, currentPosition, m_bumpRange, (int)m_unit.getFactionName());
             foreach (int id in closeUnits)
             {
-                UnityEngine.Vector3 diff = currentPosition - GameManager.Instance.getUnit(id).getPosition();
+                Vector3 diff = currentPosition - GameManager.Instance.getUnit(id).getPosition();
                 unitResult += diff.normalized * m_bumpRange / ((diff.sqrMagnitude + 0.01f) * m_mass);
 
                 diff = potentialPosition - GameManager.Instance.getUnit(id).getPosition();
@@ -134,21 +133,21 @@ public class UnitMovement : MonoBehaviour
             //Debug.Log(pathingMovement);
 
             //If the unit is bumping into other units and no walls are nearby, let it hit nearby waypoints without needing to get as close
-            if (unitResult != UnityEngine.Vector3.zero && bumpingResult == UnityEngine.Vector3.zero &&
-                (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 2.0f)
+            if (unitResult != Vector3.zero && wallsNearby &&
+                (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 2.0f)
                 m_positionToMoveTo.Dequeue();
 
             //Accumulate velocity change
             accumulate(ref bumpingResult, unitResult);
             accumulate(ref potentialBumpingResult, potentialUnitResult);
 
-            if (bumpingResult != UnityEngine.Vector3.zero || potentialBumpingResult != UnityEngine.Vector3.zero)
+            //If the unit is regularly bumping into things then recalculate the path if enough time has passed
+            if (bumpingResult != Vector3.zero || potentialBumpingResult != Vector3.zero)
             {
                 if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
                 {
                     moveTo(m_finalDestination);
                 }
-
             }
 
             accumulate(ref bumpingResult, pathingMovement);
@@ -162,20 +161,17 @@ public class UnitMovement : MonoBehaviour
             potentialFinalMovement = pathingMovement;
         }
 
-        //Apply pathingMovement to velocity and velocity to position
+        //Apply pathingMovement to velocity
         m_velocity = 0.5f * (finalMovement + potentialFinalMovement) * m_maxVelocity;
-        m_velocity.y = 0.0f;
-        
-        transform.position += m_velocity * Time.deltaTime;
     }
 
     //Adds a vector to another, capping the length of the second such that the result's length is 1 or less
-    private void accumulate(ref UnityEngine.Vector3 acc, UnityEngine.Vector3 add)
+    private void accumulate(ref Vector3 acc, Vector3 add)
     {
         if (acc.magnitude == 1.0f)
             return;
 
-        float dot = UnityEngine.Vector3.Dot(acc, add);
+        float dot = Vector3.Dot(acc, add);
         float root = Mathf.Sqrt((dot * dot) - (add.sqrMagnitude * (acc.sqrMagnitude - 1)));
         float A = (-dot + root) / (acc.sqrMagnitude - 1);
         float B = (-dot - root) / (acc.sqrMagnitude - 1);
@@ -196,7 +192,7 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
-    public void moveTo(UnityEngine.Vector3 position)
+    public void moveTo(Vector3 position)
     {
         m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
@@ -235,7 +231,7 @@ public class UnitMovement : MonoBehaviour
     {
         if (m_positionToMoveTo.Count == 0)
             return true;
-        return (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.2f;
+        return (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.2f;
     }
 
     public void stop()
