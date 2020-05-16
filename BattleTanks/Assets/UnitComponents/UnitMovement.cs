@@ -31,11 +31,12 @@ public class UnitMovement : MonoBehaviour
     {
         m_unit = GetComponent<Unit>();
         Assert.IsNotNull(m_unit);
+        m_unitState = GetComponent<UnitStateHandler>();
     }
 
     private void Start()
     {
-        m_unitState = GetComponent<UnitStateHandler>();
+
     }
 
     private void Update()
