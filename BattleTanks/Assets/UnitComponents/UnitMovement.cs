@@ -131,7 +131,7 @@ public class UnitMovement : MonoBehaviour
             //Debug.Log(pathingMovement);
 
             //If the unit is bumping into other units and no walls are nearby, let it hit nearby waypoints without needing to get as close
-            if (unitResult != Vector3.zero && wallsNearby &&
+            if (unitResult != Vector3.zero && wallsNearby && m_positionToMoveTo.Count != 0 &&
                 (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 2.0f)
                 m_positionToMoveTo.Dequeue();
 
