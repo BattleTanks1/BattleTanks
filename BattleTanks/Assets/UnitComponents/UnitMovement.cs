@@ -10,6 +10,8 @@ public class UnitMovement : MonoBehaviour
     [SerializeField]
     private float m_mass = 1.0f;
     [SerializeField]
+    private bool m_influence = true;
+    [SerializeField]
     private bool m_bumping = true;
     [SerializeField]
     private float m_bumpRange = 0.7f;
@@ -203,7 +205,11 @@ public class UnitMovement : MonoBehaviour
             Vector2Int start = Utilities.convertToGridPosition(transform.position);
             Vector2Int end = Utilities.convertToGridPosition(position);
 
-            m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
+            if (m_influence)
+                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
+            else
+                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), 0.0f, 0.0f);
+
             if (m_positionToMoveTo.Count != 0)
                 m_finalDestination = end;
         }
@@ -218,7 +224,11 @@ public class UnitMovement : MonoBehaviour
             Vector2Int start = new Vector2Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z));
             Vector2Int end = position;
 
-            m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
+            if (m_influence)
+                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
+            else
+                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), 0.0f, 0.0f);
+
             if (m_positionToMoveTo.Count != 0)
                 m_finalDestination = end;
         }
