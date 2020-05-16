@@ -178,7 +178,7 @@ public class Pathfinder : MonoBehaviour
 
         //Private helper functions
 
-        private Vector2Int findClosestPos(Vector2Int start)
+    private Vector2Int findClosestPos(Vector2Int start)
     {
         start.x = Mathf.Clamp(start.x, 0, m_mapSize.x);
         start.y = Mathf.Clamp(start.y, 0, m_mapSize.y);
