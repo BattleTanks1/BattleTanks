@@ -133,8 +133,10 @@ public class UnitMovement : MonoBehaviour
             //Debug.Log(bumpingResult);
             //Debug.Log(pathingMovement);
 
-            //if (unitResult != UnityEngine.Vector3.zero && (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 3.0f)
-            //    m_positionToMoveTo.Dequeue();
+            //If the unit is bumping into other units and no walls are nearby, let it hit nearby waypoints without needing to get as close
+            if (unitResult != UnityEngine.Vector3.zero && bumpingResult == UnityEngine.Vector3.zero &&
+                (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 2.0f)
+                m_positionToMoveTo.Dequeue();
 
             //Accumulate velocity change
             accumulate(ref bumpingResult, unitResult);
@@ -233,7 +235,7 @@ public class UnitMovement : MonoBehaviour
     {
         if (m_positionToMoveTo.Count == 0)
             return true;
-        return (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.3f;
+        return (new UnityEngine.Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.2f;
     }
 
     public void stop()
