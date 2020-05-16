@@ -26,6 +26,9 @@ public class UnitStateHandler : MonoBehaviour
     protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
 
+    public float m_dangerAvoid { get; private set; }
+    public float m_usageAvoid { get; private set; }
+
     protected virtual void Awake()
     {
         m_unit = GetComponent<Unit>();
@@ -36,6 +39,9 @@ public class UnitStateHandler : MonoBehaviour
 
         m_tankShooting = GetComponent<UnitAttack>();
         Assert.IsNotNull(m_tankShooting);
+
+        m_dangerAvoid = 0.5f;
+        m_usageAvoid = 1.0f;
     }
 
     protected virtual void Update()

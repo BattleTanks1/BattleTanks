@@ -23,13 +23,17 @@ public class UnitMovement : MonoBehaviour
     private float m_timeOfLastPath;
     private bool m_startingPositionSet = false;
 
-    public float m_defaultDangerAvoid = 0.5f;
-    public float m_defaultUsageAvoid = 1.0f;
+    private UnitStateHandler m_unitState;
 
     private void Awake()
     {
         m_unit = GetComponent<Unit>();
         Assert.IsNotNull(m_unit);
+    }
+
+    private void Start()
+    {
+        m_unitState = GetComponent<UnitStateHandler>();
     }
 
     private void Update()
@@ -144,7 +148,7 @@ public class UnitMovement : MonoBehaviour
             {
                 if (Time.time - m_timeOfLastPath > 1.0f && m_positionToMoveTo.Count != 0)
                 {
-                    moveTo(m_finalDestination, m_defaultDangerAvoid, m_defaultUsageAvoid);
+                    moveTo(m_finalDestination);
                 }
             }
 
@@ -190,7 +194,7 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
-    public void moveTo(Vector3 position, float dangerAvoid, float usageAvoid)
+    public void moveTo(Vector3 position)
     {
         m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
@@ -199,13 +203,13 @@ public class UnitMovement : MonoBehaviour
             Vector2Int start = Utilities.convertToGridPosition(transform.position);
             Vector2Int end = Utilities.convertToGridPosition(position);
 
-            m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), dangerAvoid, usageAvoid);
+            m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
             if (m_positionToMoveTo.Count != 0)
                 m_finalDestination = end;
         }
     }
 
-    public void moveTo(Vector2Int position, float dangerAvoid, float usageAvoid)
+    public void moveTo(Vector2Int position)
     {
         m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
@@ -214,7 +218,7 @@ public class UnitMovement : MonoBehaviour
             Vector2Int start = new Vector2Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z));
             Vector2Int end = position;
 
-            m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), dangerAvoid, usageAvoid);
+            m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
             if (m_positionToMoveTo.Count != 0)
                 m_finalDestination = end;
         }
