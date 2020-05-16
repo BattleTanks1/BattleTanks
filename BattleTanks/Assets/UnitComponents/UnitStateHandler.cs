@@ -26,7 +26,9 @@ public class UnitStateHandler : MonoBehaviour
     protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
 
+    [SerializeField]
     public float m_dangerAvoid { get; private set; }
+    [SerializeField]
     public float m_usageAvoid { get; private set; }
 
     protected virtual void Awake()
