@@ -22,7 +22,7 @@ public class UnitMovement : MonoBehaviour
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Vector2Int m_finalDestination = new Vector2Int();
     private Unit m_unit = null;
-    private float m_timeOfLastPath;
+    private float m_timeOfLastPath = 0.0f;
     private bool m_startingPositionSet = false;
 
     private UnitStateHandler m_unitState;
@@ -197,8 +197,20 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
+    private bool reachedWaypoint()
+    {
+        if (m_positionToMoveTo.Count == 0)
+            return true;
+        return (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.2f;
+    }
+
     public void moveTo(Vector3 position)
     {
+        //Catch for numerous calls for the same location
+        if (m_finalDestination == Utilities.convertToGridPosition(position) && 
+            Time.time - m_timeOfLastPath > 0.5f)
+            return;
+
         m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
         if(Map.Instance.isInBounds(position))
@@ -218,11 +230,16 @@ public class UnitMovement : MonoBehaviour
 
     public void moveTo(Vector2Int position)
     {
+        //Catch for numerous calls for the same location
+        if (m_finalDestination == position && Time.time - m_timeOfLastPath > 0.5f)
+            return;
+
         m_timeOfLastPath = Time.time;
         m_positionToMoveTo.Clear();
+
         if (Map.Instance.isInBounds(position))
         {
-            Vector2Int start = new Vector2Int(Mathf.FloorToInt(transform.position.x), Mathf.FloorToInt(transform.position.z));
+            Vector2Int start = Utilities.convertToGridPosition(transform.position);
             Vector2Int end = position;
 
             if (m_influence)
@@ -235,16 +252,17 @@ public class UnitMovement : MonoBehaviour
         }
     }
 
+    public void moveStraightTowards(Vector3 position)
+    {
+        Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z));
+        m_positionToMoveTo.Clear();
+        m_positionToMoveTo.Enqueue(roundedPosition);
+        m_finalDestination = roundedPosition;
+    }
+
     public bool reachedDestination()
     {
         return m_positionToMoveTo.Count == 0;
-    }
-
-    public bool reachedWaypoint()
-    {
-        if (m_positionToMoveTo.Count == 0)
-            return true;
-        return (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.2f;
     }
 
     public void stop()

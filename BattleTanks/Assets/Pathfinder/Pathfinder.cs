@@ -20,7 +20,7 @@ public struct ExplorationNode
     public bool explored;
     public Vector2Int parent;
     public UnityEngine.Vector2 dangerInfluence;
-    public float usageInfluence;
+    public UnityEngine.Vector2 usageInfluence;
 }
 
 public class Pathfinder : MonoBehaviour
@@ -55,13 +55,13 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
-    public void updateUsageMap(in float[,] usageVals)
+    public void updateUsageMap(int faction, in float[,] usageVals)
     {
         for (int i = 0; i < m_mapSize.x; ++i)
         {
             for (int j = 0; j < m_mapSize.y; ++j)
             {
-                m_exploredTiles[i, j].usageInfluence = usageVals[i, j];
+                m_exploredTiles[i, j].usageInfluence[faction] = usageVals[i, j];
             }
         }
     }
@@ -114,7 +114,7 @@ public class Pathfinder : MonoBehaviour
             while (currentLoc != destination && maxExploreCount != 0)
             {
                 currentLoc = m_exploredTiles[currentLoc.x, currentLoc.y].parent;
-                m_exploredTiles[currentLoc.x, currentLoc.y].usageInfluence += 0.2f;
+                m_exploredTiles[currentLoc.x, currentLoc.y].usageInfluence[faction] += 0.2f;
                 //Check for a linear streak, and cull unnecessary path points
                 if (isInline(secondLastLoc, lastLoc, currentLoc) && path.Count != 0)
                     path.Dequeue();
@@ -191,7 +191,8 @@ public class Pathfinder : MonoBehaviour
             {
                 for (int j = 0; j < m_mapSize.y; ++j)
                 {
-                    m_exploredTiles[i, j].usageInfluence = Mathf.Max(m_exploredTiles[i, j].usageInfluence * 0.5f - 0.1f, 0.0f);
+                    m_exploredTiles[i, j].usageInfluence[0] = Mathf.Max(m_exploredTiles[i, j].usageInfluence[0] * 0.5f - 0.1f, 0.0f);
+                    m_exploredTiles[i, j].usageInfluence[1] = Mathf.Max(m_exploredTiles[i, j].usageInfluence[1] * 0.5f - 0.1f, 0.0f);
                 }
             }
         }
@@ -251,7 +252,7 @@ public class Pathfinder : MonoBehaviour
         //Danger amount
         weight += m_exploredTiles[tile.x, tile.y].dangerInfluence[faction] * dangerAvoidance;
         //Tile usage amount
-        weight += m_exploredTiles[tile.x, tile.y].usageInfluence * usageAvoidance;
+        weight += m_exploredTiles[tile.x, tile.y].usageInfluence[faction] * usageAvoidance;
 
         return weight;
     }
