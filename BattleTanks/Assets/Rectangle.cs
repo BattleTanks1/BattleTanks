@@ -1,5 +1,24 @@
 ﻿using UnityEngine;
 
+abstract public class Rectangle<T>
+{
+    public Rectangle()
+    { }
+
+    public Rectangle(T left, T right, T bottom, T top)
+    {
+        m_left = left;
+        m_right = right;
+        m_top = top;
+        m_bottom = bottom;
+    }
+
+    public T m_left { get; set; }
+    public T m_right { get; set; }
+    public T m_top { get; set; }
+    public T m_bottom { get; set; }
+}
+
 public class iRectangle : Rectangle<int>
 {
     public iRectangle(Vector3 position, Vector3 localScale)
@@ -83,23 +102,4 @@ public class fRectangle : Rectangle<float>
         m_bottom = Mathf.Min(position.z - scale.z, position.z + scale.z);
         m_top = Mathf.Max(position.z - scale.z, position.z + scale.z);
     }
-}
-
-abstract public class Rectangle<T>
-{
-    public Rectangle()
-    {}
-
-    public Rectangle(T left, T right, T bottom, T top)
-    {
-        m_left = left;
-        m_right = right;
-        m_top = top;
-        m_bottom = bottom;
-    }
-
-    public T m_left { get; set; }
-    public T m_right { get; set; }
-    public T m_top { get; set; }
-    public T m_bottom { get; set; }
 }
