@@ -57,4 +57,9 @@ public class BoidBox : MonoBehaviour
             }
         }
     }
+
+    public BoidTracker[] getBoids()
+    {
+        return m_boids;
+    }
 }

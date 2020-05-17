@@ -56,29 +56,12 @@ public class Boid : MonoBehaviour
         return acc;
     }
 
-    //Vector3 collisionAvoidance(std::vector<Vector3> obstacles, Vector3 pos, float avoidDist)
-    //{
-    //    Vector3 sum = Vector3.zero;
-    //    for (Vector3 obj : obstacles)
-    //    {
-    //        Vector3 diff = obj - pos;
-    //        if (diff.square() < avoidDist)
-    //        {
-    //            sum = sum + diff.normalized;
-    //        }
-    //    }
-    //    if (sum.magnitude > 1)
-    //        return sum.normalized;
-    //    else
-    //        return sum;
-    //}
-
-    Vector3 collisionAvoidance(Boid[] boids, Vector3 pos, float avoidDist)
+    Vector3 collisionAvoidance(BoidTracker[] boids, Vector3 pos, float avoidDist)
     {
         Vector3 sum = Vector3.zero;
-        foreach (Boid boid in boids)
+        foreach (BoidTracker boid in boids)
         {
-            Vector3 diff = pos - boid.m_position;
+            Vector3 diff = pos - boid.m_boid.m_position;
             if (diff.magnitude < avoidDist)
             {
                 sum += diff - (diff / avoidDist);
@@ -94,13 +77,13 @@ public class Boid : MonoBehaviour
     {
         Vector3 oldAcc = m_acceleration;
         //Find "flock" data
-        Boid[] boids = GameObject.FindObjectsOfType<Boid>();//TEMP!! Inefficient to call each frame
+        BoidTracker[] boids = m_parent.getBoids();//TEMP!! Inefficient to call each frame
         Vector3 sumPos = Vector3.zero;
         Vector3 sumVel = Vector3.zero;
-        foreach (Boid boid in boids)
+        foreach (BoidTracker boid in boids)
         {
             //rather than creating the flock store the average of nearby velocities and positions simultaneously as it saves on temp data
-            Vector3 diff = m_position - boid.m_position;
+            Vector3 diff = m_position - boid.m_boid.m_position;
             if (diff.magnitude < m_detectionDistance)
             {
                 if (diff == Vector3.zero)
@@ -111,8 +94,8 @@ public class Boid : MonoBehaviour
                     if (Mathf.Acos(sigma) > Mathf.PI * 0.75)
                         continue;
                 }
-                sumPos += boid.m_position;
-                sumVel += boid.m_velocity;
+                sumPos += boid.m_boid.m_position;
+                sumVel += boid.m_boid.m_velocity;
             }
         }
 
@@ -146,9 +129,6 @@ public class Boid : MonoBehaviour
         }
 
         //Random acceleration
-        //Vector3 randmotion = Vector3(rand() % 21 - 10, rand() % 21 - 10, 0.0f);
-        //randmotion = randmotion.normalized;
-        //accumulate(m_acceleration, randmotion * 0.5f);
 
         //Continue on current path
         m_acceleration = accumulate(m_acceleration, m_velocity);
@@ -168,16 +148,6 @@ public class Boid : MonoBehaviour
         //Rotate towards the new velocity
         transform.rotation = Quaternion.LookRotation(m_velocity, Vector3.up);
     }
-
-    //void simulate(float Time.deltaTime)
-    //{
-    //    m_velocity += m_acceleration * m_maxAcceleration * Time.deltaTime;
-    //    //Temp code capping velocity in place of drag
-    //    float magnitude = std::min(m_velocity.magnitude, 5.0f);
-    //    m_velocity = m_velocity.normalized * magnitude;
-
-    //    m_position += m_velocity * Time.deltaTime;
-    //}
 
     public void setParent(in BoidBox parent, int index)
     {
