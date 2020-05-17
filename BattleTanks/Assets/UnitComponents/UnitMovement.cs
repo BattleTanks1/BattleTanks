@@ -207,7 +207,7 @@ public class UnitMovement : MonoBehaviour
             Vector2Int end = Utilities.convertToGridPosition(position);
 
             if (m_influence)
-                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
+                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unit.m_dangerAvoid, m_unit.m_usageAvoid);
             else
                 m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), 0.0f, 0.0f);
 
@@ -226,7 +226,7 @@ public class UnitMovement : MonoBehaviour
             Vector2Int end = position;
 
             if (m_influence)
-                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unitState.m_dangerAvoid, m_unitState.m_usageAvoid);
+                m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), m_unit.m_dangerAvoid, m_unit.m_usageAvoid);
             else
                 m_positionToMoveTo = Pathfinder.Instance.findPath(start, end, (int)m_unit.getFactionName(), 0.0f, 0.0f);
 

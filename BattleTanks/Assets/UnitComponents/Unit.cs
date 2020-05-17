@@ -14,7 +14,7 @@ public class Unit : MonoBehaviour
     [SerializeField]
     private int m_visibilityDistance = 0;
     [SerializeField]
-    private float m_threatStrength = 0.0f;
+    private float m_threatStrength = 1.0f;
     [SerializeField]
     private int m_threatDistance = 0;
     [SerializeField]
@@ -37,6 +37,9 @@ public class Unit : MonoBehaviour
     private int m_health = 1;
     [SerializeField]
     private float m_scaredValue = 0.0f;
+
+    public float m_dangerAvoid = 0.0f;
+    public float m_usageAvoid = 0.5f;
 
     private void Awake()
     {

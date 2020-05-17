@@ -26,11 +26,6 @@ public class UnitStateHandler : MonoBehaviour
     protected UnitMovement m_tankMovement = null;
     private UnitAttack m_tankShooting = null;
 
-    [SerializeField]
-    public float m_dangerAvoid { get; private set; }
-    [SerializeField]
-    public float m_usageAvoid { get; private set; }
-
     protected virtual void Awake()
     {
         m_unit = GetComponent<Unit>();
@@ -41,9 +36,6 @@ public class UnitStateHandler : MonoBehaviour
 
         m_tankShooting = GetComponent<UnitAttack>();
         Assert.IsNotNull(m_tankShooting);
-
-        m_dangerAvoid = 0.5f;
-        m_usageAvoid = 1.0f;
     }
 
     protected virtual void Update()
@@ -73,6 +65,11 @@ public class UnitStateHandler : MonoBehaviour
                 break;
             case eUnitState.MovingToNewPosition:
                 {
+                    if (m_tankMovement.reachedDestination())
+                    {
+                        Debug.Log("Reached Destination");
+                    }
+
                     Vector3 enemyPosition = new Vector3();
                     if (m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
                     {

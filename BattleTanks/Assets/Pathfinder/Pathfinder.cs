@@ -171,6 +171,11 @@ public class Pathfinder : MonoBehaviour
         m_exploredTiles = new ExplorationNode[250, 250];
     }
 
+    void Start()
+    {
+        StartCoroutine(decayUsageLevel());
+    }
+
     // Update is called once per frame
     void Update()
     {
