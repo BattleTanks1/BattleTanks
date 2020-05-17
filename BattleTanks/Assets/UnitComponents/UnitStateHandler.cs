@@ -157,7 +157,7 @@ public class UnitStateHandler : MonoBehaviour
                 break;
             case eUnitState.SetDestinationToSafePosition:
                 {
-                    m_tankMovement.moveTo(PathFinding.Instance.getClosestSafePosition(8, m_unit));
+                    m_tankMovement.moveTo(Pathfinder.Instance.getSafePosition(transform.position, (int)m_unit.getFactionName(), m_unit.getScaredValue()));
                     m_currentState = eUnitState.MovingToNewPosition;
                 }
                 break;

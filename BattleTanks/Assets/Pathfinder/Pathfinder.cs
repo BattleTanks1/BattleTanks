@@ -2,11 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Threading;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Tilemaps;
 
 //Thoughts: should be using a single map to reduce cache bouncing
 
@@ -113,13 +110,13 @@ public class Pathfinder : MonoBehaviour
             Vector2Int lastLoc = new Vector2Int(-1, -1);
             Vector2Int secondLastLoc = start;
             //Loop creating path
-            int maxExploreCount = 10000;
+            int maxExploreCount = 62500;
             while (currentLoc != destination && maxExploreCount != 0)
             {
                 currentLoc = m_exploredTiles[currentLoc.x, currentLoc.y].parent;
                 m_exploredTiles[currentLoc.x, currentLoc.y].usageInfluence += 0.2f;
                 //Check for a linear streak, and cull unnecessary path points
-                if (isInline(secondLastLoc, lastLoc, currentLoc))
+                if (isInline(secondLastLoc, lastLoc, currentLoc) && path.Count != 0)
                     path.Dequeue();
 
                 //Set up for next search
@@ -128,13 +125,34 @@ public class Pathfinder : MonoBehaviour
                     secondLastLoc = path.Peek();
 
                 path.Enqueue(currentLoc);
-                ++maxExploreCount;
+                --maxExploreCount;
             }
 
         }
-        Debug.Log("Pathing finished");
-        Debug.Log(path.Count);
+        //Debug.Log("Pathing finished");
+        //Debug.Log(path.Count);
         return path;
+    }
+
+    public Vector3 getSafePosition(Vector3 position, int faction, float dangerThreshold)
+    {
+        Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(position.x), Mathf.RoundToInt(position.z));
+        KeyValuePair<float, Vector2Int> bestGuess = new KeyValuePair<float, Vector2Int>(
+            m_exploredTiles[roundedPosition.x, roundedPosition.y].dangerInfluence[faction], roundedPosition);
+
+        int maxSearchTiles = 500;
+        m_searchList.Clear();
+        m_searchList.Add(0, roundedPosition);
+        while (m_searchList.Count != 0 && maxSearchTiles != 0)
+        {
+            //Run search on tile
+            KeyValuePair<float, Vector2Int> tile = m_searchList.First();
+            m_searchList.RemoveAt(0);
+            if (fleeTile(tile.Value, roundedPosition, faction, dangerThreshold, ref bestGuess))
+                break;
+            --maxSearchTiles;
+        }
+        return new Vector3(bestGuess.Value.x, 1.0f, bestGuess.Value.y);
     }
 
     // Start is called before the first frame update
@@ -156,9 +174,7 @@ public class Pathfinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Remove items from the pathing queue up to a limit TODO: create a pathing queue
-
-        //Decay usage level
+        //Potential for pathing queue
     }
 
     private IEnumerator decayUsageLevel()
@@ -176,7 +192,7 @@ public class Pathfinder : MonoBehaviour
         }
     }
 
-        //Private helper functions
+    //Private helper functions
 
     private Vector2Int findClosestPos(Vector2Int start)
     {
@@ -264,20 +280,55 @@ public class Pathfinder : MonoBehaviour
             new Vector2Int(location.x - 1, location.y - 1),//NorthWest
         };
         //Add each valid adjacent to list
-        int count = 0;
         foreach (Vector2Int option in options)
         {
             if (isTileValid(option) && !m_exploredTiles[option.x, option.y].explored)
             {
-                m_exploredTiles[options[count].x, options[count].y].explored = true;
-                m_exploredTiles[options[count].x, options[count].y].parent = location;
+                m_exploredTiles[option.x, option.y].explored = true;
+                m_exploredTiles[option.x, option.y].parent = location;
 
-                float weight = findWeight(options[count], location, goal, faction, dangerAvoidance, usageAvoidance);
+                float weight = findWeight(option, location, goal, faction, dangerAvoidance, usageAvoidance);
                 while (m_searchList.ContainsKey(weight))
                     weight += 0.01f;
-                m_searchList.Add(weight, options[count]);
+                m_searchList.Add(weight, option);
             }
-            count++;
+        }
+        return false;
+    }
+
+    private bool fleeTile(Vector2Int location, Vector2Int start,
+        int faction, float dangerThreshold, ref KeyValuePair<float, Vector2Int> bestGuess)
+    {
+        float danger = m_exploredTiles[location.x, location.y].dangerInfluence[faction];
+        if (danger <= dangerThreshold)
+        {
+            bestGuess = new KeyValuePair<float, Vector2Int>(danger, location);
+            return true;
+        }
+
+        Vector2Int[] options = {
+            new Vector2Int(location.x, location.y - 1),//North
+            new Vector2Int(location.x + 1, location.y),//East
+            new Vector2Int(location.x, location.y + 1),//South
+            new Vector2Int(location.x - 1, location.y),//West
+            new Vector2Int(location.x + 1, location.y - 1),//NorthEast
+            new Vector2Int(location.x + 1, location.y + 1),//SouthEast
+            new Vector2Int(location.x - 1, location.y + 1),//SouthWest
+            new Vector2Int(location.x - 1, location.y - 1),//NorthWest
+        };
+        //Add each valid adjacent to list
+        foreach (Vector2Int option in options)
+        {
+            if (isTileValid(option) && !m_exploredTiles[option.x, option.y].explored)
+            {
+                m_exploredTiles[option.x, option.y].explored = true;
+                m_exploredTiles[option.x, option.y].parent = location;
+
+                float weight = (option - start).sqrMagnitude;
+                while (m_searchList.ContainsKey(weight))
+                    weight += 0.01f;
+                m_searchList.Add(weight, option);
+            }
         }
         return false;
     }
