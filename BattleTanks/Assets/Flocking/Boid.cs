@@ -10,6 +10,7 @@ public class Boid : MonoBehaviour
     private Vector3 m_velocity;
     [SerializeField]
     private Vector3 m_acceleration = Vector3.zero;
+    public BoidBox m_parent;
     public Vector3 m_homePos = Vector3.zero;
     public float m_homeBounds = 10.0f;
     public float m_maxAcceleration = 10.0f;
@@ -176,4 +177,9 @@ public class Boid : MonoBehaviour
 
     //    m_position += m_velocity * Time.deltaTime;
     //}
+
+    public void setParent(in BoidBox parent)
+    {
+        m_parent = parent;
+    }
 }
