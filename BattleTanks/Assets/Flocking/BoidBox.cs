@@ -33,11 +33,11 @@ public class BoidBox : MonoBehaviour
     [SerializeField]
     private float m_boidMaxAcceleration = 3.0f;
     [SerializeField]
-    private float m_boidDragEffect = 0.05f;
+    private float m_boidSpeed = 5.0f;
     [SerializeField]
     private float m_boidAvoidanceDistance = 3.0f;
     [SerializeField]
-    private float m_boidDetectionDistance = 5.0f;
+    private float m_boidDetectionDistance = 10.0f;
     [SerializeField]
     private float m_boidViewAngle = 0.75f;
     // Start is called before the first frame update
@@ -45,7 +45,6 @@ public class BoidBox : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log("Gooooood morning vietnam");
         m_spawnPosition = new Vector3(transform.position.x, 1.0f, transform.position.z);
         m_boids = new BoidTracker[m_maxActiveBoids];
         m_boidsRemaining = m_maxBoids;
@@ -70,17 +69,16 @@ public class BoidBox : MonoBehaviour
 
                 for (int i = 0; i < m_boids.Length; ++i)
                 {
-                    Debug.Log("Checking element" + i.ToString());
+                    //Debug.Log("Checking element" + i.ToString());
                     if (m_boids[i].m_deathTime != 0.0f && Time.time - m_boids[i].m_deathTime > m_respawnTime && m_boidsRemaining > 0)
                     {
-                        Debug.Log("HOOHAA");
                         //create a new wobject
                         GameObject newBoid = Instantiate(m_boidTemplate, m_spawnPosition, Quaternion.identity);
                         //Get the wobjects boid script via GetComponent<Boid>()
                         m_boids[i].m_boid = newBoid.GetComponent<Boid>();
                         //Set its home pos to your location
                         m_boids[i].m_boid.setParent(this, i);
-                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidDragEffect, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
+                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidSpeed, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
                         m_boids[i].m_deathTime = 0.0f;
                         --m_boidsRemaining;
                         break;
@@ -93,7 +91,7 @@ public class BoidBox : MonoBehaviour
                     {
                         if (m_boids[i].m_boid == null)
                             continue;
-                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidDragEffect, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
+                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidSpeed, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
                     }
                 }
             }

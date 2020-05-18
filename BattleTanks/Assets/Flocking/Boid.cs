@@ -5,11 +5,13 @@ using UnityEngine;
 public class Boid : MonoBehaviour
 {
     [SerializeField]
+    private bool m_testing = false;
+    [SerializeField]
     private Vector3 m_position;
     [SerializeField]
     private Vector3 m_velocity;
-    [SerializeField]
-    private Vector3 m_acceleration = Vector3.zero;
+    //[SerializeField]
+    //private float m_acceleration = Vector3.zero;
 
     private BoidBox m_parent = null;
     private int m_index = 0;
@@ -21,11 +23,11 @@ public class Boid : MonoBehaviour
     [SerializeField]
     private float m_maxAcceleration = 3.0f;
     [SerializeField]
-    private float m_dragEffect = 0.05f;
+    private float m_speed = 5.0f;
     [SerializeField]
     private float m_avoidanceDistance = 3.0f;
     [SerializeField]
-    private float m_detectionDistance = 5.0f;
+    private float m_detectionDistance = 10.0f;
     [SerializeField]
     private float m_viewAngle = 0.75f;
 
@@ -42,7 +44,7 @@ public class Boid : MonoBehaviour
     Vector3 accumulate(Vector3 acc, Vector3 add)
     {
         if (acc.magnitude == 1.0f)
-            return acc;
+            return acc.normalized;
 
         float dot = Vector3.Dot(acc, add);
         float root = Mathf.Sqrt((dot * dot) - (add.sqrMagnitude * (acc.sqrMagnitude - 1)));
@@ -66,98 +68,157 @@ public class Boid : MonoBehaviour
         return acc;
     }
 
-    Vector3 collisionAvoidance(BoidTracker[] boids, Vector3 pos, float avoidDist)
+    Vector3 collisionAvoidance(BoidTracker[] boids, Vector3 perpNormal)
     {
-        Vector3 sum = Vector3.zero;
+        
+        Vector2Int roundedPosition = Utilities.convertToGridPosition(m_position);
+        Vector3 scenerySum = Vector3.zero;
+        //Scenery avoidance
+        //Find objects that are too close
+        int bound = (int)Mathf.Ceil(m_avoidanceDistance);
+        for (int x = -bound; x <= bound; ++x)
+        {
+            for (int y = -bound; y <= bound; ++y)
+            {
+                if (!Map.Instance.isInBounds(roundedPosition.x + x, roundedPosition.y + y) || 
+                    Map.Instance.getPoint(roundedPosition.x + x, roundedPosition.y + y).scenery)
+                {
+                    Vector3 obstPosition = new Vector3(roundedPosition.x + x, 1.0f, roundedPosition.y + y);
+
+                    Vector3 diff = m_position - obstPosition;
+                    if (diff.sqrMagnitude < m_avoidanceDistance * m_avoidanceDistance)
+                    {
+                        float dot = Vector3.Dot(diff, perpNormal);
+                        //Induce hard turns from scenery
+                        if (dot > 0.0f)
+                            scenerySum += perpNormal * m_avoidanceDistance / (diff.magnitude + 0.01f);
+                        else
+                            scenerySum -= perpNormal * m_avoidanceDistance / (diff.magnitude + 0.01f);
+                    }
+                }
+            }
+        }
+
+        Vector3 boidSum = Vector3.zero;
+        //Boid avoidance
         foreach (BoidTracker boid in boids)
         {
             if (boid.m_boid == null)
                 continue;
 
-            Vector3 diff = pos - boid.m_boid.m_position;
-            if (diff.magnitude < avoidDist)
+            Vector3 diff = m_position - boid.m_boid.m_position;
+            if (diff.sqrMagnitude < m_avoidanceDistance * m_avoidanceDistance)
             {
-                sum += diff - (diff / avoidDist);
+                boidSum += diff.normalized * m_avoidanceDistance / (diff.sqrMagnitude + 0.01f);
             }
         }
-        if (sum.magnitude > 1)
-            return sum.normalized;
-        else
-            return sum;
+        Vector3 finalSum = accumulate(scenerySum, boidSum);
+        if (m_testing)
+        {
+            Debug.Log("Sum of avoidance");
+            Debug.Log(finalSum);
+        }
+        return finalSum;
     }
 
     void Update()
     {
-        Vector3 oldAcc = m_acceleration;
+        //Vector3 oldAcc = m_acceleration;
+        Vector3 acceleration = Vector3.zero;
+        //Get perpendicular normal vector for velocity
+        float x = m_velocity.x * Mathf.Cos(Mathf.PI * 0.5f) + m_velocity.z * Mathf.Sin(Mathf.PI * 0.5f);
+        float z = m_velocity.z * Mathf.Cos(Mathf.PI * 0.5f) - m_velocity.x * Mathf.Sin(Mathf.PI * 0.5f);
+        Vector3 perpVec = new Vector3(x, 0.0f, z).normalized;
         //Find "flock" data
         BoidTracker[] boids = m_parent.getBoids();
         Vector3 sumPos = Vector3.zero;
         Vector3 sumVel = Vector3.zero;
+        int numBoids = 0;
         foreach (BoidTracker boid in boids)
         {
             if (boid.m_boid == null)
                 continue;
-            //rather than creating the flock store the average of nearby velocities and positions simultaneously as it saves on temp data
+            
             Vector3 diff = m_position - boid.m_boid.m_position;
-            if (diff.magnitude < m_detectionDistance)
+            if (diff.sqrMagnitude < m_detectionDistance * m_detectionDistance)
             {
                 if (diff == Vector3.zero)
                     continue;
                 if (m_velocity != Vector3.zero)
                 {
                     float sigma = Vector3.Dot(m_velocity, diff) / (diff.magnitude * m_velocity.magnitude);
-                    if (Mathf.Acos(sigma) > Mathf.PI * 0.1f)
+                    if (Mathf.Acos(sigma) > Mathf.PI * m_viewAngle)
                         continue;
                 }
                 sumPos += boid.m_boid.m_position;
                 sumVel += boid.m_boid.m_velocity;
+                ++numBoids;
             }
+        }
+        if (m_testing)
+        {
+            Debug.Log("Position and velocity sums");
+            Debug.Log(sumPos);
+            Debug.Log(sumVel);
         }
 
         //Collision avoidance
-        m_acceleration = collisionAvoidance(boids, m_position, m_avoidanceDistance);
+        acceleration = collisionAvoidance(boids, perpVec);
 
         //Home towards 0, 0
         Vector3 homeVec = m_homePos - m_position;
-        if (homeVec.magnitude > m_homeBounds)
+        if (homeVec.sqrMagnitude > m_homeBounds * m_homeBounds)
         {
-            float mult = (homeVec.magnitude - m_homeBounds) / m_homeBounds;
-            m_acceleration = accumulate(m_acceleration, homeVec.normalized * mult);
+            float mult = (homeVec.magnitude - m_homeBounds) / (m_homeBounds * m_maxAcceleration);
+            acceleration = accumulate(acceleration, homeVec.normalized * mult);
         }
 
         //Match velocity with flock
         if (sumVel != Vector3.zero)
         {
-            if (sumVel.magnitude > 1.0f)
-                sumVel = sumVel.normalized;
-            Vector3 matchVel = (sumVel - m_velocity) / m_maxAcceleration;
-            m_acceleration = accumulate(m_acceleration, matchVel);
+            Vector3 matchVel = (sumVel / numBoids) - m_velocity;
+            if (m_testing)
+            {
+                Debug.Log("Velocity matching vector");
+                Debug.Log(matchVel);
+            }
+            acceleration = accumulate(acceleration, matchVel);
         }
 
         //Move toward flock centre
         if (sumPos != Vector3.zero)
         {
-            if (sumPos.magnitude > 1.0f)
-                sumPos = sumPos.normalized;
-            Vector3 matchPos = sumPos / m_detectionDistance;
-            m_acceleration = accumulate(m_acceleration, matchPos);
+            Vector3 matchPos = (sumPos / numBoids) - m_position;
+            if (m_testing)
+            {
+                Debug.Log("Position seeking vector");
+                Debug.Log(matchPos);
+            }
+            acceleration = accumulate(acceleration, matchPos);
         }
 
         //Random acceleration?
 
-        //Continue on current path
-        m_acceleration = accumulate(m_acceleration, m_velocity.normalized);
-
         //Damping
-        m_acceleration = (m_acceleration + oldAcc) / 2;
+        //acceleration = (acceleration + oldAcc) / 2;
 
-        //Actually interacting with stuff
-        float drag = m_velocity.sqrMagnitude * m_dragEffect;
-        m_velocity -= m_velocity * drag * Time.deltaTime;
-
-        m_velocity += m_acceleration.normalized * m_maxAcceleration * Time.deltaTime;
-
-        m_velocity.y = 0.0f;
+        //Get dot product of acc with perp normal vector
+        if (m_testing)
+        {
+            Debug.Log("Perpendicular vector");
+            Debug.Log(perpVec);
+            Debug.Log("Incoming accelerations");
+            Debug.Log(acceleration);
+        }
+        acceleration = perpVec * Vector3.Dot(acceleration, perpVec) * m_maxAcceleration;
+        //Apply steering to velocity and velocity to position
+        if (m_testing)
+            Debug.Log(acceleration);
+        if (acceleration == Vector3.zero)
+            acceleration += perpVec * 0.1f;
+        Vector3 newVelocity = m_velocity + acceleration * Time.deltaTime;
+        m_velocity = newVelocity.normalized * m_speed;
+        m_velocity = new Vector3(m_velocity.x, 0.0f, m_velocity.z);
         m_position += m_velocity * Time.deltaTime;
         transform.position = m_position;
 
@@ -171,12 +232,12 @@ public class Boid : MonoBehaviour
         m_index = index;
     }
 
-    public void setStats(Vector3 home, float bounds, float maxAcc, float drag, float avoidance, float detection, float view)
+    public void setStats(Vector3 home, float bounds, float maxAcc, float speed, float avoidance, float detection, float view)
     {
         m_homePos = home;
         m_homeBounds = bounds;
         m_maxAcceleration = maxAcc;
-        m_dragEffect = drag;
+        m_speed = speed;
         m_avoidanceDistance = avoidance;
         m_detectionDistance = detection;
         m_viewAngle = view;
