@@ -51,7 +51,7 @@ public class UnitAttack : MonoBehaviour
 
         Projectile projectile = clone.GetComponent<Projectile>();
         Assert.IsNotNull(projectile);
-        projectile.setSenderID(m_unit.m_ID, m_unit.m_factionName, m_damage);
+        projectile.setSenderID(m_unit.getID(), m_unit.getFactionName(), m_damage);
     }
 
     public void attackPosition(Vector3 position)

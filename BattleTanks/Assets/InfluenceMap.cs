@@ -58,49 +58,15 @@ you can figure out where an enemy would go and how his influence would extend in
 //so that closer cells are left relatively untouched, but cells on the periphery are reduced
 //artificially—ultimately dropping to zero
 
-public class FrontierNode
-{
-    public FrontierNode(Vector2Int p)
-    {
-        position = p;
-    }
-
-    public Vector2Int position;
-}
-
-public class Point
+public class PointOnInfluenceMap
 {
     public float value = 0.0f;
     public bool visited = false;
 }
 
-public class WorkingMap
-{ 
-    public WorkingMap()
-    {
-        m_workingMap = new Point[40, 40];
-        for(int y = 0; y < 40; ++y)
-        {
-            for(int x = 0; x < 40; ++x)
-            {
-                m_workingMap[y, x] = new Point();
-            }
-        }
-    }
-
-    public void reset(Vector2Int position, int distance)
-    {
-        m_searchableArea.reset(position, distance);
-    }
-
-    private iRectangle m_searchableArea;
-    [SerializeField]
-    public Point[,] m_workingMap { get; private set; }
-}
-
 public class FactionInfluenceMap
 {
-    public Point[,] m_map { get; private set; }
+    public PointOnInfluenceMap[,] m_map { get; private set; }
 
     public eFactionName m_ownerName { get; private set; }
 
@@ -108,32 +74,32 @@ public class FactionInfluenceMap
     {
         m_ownerName = ownerName;
         Vector2Int mapSize = Map.Instance.m_mapSize;
-        m_map = new Point[mapSize.y, mapSize.x];
-        for (int y = 0; y < mapSize.y; ++y)
+        m_map = new PointOnInfluenceMap[mapSize.y, mapSize.x];
+        for (int x = 0; x < mapSize.x; ++x)
         {
-            for (int x = 0; x < mapSize.x; ++x)
+            for (int y = 0; y < mapSize.y; ++y)
             {
-                m_map[y, x] = new Point();
+                m_map[x, y] = new PointOnInfluenceMap();
             }
         }
     }
 
-    public void createInfluence(Vector2Int position, float strength, int maxDistance)
+    public void createProximity(Vector2Int position, float strength, int maxDistance)
     {
         iRectangle searchableRect = new iRectangle(position, maxDistance);
-        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
         {
-            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
             {
                 if(Map.Instance.isPositionScenery(x, y))
                 {
                     continue;
                 }
 
-                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
-                if (distance <= maxDistance)
+                float sqrDistance = (new Vector2Int(x, y) - position).sqrMagnitude;
+                if (sqrDistance <= maxDistance * maxDistance)
                 {
-                    m_map[y, x].value += strength - (strength * (distance / maxDistance));
+                    m_map[x, y].value += strength - (strength * (sqrDistance / (maxDistance * maxDistance)));
                 }
             }
         }
@@ -143,25 +109,25 @@ public class FactionInfluenceMap
     {
         int totalDistance = maxDistance + fallOfDistance;
         iRectangle searchableRect = new iRectangle(position, totalDistance);
-        for (int y = searchableRect.m_top; y <= searchableRect.m_bottom; ++y)
+        for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
         {
-            for (int x = searchableRect.m_left; x <= searchableRect.m_right; ++x)
+            for (int y = searchableRect.m_bottom; y <= searchableRect.m_top; ++y)
             {
                 if (Map.Instance.isPositionScenery(x, y))
                 {
                     continue;
                 }
 
-                float distance = Vector2Int.Distance(new Vector2Int(x, y), position);
-                if (distance <= maxDistance)
+                float sqrDistance = (new Vector2Int(x, y) - position).sqrMagnitude;
+                if (sqrDistance <= maxDistance * maxDistance)
                 {
-                    m_map[y, x].value += strength;
-                    //m_map[y, x].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
+                    m_map[x, y].value += strength;
+                    //m_map[x, y].value = strength * (1 - ((distance / maxDistance) * (distance / maxDistance)));
                 }
-                else if(distance <= maxDistance + fallOfDistance)
+                else if(sqrDistance <= maxDistance * maxDistance + fallOfDistance * fallOfDistance)
                 {
-                    //m_map[y, x].value += strength - (strength * (distance / maxDistance));
-                    m_map[y, x].value += fallOfStrength - (fallOfStrength * (distance / totalDistance));
+                    //m_map[x, y].value += strength - (strength * (distance / maxDistance));
+                    m_map[x, y].value += fallOfStrength - (fallOfStrength * (sqrDistance / (totalDistance * totalDistance)));
                 }
             }
         }
@@ -170,30 +136,31 @@ public class FactionInfluenceMap
     public void reset()
     {
         Vector2Int mapSize = Map.Instance.m_mapSize;
-        for (int y = 0; y < mapSize.y; ++y)
+        for (int x = 0; x < mapSize.x; ++x)
         {
-            for (int x = 0; x < mapSize.x; ++x)
+            for (int y = 0; y < mapSize.y; ++y)
             {
-                m_map[y, x].value = 0.0f;
+                m_map[x, y].value = 0.0f;
             }
         }
     }
 
-    public Point getPoint(Vector3 position)
+    public PointOnInfluenceMap getPoint(Vector3 position)
     {
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
 
-        return m_map[positionOnGrid.y, positionOnGrid.x];
+        return m_map[positionOnGrid.x, positionOnGrid.y];
     }
 
-    public Point getPoint(Vector2Int position)
+    public PointOnInfluenceMap getPoint(Vector2Int position)
     {
-        return m_map[position.y, position.x];
+        return m_map[position.x, position.y];
     }
 }
 
 public class InfluenceMap : MonoBehaviour
 {
+    //Visual aides
     List<GameObject> m_boxes;
     public GameObject m_redBox;
     public GameObject m_blueBox;
@@ -201,7 +168,9 @@ public class InfluenceMap : MonoBehaviour
 
     //Proximity Map
     [SerializeField]
-    private bool m_renderCubes = false;
+    private bool m_renderProximityMap = false;
+    [SerializeField]
+    private bool m_renderThreatMap = false;
     [SerializeField]
     private FactionInfluenceMap[] m_proximityMaps = new FactionInfluenceMap[(int)eFactionName.Total];
     [SerializeField]
@@ -212,6 +181,7 @@ public class InfluenceMap : MonoBehaviour
 
     private void Awake()
     {
+        //Prevents more than one instance existing in the scene
         if (_instance != null && _instance != this)
         {
             Destroy(this.gameObject);
@@ -235,26 +205,26 @@ public class InfluenceMap : MonoBehaviour
         m_threatMaps[(int)eFactionName.Red] = new FactionInfluenceMap(eFactionName.Red);
         m_threatMaps[(int)eFactionName.Blue] = new FactionInfluenceMap(eFactionName.Blue);
 
-        IEnumerator coroutine = resetBaseMaps();
+        IEnumerator coroutine = updateBaseMaps();
         StartCoroutine(coroutine);
     }
 
     private void spawnCube(int x, int y, FactionInfluenceMap map)
     {
-        if(map.m_map[y, x].value > 0)
+        if(map.m_map[x, y].value > 0)
         {
             if (map.m_ownerName == eFactionName.Red)
             {
                 GameObject clone;
                 clone = Instantiate(m_redBox, new Vector3(x, 0, y), Quaternion.identity);
-                clone.transform.localScale += new Vector3(0, Mathf.Abs(map.m_map[y, x].value), 0);
+                clone.transform.localScale += new Vector3(0, Mathf.Abs(map.m_map[x, y].value), 0);
                 m_boxes.Add(clone);
             }
             else if (map.m_ownerName == eFactionName.Blue)
             {
                 GameObject clone;
                 clone = Instantiate(m_blueBox, new Vector3(x, 0, y), Quaternion.identity);
-                clone.transform.localScale += new Vector3(0, Mathf.Abs(map.m_map[y, x].value), 0);
+                clone.transform.localScale += new Vector3(0, Mathf.Abs(map.m_map[x, y].value), 0);
                 m_boxes.Add(clone);
             }
         }
@@ -265,26 +235,21 @@ public class InfluenceMap : MonoBehaviour
         float threatValue = -1.0f;
         foreach(FactionInfluenceMap threatMap in m_threatMaps)
         {
-            if(threatMap.m_ownerName != unit.m_factionName)
+            if(threatMap.m_ownerName != unit.getFactionName())
             {
                 threatValue += threatMap.getPoint(unit.transform.position).value;
             }
         }
 
-        return threatValue >= unit.m_scaredValue;
+        return threatValue >= unit.getScaredValue();
     }
 
-    public Point getPointOnProximityMap(Vector2Int position, eFactionName factionName)
+    public PointOnInfluenceMap getPointOnProximityMap(Vector2Int position, eFactionName factionName)
     {
         return m_proximityMaps[(int)factionName].getPoint(position);
     }
 
-    private void inverseWorkingMap(Vector2Int position)
-    {
-      
-    }
-
-    private IEnumerator resetBaseMaps()
+    private IEnumerator updateBaseMaps()
     {
         while(true)
         {
@@ -299,30 +264,36 @@ public class InfluenceMap : MonoBehaviour
                 m_threatMaps[i].reset();
                 m_proximityMaps[i].reset();
             }
-            
-            foreach(Faction faction in GameManager.Instance.m_factions)
-            {
-                foreach(Unit unit in faction.m_unit)
-                {
-                    Vector2Int positionOnGrid = Utilities.convertToGridPosition(unit.transform.position);
-                    m_proximityMaps[(int)unit.m_factionName].createInfluence(positionOnGrid, unit.m_proximityStrength, unit.m_proximityDistance);
-                    m_threatMaps[(int)unit.m_factionName].createThreat(positionOnGrid, unit.m_threatStrength, unit.m_threatDistance, 
-                        unit.m_threatFallOffStrength, unit.m_threatFallOffDistance);
-                }
-            }
 
-            if(m_renderCubes)
+            GameManager.Instance.createInfluence(m_proximityMaps, m_threatMaps);
+
+            if(m_renderThreatMap)
             {
                 Vector2Int mapSize = Map.Instance.m_mapSize;
-                for (int y = 0; y < mapSize.y; ++y)
+                for (int x = 0; x < mapSize.x; ++x)
                 {
-                    for (int x = 0; x < mapSize.x; ++x)
-                    {
+                    for (int y = 0; y < mapSize.y; ++y)
+                    {  
                         spawnCube(x, y, m_threatMaps[(int)eFactionName.Red]);
                         spawnCube(x, y, m_threatMaps[(int)eFactionName.Blue]);
                     }
                 }
             }
+            if(m_renderProximityMap)
+            {
+                Vector2Int mapSize = Map.Instance.m_mapSize;
+                for (int x = 0; x < mapSize.x; ++x)
+                {
+                    for (int y = 0; y < mapSize.y; ++y)
+                    {
+                        spawnCube(x, y, m_proximityMaps[(int)eFactionName.Red]);
+                        spawnCube(x, y, m_proximityMaps[(int)eFactionName.Blue]);
+                    }
+                }
+            }
+            //Feeding opposite teams threat maps in
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Blue, m_threatMaps[(int)eFactionName.Red].m_map);
+            Pathfinder.Instance.updateDangerMap((int)eFactionName.Red, m_threatMaps[(int)eFactionName.Blue].m_map);
         }
     }
 }

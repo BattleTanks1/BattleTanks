@@ -12,7 +12,7 @@ public class PointOnMap
 
     public bool isEmpty()
     {
-        return unitID == Utilities.INVALID_ID;
+        return unitID == Utilities.INVALID_ID && !scenery;
     }
 
     public void assign(int ID, eFactionName factionName)
@@ -23,11 +23,11 @@ public class PointOnMap
 
     public void reset()
     {
-        sceneryType = eSceneryType.None;
+        scenery = false;
         unitID = Utilities.INVALID_ID;
     }
 
-    public eSceneryType sceneryType;
+    public bool scenery = false;
     public int unitID = Utilities.INVALID_ID;
     public eFactionName unitFactionName;
 }
@@ -53,12 +53,12 @@ public class Map : MonoBehaviour
         }
 
         m_mapSize = new Vector2Int(250, 250);
-        m_map = new PointOnMap[m_mapSize.y, m_mapSize.x];
-        for (int y = 0; y < m_mapSize.y; ++y)
+        m_map = new PointOnMap[m_mapSize.x, m_mapSize.y];
+        for (int x = 0; x < m_mapSize.x; ++x)
         {
-            for (int x = 0; x < m_mapSize.x; ++x)
+            for (int y = 0; y < m_mapSize.y; ++y)
             {
-                m_map[y, x] = new PointOnMap();
+                m_map[x, y] = new PointOnMap();
             }
         }
     }
@@ -66,7 +66,7 @@ public class Map : MonoBehaviour
     private PointOnMap getPoint(Vector2Int position)
     {
         Assert.IsTrue(isInBounds(position));
-        return m_map[position.y, position.x];
+        return m_map[position.x, position.y];
     }
 
     public bool isInBounds(int x, int y)
@@ -142,8 +142,7 @@ public class Map : MonoBehaviour
         Assert.IsTrue(isInBounds(position));
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        return getPoint(positionOnGrid).sceneryType != eSceneryType.None ||
-             getPoint(positionOnGrid).unitID != Utilities.INVALID_ID;
+        return !getPoint(positionOnGrid).isEmpty();
     }
 
     public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
@@ -164,37 +163,39 @@ public class Map : MonoBehaviour
     public bool isPointOnScenery(Vector2Int position)
     {
         Assert.IsTrue(isInBounds(position));
-        return getPoint(position).sceneryType != eSceneryType.None;
+        return getPoint(position).scenery;
     }
 
     public PointOnMap getPoint(int x, int y)
     {
         Assert.IsTrue(isInBounds(x, y));
-        return m_map[y, x];
+        return m_map[x, y];
     }
 
-    public void addScenery(iRectangle rect, eSceneryType sceneryType)
+    public void addScenery(iRectangle rect)
     {
-        for (int y = rect.m_top; y <= rect.m_bottom; ++y)
+        for (int x = rect.m_left; x <= rect.m_right; ++x)
         {
-            for (int x = rect.m_left; x <= rect.m_right; ++x)
+            for (int y = rect.m_bottom; y <= rect.m_top; ++y)
             {
                 Assert.IsTrue(isInBounds(x, y));
-                getPoint(x, y).sceneryType = sceneryType;
+                Assert.IsTrue(getPoint(x, y).isEmpty());
+                getPoint(x, y).scenery = true;
             }
         }
+        Pathfinder.Instance.updateObstructions(m_map);
     }
 
     public bool isPositionScenery(int x, int y)
     {
         Assert.IsTrue(isInBounds(x, y));
-        return getPoint(x, y).sceneryType != eSceneryType.None;
+        return getPoint(x, y).scenery;
     }
 
-    public void clear(Vector3 position, int ID)
+    public void clear(Vector3 position, int senderID)
     {
         Assert.IsTrue(isInBounds(position));
-        Assert.IsTrue(isPositionOccupied(position, ID));
+        Assert.IsTrue(isPositionOccupied(position, senderID));
 
         Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
         getPoint(positionOnGrid).reset();

@@ -1,12 +1,16 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Assertions;
 
 public class GameManager : MonoBehaviour
 {
-    public Faction[] m_factions;
-
+    [SerializeField]
+    private Faction[] m_factions;
+    [SerializeField]
+    private List<Resource> m_resources;
+    [SerializeField]
     private int m_ID = 0; //Unique ID
 
     private static GameManager _instance;
@@ -27,15 +31,31 @@ public class GameManager : MonoBehaviour
         {
             Assert.IsNotNull(faction);
         }
+
+        m_resources = new List<Resource>();
+    }
+
+    public List<Unit> getOpposingFactionUnits(eFactionName sendingFaction)
+    {
+        switch (sendingFaction)
+        {
+            case eFactionName.Red:
+                return m_factions[(int)eFactionName.Blue].m_units;
+            case eFactionName.Blue:
+                return m_factions[(int)eFactionName.Red].m_units;
+            default:
+                Assert.IsTrue(false);
+                return null;
+        }
     }
 
     public Unit getUnit(int ID)
     {
         foreach (Faction faction in m_factions)
         {
-            foreach (Unit unit in faction.m_unit)
+            foreach (Unit unit in faction.m_units)
             {
-                if(unit.m_ID == ID)
+                if(unit.getID() == ID)
                 {
                     return unit;
                 }
@@ -49,7 +69,7 @@ public class GameManager : MonoBehaviour
     {
         foreach(Faction faction in m_factions)
         {
-            foreach(Unit unit in faction.m_unit)
+            foreach(Unit unit in faction.m_units)
             {
                 Selection tankSelection = unit.GetComponent<Selection>();
                 Assert.IsNotNull(tankSelection);
@@ -63,18 +83,16 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    public Faction getPlayerFaction()
+    public void getFactionUnitsInRange(ref List<int> output,Vector3 position, float range, int faction)
     {
-        Faction playerFaction = null;
-        foreach(Faction faction in m_factions)
+        for (int i = 0; i < m_factions[faction].m_units.Count; ++i)
         {
-            if(faction.getControllerType() == eFactionControllerType.Human)
+            Vector3 diff = m_factions[faction].m_units[i].getPosition() - position;
+            if (diff.sqrMagnitude <= range * range && diff.sqrMagnitude != 0)
             {
-                playerFaction = faction;
+                output.Add(m_factions[faction].m_units[i].getID());
             }
         }
-
-        return playerFaction;
     }
 
     public int addUnit()
@@ -91,9 +109,9 @@ public class GameManager : MonoBehaviour
 
         foreach (Faction faction in m_factions)
         {
-            foreach(Unit unit in faction.m_unit)
+            foreach(Unit unit in faction.m_units)
             {
-                if(unit.m_ID == tankID)
+                if(unit.getID() == tankID)
                 {
                     return unit.transform.position;
                 }
@@ -110,9 +128,51 @@ public class GameManager : MonoBehaviour
         
         if(unit.isDead())
         {
-            Map.Instance.clear(unit.transform.position, unit.m_ID);
-            m_factions[(int)unit.m_factionName].m_unit.Remove(unit);
-            Destroy(unit.gameObject);
+            m_factions[(int)unit.getFactionName()].removeUnit(unit);
         }
+    }
+
+    public void addResource(Resource newResource)
+    {
+        Assert.IsNotNull(newResource);
+        m_resources.Add(newResource);
+    }
+
+    public Resource getResource(Vector3 position)
+    {
+        foreach (Resource resource in m_resources)
+        {
+            Selection selection = resource.GetComponent<Selection>();
+            Assert.IsNotNull(selection);
+
+            if(selection.contains(position))
+            {
+                return resource;
+            }
+        }
+
+        return null;
+    }
+
+    public void createInfluence(FactionInfluenceMap[] proximityMaps, FactionInfluenceMap[] threatMaps)
+    {
+        Assert.IsNotNull(proximityMaps);
+        Assert.IsNotNull(threatMaps);
+
+        foreach (Faction faction in m_factions)
+        {
+            foreach (Unit unit in faction.m_units)
+            {
+                unit.createInfluence(proximityMaps, threatMaps);
+            }
+        }
+    }
+
+    public void addResourcesToFaction(Harvester harvester)
+    {
+        Unit unit = harvester.GetComponent<Unit>();
+        Assert.IsNotNull(unit);
+
+        m_factions[(int)unit.getFactionName()].addResources(harvester);
     }
 }

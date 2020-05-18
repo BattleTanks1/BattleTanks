@@ -1,5 +1,24 @@
 ﻿using UnityEngine;
 
+abstract public class Rectangle<T>
+{
+    public Rectangle()
+    { }
+
+    public Rectangle(T left, T right, T bottom, T top)
+    {
+        m_left = left;
+        m_right = right;
+        m_top = top;
+        m_bottom = bottom;
+    }
+
+    public T m_left { get; set; }
+    public T m_right { get; set; }
+    public T m_top { get; set; }
+    public T m_bottom { get; set; }
+}
+
 public class iRectangle : Rectangle<int>
 {
     public iRectangle(Vector3 position, Vector3 localScale)
@@ -33,18 +52,9 @@ public class iRectangle : Rectangle<int>
         Vector2Int mapSize = Map.Instance.m_mapSize;
 
         m_left = Mathf.Max(position.x - distance, 0);
-        m_right = Mathf.Min(position.x + distance, mapSize.x);
-        if (m_right == mapSize.x)
-        {
-            --m_right;
-        }
-
-        m_top = Mathf.Max(position.y - distance, 0);
-        m_bottom = Mathf.Min(position.y + distance, mapSize.y);
-        if (m_bottom == mapSize.y)
-        {
-            --m_bottom;
-        }
+        m_right = Mathf.Min(position.x + distance, mapSize.x - 1);
+        m_top = Mathf.Min(position.y + distance, mapSize.y - 1);
+        m_bottom = Mathf.Max(position.y - distance, 0);
     }
 }
 
@@ -75,6 +85,14 @@ public class fRectangle : Rectangle<float>
             position.y <= m_top;
     }
 
+    public bool contains(Vector3 position)
+    {
+        return position.x >= m_left &&
+            position.x <= m_right &&
+            position.z >= m_bottom &&
+            position.z <= m_top;
+    }
+
     public void reset(Vector3 position, Vector3 localScale)
     {
         Vector3 scale = new Vector3(localScale.x / 2.0f, 0, localScale.z / 2.0f);
@@ -84,23 +102,4 @@ public class fRectangle : Rectangle<float>
         m_bottom = Mathf.Min(position.z - scale.z, position.z + scale.z);
         m_top = Mathf.Max(position.z - scale.z, position.z + scale.z);
     }
-}
-
-abstract public class Rectangle<T>
-{
-    public Rectangle()
-    {}
-
-    public Rectangle(T left, T right, T bottom, T top)
-    {
-        m_left = left;
-        m_right = right;
-        m_top = top;
-        m_bottom = bottom;
-    }
-
-    public T m_left { get; set; }
-    public T m_right { get; set; }
-    public T m_top { get; set; }
-    public T m_bottom { get; set; }
 }

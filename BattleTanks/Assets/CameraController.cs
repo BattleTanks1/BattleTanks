@@ -22,7 +22,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float m_maxDistanceFromMap = 0.0f;
     [SerializeField]
-    private bool m_movable = true;
+    private bool m_movableByMouse = false;
 
     private GameObject m_selectionBoxClone = null;
     private Vector3 m_mousePressedPosition;
@@ -40,10 +40,12 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if (m_movable)
+        if (m_movableByMouse)
         {
-            Move();
+            MoveByMouse();
         }
+
+        moveByArrowKeys();
 
         onLeftClick();
         onRightClick();
@@ -51,15 +53,71 @@ public class CameraController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.F))
         {
-            m_player.spawnUnit();
+            m_player.spawnUnit(eUnitType.Attacker);
+        }
+        else if(Input.GetKeyDown(KeyCode.E))
+        {
+            m_player.spawnUnit(eUnitType.Harvester);
         }
         else if(Input.GetKeyDown(KeyCode.A))
         {
-            m_player.turnOnAttackMove();
+            m_player.setAttackMove(true);
         }
     }
 
-    private void Move()
+    private void moveByArrowKeys()
+    {
+        Vector3 position = new Vector3();
+
+        //Diagonal
+        if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.UpArrow))
+        {
+            Vector3 move = new Vector3(position.x + m_movementSpeed, 0, position.z + m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
+        }
+        else if (Input.GetKey(KeyCode.RightArrow) && Input.GetKey(KeyCode.DownArrow))
+        {
+            Vector3 move = new Vector3(position.x + m_movementSpeed, 0, position.z - m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
+        }
+        else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.DownArrow))
+        {
+            Vector3 move = new Vector3(position.x - m_movementSpeed, 0, position.z - m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
+        }
+        else if (Input.GetKey(KeyCode.LeftArrow) && Input.GetKey(KeyCode.UpArrow))
+        {
+            Vector3 move = new Vector3(position.x - m_movementSpeed, 0, position.z + m_movementSpeed);
+            position += move.normalized * m_movementSpeed * Time.deltaTime;
+        }
+
+        //Vertical
+        else if (Input.GetKey(KeyCode.UpArrow))
+        {
+            position.z += m_movementSpeed * Time.deltaTime;
+        }
+        else if (Input.GetKey(KeyCode.DownArrow))
+        {
+            position.z -= m_movementSpeed * Time.deltaTime;
+        }
+
+        //Horizontal
+        else if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            position.x -= m_movementSpeed * Time.deltaTime;
+        }
+        else if (Input.GetKey(KeyCode.RightArrow))
+        {
+            position.x += m_movementSpeed * Time.deltaTime;
+        }
+
+        if (isInBounds(Utilities.convertToGridPosition(transform.position + position)))
+        {
+            transform.position += position;
+        }
+    }
+
+    private void MoveByMouse()
     {
         Vector3 position = new Vector3();
 
@@ -216,9 +274,9 @@ public class CameraController : MonoBehaviour
             {
                 m_player.targetEnemyAtPosition(hit.point);
             }
-            else if (hit.collider.tag == "Ground" || hit.collider.tag == "PlayerBuilding")
+            else if (hit.collider.tag == "Ground" || hit.collider.tag == "PlayerBuilding" || hit.collider.tag == "Resource")
             {
-                m_player.handleSelectedUnit(hit.point);
+                m_player.handleSelectedUnits(hit.point);
             }
 
             clearSelectionBox();
@@ -252,7 +310,7 @@ public class CameraController : MonoBehaviour
     private void clearSelectionBox()
     {
         m_leftButtonHeld = false;
-        m_player.turnOffAttackMove();
+        m_player.setAttackMove(false);
 
         if(m_selectionBoxClone)
         {

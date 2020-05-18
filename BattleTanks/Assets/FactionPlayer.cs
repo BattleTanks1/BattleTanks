@@ -5,9 +5,6 @@ using UnityEngine.Assertions;
 
 public class FactionPlayer : Faction
 {
-    [SerializeField]
-    private Building m_building = null;
-
     private bool m_attackMoveNextSelection = false;
 
     private void Awake()
@@ -18,7 +15,7 @@ public class FactionPlayer : Faction
 
     public void selectUnits(fRectangle selectionBox)
     {
-        foreach (Unit unit in m_unit)
+        foreach (Unit unit in m_units)
         {
             Selection unitSelection = unit.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(unitSelection);
@@ -29,7 +26,7 @@ public class FactionPlayer : Faction
 
     public void deselectAllUnits()
     { 
-        foreach (Unit unit in m_unit)
+        foreach (Unit unit in m_units)
         {
             Selection unitSelection = unit.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(unitSelection);
@@ -43,7 +40,7 @@ public class FactionPlayer : Faction
         m_building.hideWayPoint();
     }
 
-    public void handleSelectedUnit(Vector3 position)
+    public void handleSelectedUnits(Vector3 position)
     {
         //Handle selected building
         Selection buildingSelection = m_building.GetComponent<Selection>();
@@ -55,25 +52,55 @@ public class FactionPlayer : Faction
         //Handle units
         else
         {
-            foreach (Unit unit in m_unit)
+            Resource resourceAtPosition = GameManager.Instance.getResource(position);
+            if (resourceAtPosition)
             {
-                Selection unitSelection = unit.gameObject.GetComponent<Selection>();
-                Assert.IsNotNull(unitSelection);
-                if (!unitSelection.isSelected())
+                foreach (Unit unit in m_units)
                 {
-                    continue;
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
+                    if (unitSelection.isSelected() && harvesterStateHandler)
+                    {
+                        harvesterStateHandler.switchToState(eHarvesterState.SetDestinationHarvest, resourceAtPosition);
+                    }
                 }
-
-                UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
-                Assert.IsNotNull(unitStateHandler);
-
-                if(m_attackMoveNextSelection)
+            }
+            else if(buildingSelection.contains(position))
+            {
+                foreach (Unit unit in m_units)
                 {
-                    unitStateHandler.switchToState(eTankState.SetAttackDestination, Utilities.INVALID_ID, position);
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
+                    if (unitSelection.isSelected() && harvesterStateHandler)
+                    {
+                        harvesterStateHandler.switchToState(eHarvesterState.SetDestinationResourceBuilding, null);
+                    }
                 }
-                else
+            }
+            else
+            {
+                foreach (Unit unit in m_units)
                 {
-                    unitStateHandler.switchToState(eTankState.SetNewDestination, Utilities.INVALID_ID, position);
+                    Selection unitSelection = unit.gameObject.GetComponent<Selection>();
+                    Assert.IsNotNull(unitSelection);
+                    if (!unitSelection.isSelected())
+                    {
+                        continue;
+                    }
+
+                    UnitStateHandler unitStateHandler = unit.GetComponent<UnitStateHandler>();
+                    Assert.IsNotNull(unitStateHandler);
+
+                    if (m_attackMoveNextSelection)
+                    {
+                        unitStateHandler.switchToState(eUnitState.SetAttackDestination, Utilities.INVALID_ID, position);
+                    }
+                    else
+                    {
+                        unitStateHandler.switchToState(eUnitState.SetDestination, Utilities.INVALID_ID, position);
+                    }
                 }
             }
         }
@@ -87,7 +114,7 @@ public class FactionPlayer : Faction
             return;
         }
         
-        foreach (Unit tank in m_unit)
+        foreach (Unit tank in m_units)
         {
             Selection selectionComponent = tank.gameObject.GetComponent<Selection>();
             Assert.IsNotNull(selectionComponent);
@@ -97,7 +124,7 @@ public class FactionPlayer : Faction
                 UnitStateHandler unitStateHandler = tank.gameObject.GetComponent<UnitStateHandler>();
                 Assert.IsNotNull(unitStateHandler);
 
-                unitStateHandler.switchToState(eTankState.MovingToNewPosition, enemy.m_ID, enemy.transform.position);
+                unitStateHandler.switchToState(eUnitState.MovingToNewPosition, enemy.getID(), enemy.transform.position);
             }
         }
     }
@@ -111,29 +138,8 @@ public class FactionPlayer : Faction
         buildingSelection.select(position);
     }
 
-    public void spawnUnit()
+    public void setAttackMove(bool attackMove)
     {
-        Selection buildingSelection = m_building.GetComponent<Selection>();
-        Assert.IsNotNull(buildingSelection);
-
-        if(buildingSelection.isSelected())
-        {
-            GameObject newGameObject = m_building.spawnUnit();
-            if(newGameObject)
-            {
-                Unit unit = newGameObject.GetComponent<Unit>();
-                m_unit.Add(unit);
-            }
-        }
-    }
-
-    public void turnOnAttackMove()
-    {
-        m_attackMoveNextSelection = true;
-    }
-
-    public void turnOffAttackMove()
-    {
-        m_attackMoveNextSelection = false;
+        m_attackMoveNextSelection = attackMove;
     }
 }
