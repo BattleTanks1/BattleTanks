@@ -5,15 +5,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-//Thoughts: should be using a single map to reduce cache bouncing
-
-public struct Node
-{
-    Vector2Int m_averagePosition;
-    UnityEngine.Vector2 m_dangerLevel;
-    float m_usageLevel;
-}
-
 public struct ExplorationNode
 {
     public bool obstructed;
