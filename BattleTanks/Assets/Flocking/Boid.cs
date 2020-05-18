@@ -181,5 +181,9 @@ public class Boid : MonoBehaviour
         m_detectionDistance = detection;
         m_viewAngle = view;
     }
-    //Death behaviour TODO
+    //Death behaviour
+    private void OnDestroy()
+    {
+        m_parent.killBoid(m_index);
+    }
 }

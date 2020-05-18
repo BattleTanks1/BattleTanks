@@ -11,8 +11,11 @@ public struct BoidTracker
 
 public class BoidBox : MonoBehaviour
 {
+    [SerializeField]
     int m_maxBoids = 20;
-    int m_boidStockpile;
+    [SerializeField]
+    int m_boidsRemaining;
+    [SerializeField]
     int m_maxActiveBoids = 10;
     BoidTracker[] m_boids;
     float m_respawnTime = 0.5f;
@@ -45,7 +48,7 @@ public class BoidBox : MonoBehaviour
         Debug.Log("Gooooood morning vietnam");
         m_spawnPosition = new Vector3(transform.position.x, 1.0f, transform.position.z);
         m_boids = new BoidTracker[m_maxActiveBoids];
-        m_boidStockpile = m_maxBoids;
+        m_boidsRemaining = m_maxBoids;
         for (int i = 0; i < m_boids.Length; ++i)
         {
             m_boids[i].m_deathTime = Time.time + 0.1f;
@@ -68,7 +71,7 @@ public class BoidBox : MonoBehaviour
                 for (int i = 0; i < m_boids.Length; ++i)
                 {
                     Debug.Log("Checking element" + i.ToString());
-                    if (m_boids[i].m_deathTime != 0.0f && Time.time - m_boids[i].m_deathTime > m_respawnTime && m_boidStockpile > 0)
+                    if (m_boids[i].m_deathTime != 0.0f && Time.time - m_boids[i].m_deathTime > m_respawnTime && m_boidsRemaining > 0)
                     {
                         Debug.Log("HOOHAA");
                         //create a new wobject
@@ -79,7 +82,7 @@ public class BoidBox : MonoBehaviour
                         m_boids[i].m_boid.setParent(this, i);
                         m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidDragEffect, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
                         m_boids[i].m_deathTime = 0.0f;
-                        --m_boidStockpile;
+                        --m_boidsRemaining;
                         break;
                     }
                 }
@@ -106,5 +109,14 @@ public class BoidBox : MonoBehaviour
     public BoidTracker[] getBoids()
     {
         return m_boids;
+    }
+
+    public void killBoid(int index)
+    {
+        if (index >= 0 && index < m_boids.Length)
+        {
+            m_boids[index].m_boid = null;
+            m_boids[index].m_deathTime = Time.time;
+        }
     }
 }
