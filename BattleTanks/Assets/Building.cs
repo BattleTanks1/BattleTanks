@@ -80,7 +80,6 @@ public class Building : MonoBehaviour
 
     public Unit spawnUnit(eUnitType unitType)
     {
-        Unit newUnit = null;
         Vector3 spawnPosition;
         if (m_wayPointClone.transform.position != transform.position)
         {
@@ -95,7 +94,8 @@ public class Building : MonoBehaviour
         
         if (!Map.Instance.isPositionOccupied(spawnPosition))
         {
-            if(unitType == eUnitType.Harvester)
+            Unit newUnit = null;
+            if (unitType == eUnitType.Harvester)
             {
                 newUnit = Instantiate(m_harvesterToSpawn, spawnPosition, Quaternion.identity);
                 Harvester harvester = newUnit.GetComponent<Harvester>();
@@ -106,7 +106,6 @@ public class Building : MonoBehaviour
             {
                 newUnit = Instantiate(m_tankToSpawn, spawnPosition, Quaternion.identity);
             }
-            Assert.IsNotNull(newUnit);
 
             if (m_wayPointClone.transform.position != transform.position)
             {
@@ -114,7 +113,7 @@ public class Building : MonoBehaviour
                 UnitStateHandler stateHandlerComponent = newUnit.GetComponent<UnitStateHandler>();
                 Assert.IsNotNull(stateHandlerComponent);
 
-                stateHandlerComponent.switchToState(eUnitState.MovingToNewPosition, Utilities.INVALID_ID, m_wayPointClone.transform.position);
+                stateHandlerComponent.switchToState(eUnitState.SetDestination, Utilities.INVALID_ID, m_wayPointClone.transform.position);
             }
 
             return newUnit;
