@@ -19,11 +19,11 @@ public class Boid : MonoBehaviour
     [SerializeField]
     private float m_homeBounds = 10.0f;
     [SerializeField]
-    private float m_maxAcceleration = 10.0f;
+    private float m_maxAcceleration = 3.0f;
     [SerializeField]
-    private float m_dragEffect = 0.0f;
+    private float m_dragEffect = 0.05f;
     [SerializeField]
-    private float m_avoidanceDistance = 5.0f;
+    private float m_avoidanceDistance = 3.0f;
     [SerializeField]
     private float m_detectionDistance = 5.0f;
     [SerializeField]

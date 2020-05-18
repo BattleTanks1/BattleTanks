@@ -28,11 +28,11 @@ public class BoidBox : MonoBehaviour
     [SerializeField]
     private float m_boidBounds = 10.0f;
     [SerializeField]
-    private float m_boidMaxAcceleration = 10.0f;
+    private float m_boidMaxAcceleration = 3.0f;
     [SerializeField]
-    private float m_boidDragEffect = 0.0f;
+    private float m_boidDragEffect = 0.05f;
     [SerializeField]
-    private float m_boidAvoidanceDistance = 5.0f;
+    private float m_boidAvoidanceDistance = 3.0f;
     [SerializeField]
     private float m_boidDetectionDistance = 5.0f;
     [SerializeField]
