@@ -10,14 +10,24 @@ public class Boid : MonoBehaviour
     private Vector3 m_velocity;
     [SerializeField]
     private Vector3 m_acceleration = Vector3.zero;
+
     private BoidBox m_parent = null;
     private int m_index = 0;
-    public Vector3 m_homePos = Vector3.zero;
-    public float m_homeBounds = 10.0f;
-    public float m_maxAcceleration = 10.0f;
-    public float m_dragEffect = 0.0f;
-    public float m_avoidanceDistance = 5.0f;
-    public float m_detectionDistance = 5.0f;
+    private Vector3 m_homePos = Vector3.zero;
+
+    //Tuning variables
+    [SerializeField]
+    private float m_homeBounds = 10.0f;
+    [SerializeField]
+    private float m_maxAcceleration = 10.0f;
+    [SerializeField]
+    private float m_dragEffect = 0.0f;
+    [SerializeField]
+    private float m_avoidanceDistance = 5.0f;
+    [SerializeField]
+    private float m_detectionDistance = 5.0f;
+    [SerializeField]
+    private float m_viewAngle = 0.75f;
 
     void Awake()
     {
@@ -61,6 +71,9 @@ public class Boid : MonoBehaviour
         Vector3 sum = Vector3.zero;
         foreach (BoidTracker boid in boids)
         {
+            if (boid.m_boid == null)
+                continue;
+
             Vector3 diff = pos - boid.m_boid.m_position;
             if (diff.magnitude < avoidDist)
             {
@@ -77,11 +90,13 @@ public class Boid : MonoBehaviour
     {
         Vector3 oldAcc = m_acceleration;
         //Find "flock" data
-        BoidTracker[] boids = m_parent.getBoids();//TEMP!! Inefficient to call each frame
+        BoidTracker[] boids = m_parent.getBoids();
         Vector3 sumPos = Vector3.zero;
         Vector3 sumVel = Vector3.zero;
         foreach (BoidTracker boid in boids)
         {
+            if (boid.m_boid == null)
+                continue;
             //rather than creating the flock store the average of nearby velocities and positions simultaneously as it saves on temp data
             Vector3 diff = m_position - boid.m_boid.m_position;
             if (diff.magnitude < m_detectionDistance)
@@ -91,7 +106,7 @@ public class Boid : MonoBehaviour
                 if (m_velocity != Vector3.zero)
                 {
                     float sigma = Vector3.Dot(m_velocity, diff) / (diff.magnitude * m_velocity.magnitude);
-                    if (Mathf.Acos(sigma) > Mathf.PI * 0.75)
+                    if (Mathf.Acos(sigma) > Mathf.PI * 0.1f)
                         continue;
                 }
                 sumPos += boid.m_boid.m_position;
@@ -115,7 +130,7 @@ public class Boid : MonoBehaviour
         {
             if (sumVel.magnitude > 1.0f)
                 sumVel = sumVel.normalized;
-            Vector3 matchVel = (sumVel - m_velocity) * m_maxAcceleration;
+            Vector3 matchVel = (sumVel - m_velocity) / m_maxAcceleration;
             m_acceleration = accumulate(m_acceleration, matchVel);
         }
 
@@ -128,20 +143,21 @@ public class Boid : MonoBehaviour
             m_acceleration = accumulate(m_acceleration, matchPos);
         }
 
-        //Random acceleration
+        //Random acceleration?
 
         //Continue on current path
-        m_acceleration = accumulate(m_acceleration, m_velocity);
+        m_acceleration = accumulate(m_acceleration, m_velocity.normalized);
 
         //Damping
         m_acceleration = (m_acceleration + oldAcc) / 2;
 
         //Actually interacting with stuff
-        m_velocity += m_acceleration * m_maxAcceleration * Time.deltaTime;
-
         float drag = m_velocity.sqrMagnitude * m_dragEffect;
         m_velocity -= m_velocity * drag * Time.deltaTime;
 
+        m_velocity += m_acceleration.normalized * m_maxAcceleration * Time.deltaTime;
+
+        m_velocity.y = 0.0f;
         m_position += m_velocity * Time.deltaTime;
         transform.position = m_position;
 
@@ -155,5 +171,15 @@ public class Boid : MonoBehaviour
         m_index = index;
     }
 
+    public void setStats(Vector3 home, float bounds, float maxAcc, float drag, float avoidance, float detection, float view)
+    {
+        m_homePos = home;
+        m_homeBounds = bounds;
+        m_maxAcceleration = maxAcc;
+        m_dragEffect = drag;
+        m_avoidanceDistance = avoidance;
+        m_detectionDistance = detection;
+        m_viewAngle = view;
+    }
     //Death behaviour TODO
 }
