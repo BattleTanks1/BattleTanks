@@ -101,11 +101,11 @@ public class HarvesterStateHandler : UnitStateHandler
                 break;
             case eHarvesterState.SetDestinationResourceBuilding:
                 {
-                    Assert.IsNotNull(m_harvester.getBuildingToReturnResource());
+                    Assert.IsNotNull(m_harvester.getBuildingToReturn());
                     
-                    fRectangle AABB = m_harvester.getBuildingToReturnResource().GetComponent<Selection>().getAABB();
+                    fRectangle AABB = m_harvester.getBuildingToReturn().GetComponent<Selection>().getAABB();
                     m_tankMovement.moveTo(
-                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_harvester.getBuildingToReturnResource().transform.position, m_destinationOffSetHQ));
+                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_harvester.getBuildingToReturn().transform.position, m_destinationOffSetHQ));
                     
                     m_harvesterState = eHarvesterState.MovingToResourceBuilding;
                 }

@@ -38,7 +38,7 @@ public class Harvester : MonoBehaviour
         return false;
     }
 
-    public Building getBuildingToReturnResource()
+    public Building getBuildingToReturn()
     {
         Assert.IsNotNull(m_buildingToReturnResource);
 
