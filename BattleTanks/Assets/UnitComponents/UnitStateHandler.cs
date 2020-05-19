@@ -80,7 +80,7 @@ public class UnitStateHandler : MonoBehaviour
                             switchToState(eUnitState.AttackingEnemy, m_targetID);
                         }
                     }
-                    else if (m_targetID != Utilities.INVALID_ID && !isTargetInVisibleSight(out enemyPosition))
+                    else if (m_targetID != Utilities.INVALID_ID)
                     {
                         switchToState(eUnitState.AwaitingDecision);
                     }
