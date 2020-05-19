@@ -15,9 +15,6 @@ public class UnitMovement : MonoBehaviour
     private bool m_bumping = true;
     [SerializeField]
     private float m_bumpRange = 0.7f;
-    //Just for viewing purposes
-    public Vector2Int m_nextPos = new Vector2Int();
-    public int m_count = 0;
 
     private Queue<Vector2Int> m_positionToMoveTo = new Queue<Vector2Int>();
     private Vector2Int m_finalDestination = new Vector2Int();
@@ -41,12 +38,6 @@ public class UnitMovement : MonoBehaviour
 
     private void Update()
     {
-        m_count = m_positionToMoveTo.Count;
-        if (m_positionToMoveTo.Count != 0)
-            m_nextPos = m_positionToMoveTo.Peek();
-        else
-            m_nextPos = new Vector2Int(-1, -1);
-
         Vector3 currentPosition = transform.position;
         Vector2Int roundedPosition = new Vector2Int(Mathf.RoundToInt(currentPosition.x), Mathf.RoundToInt(currentPosition.z));
         Vector3 oldVelocity = m_velocity;
