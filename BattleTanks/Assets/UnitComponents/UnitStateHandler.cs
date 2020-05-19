@@ -73,11 +73,13 @@ public class UnitStateHandler : MonoBehaviour
                     Vector3 enemyPosition = new Vector3();
                     if (m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
                     {
-                        m_tankMovement.moveTo(enemyPosition);
-
                         if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
                             switchToState(eUnitState.AttackingEnemy, m_targetID);
+                        }
+                        else
+                        {
+                            m_tankMovement.moveTo(enemyPosition);
                         }
                     }
                     else if (m_targetID != Utilities.INVALID_ID)
