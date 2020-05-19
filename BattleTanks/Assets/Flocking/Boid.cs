@@ -72,6 +72,22 @@ public class Boid : MonoBehaviour
     {
         
         Vector2Int roundedPosition = Utilities.convertToGridPosition(m_position);
+        Vector3 oobAvoid = Vector3.zero;
+        //OOB avoidance
+        if (!Map.Instance.isInBounds(roundedPosition))
+        {
+            Vector3 centreOfMap = new Vector3(125.0f, 1.0f, 125.0f);
+
+            Vector3 diff = centreOfMap - m_position;
+
+            float dot = Vector3.Dot(diff, perpNormal);
+            //Induce hard turn
+            if (dot > 0.0f)
+                oobAvoid += perpNormal;
+            else
+                oobAvoid -= perpNormal;
+
+        }
         Vector3 scenerySum = Vector3.zero;
         //Scenery avoidance
         //Find objects that are too close
@@ -112,7 +128,9 @@ public class Boid : MonoBehaviour
                 boidSum += diff.normalized * m_avoidanceDistance / (diff.sqrMagnitude + 0.01f);
             }
         }
-        Vector3 finalSum = accumulate(scenerySum, boidSum);
+        Vector3 finalSum = accumulate(oobAvoid, scenerySum);
+        finalSum = accumulate(finalSum, boidSum);
+
         if (m_testing)
         {
             Debug.Log("Sum of avoidance");
