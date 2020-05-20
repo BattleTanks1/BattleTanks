@@ -2,62 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//http://aigamedev.com/open/tutorial/influence-map-mechanics/
-//http://gameschoolgems.blogspot.com/2009/12/influence-maps-i.html
-//http://gameschoolgems.blogspot.com/2010/03/influence-maps-ii-practical.html
-
-// https://web.archive.org/web/20190717210940/http://aigamedev.com/open/tutorial/influence-map-mechanics/
-//https://gamedev.stackexchange.com/questions/133577/are-there-well-known-algorithms-for-efficient-map-knowledge
-
-//https://www.youtube.com/watch?v=6RGquWxNock
-
-//http://www.gameaipro.com/GameAIPro2/GameAIPro2_Chapter30_Modular_Tactical_Influence_Maps.pdf
-
-//https://www.gamedev.net/articles/programming/artificial-intelligence/the-core-mechanics-of-influence-mapping-r2799/
-
-//https://www.reddit.com/r/gameai/comments/b0t0q5/modular_influence_map_system_demonstration_videos/
-
-//  -Choose whatever is a relevant cell size for your setup, let's say 1 unity distance unit.
-//- Then you either use Mathf.Floor, Mathf.Round, or Mathf.Ceil(which ever gives best result for you, doesn't matter which you use as long as you are consistent) on both axis from your plane.
-
-/*
-  Situation Summary -- 
-  Influence maps do a great job of summarizing all the little details in the world and making them easy to understand at a glance. 
-  Who's in control of what area? Where are the borders between the territories? How much enemy presence is there in each area?
-
-Historical Statistics -- 
-Beyond just storing information about the current situation, influence maps can also remember what happened for a certain period of time. 
-Was this area being assaulted? How well did my previous attack go?
-
-
-Future Predictions -- 
-An often ignored aspect of influence maps, they can also help predict the future. Using the map of the terrain, 
-you can figure out where an enemy would go and how his influence would extend in the future.
- * */
-
-//Proximity map
-//Threat map
-
-//Red Positive
-//Blue Negative
-
-//GameAIPro Notes
-//They updated their tactical influence map once per second
-
-//Special Functions
-//Normalize function - take a 1.4 to 0.7 and turn into 1.0 - 0.5
-//Inverse Function - Cells start from 1.0 and below 
-
-//Uses:
-//1.
-//might be how far we could attack in 1 s(our maximum threat range + our movement speed).
-
-//Often, it is good to prioritize information that is closer to the agent so that it doesn’t
-//make decisions that cause it to, perhaps, run past one threat to get to another.By multiplying the 
-//    resulting working map by our personal interest template, we adjust the data
-//so that closer cells are left relatively untouched, but cells on the periphery are reduced
-//artificially—ultimately dropping to zero
-
 public class PointOnInfluenceMap
 {
     public float value = 0.0f;
@@ -161,9 +105,9 @@ public class FactionInfluenceMap
 public class InfluenceMap : MonoBehaviour
 {
     //Visual aides
-    List<GameObject> m_boxes;
-    public GameObject m_redBox;
-    public GameObject m_blueBox;
+    private List<GameObject> m_boxes;
+    private GameObject m_redBox;
+    private GameObject m_blueBox;
 
 
     //Proximity Map

@@ -12,20 +12,20 @@ public struct BoidTracker
 public class BoidBox : MonoBehaviour
 {
     [SerializeField]
-    int m_maxBoids = 20;
+    private int m_maxBoids = 20;
     [SerializeField]
-    int m_boidsRemaining;
+    private int m_boidsRemaining;
     [SerializeField]
-    int m_maxActiveBoids = 10;
+    private int m_maxActiveBoids = 10;
     BoidTracker[] m_boids;
-    float m_respawnTime = 0.5f;
+    private float m_respawnTime = 0.5f;
     [SerializeField]
-    float m_spawnRate = 2.0f;
-    Vector3 m_spawnPosition;
+    private float m_spawnRate = 2.0f;
+    private Vector3 m_spawnPosition;
     [SerializeField]
-    bool m_isTesting = false;
+    private bool m_isTesting = false;
     [SerializeField]
-    GameObject m_boidTemplate;
+    private GameObject m_boidTemplate;
 
     //Boid defaults
     [SerializeField]
