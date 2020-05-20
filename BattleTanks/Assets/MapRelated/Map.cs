@@ -93,78 +93,78 @@ public class Map : MonoBehaviour
             position.z < m_mapSize.y;
     }
 
-    public void setStartingPosition(Vector3 startingPosition, eFactionName factionName, int ID)
-    {
-        Assert.IsTrue(isInBounds(startingPosition));
+    //public void setStartingPosition(Vector3 startingPosition, eFactionName factionName, int ID)
+    //{
+    //    Assert.IsTrue(isInBounds(startingPosition));
 
-        Vector2Int startingPositionOnGrid = Utilities.convertToGridPosition(startingPosition);
-        Assert.IsTrue(getPoint(startingPositionOnGrid).isEmpty());
+    //    Vector2Int startingPositionOnGrid = Utilities.convertToGridPosition(startingPosition);
+    //    Assert.IsTrue(getPoint(startingPositionOnGrid).isEmpty());
 
-        getPoint(startingPositionOnGrid).assign(ID, factionName);
-    }
+    //    getPoint(startingPositionOnGrid).assign(ID, factionName);
+    //}
 
-    public void updatePositionOnMap(Vector3 currentPosition, Vector3 oldPosition, eFactionName factionName, int ID)
-    { 
-        Assert.IsTrue(isInBounds(currentPosition));
-        Assert.IsTrue(isInBounds(oldPosition));
+    //public void updatePositionOnMap(Vector3 currentPosition, Vector3 oldPosition, eFactionName factionName, int ID)
+    //{ 
+    //    Assert.IsTrue(isInBounds(currentPosition));
+    //    Assert.IsTrue(isInBounds(oldPosition));
 
-        Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(oldPosition);
-        Assert.IsTrue(isPositionOccupied(oldPosition, ID));
-        Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
-        Assert.IsTrue(oldPositionOnGrid != currentPositionOnGrid);
+    //    Vector2Int oldPositionOnGrid = Utilities.convertToGridPosition(oldPosition);
+    //    Assert.IsTrue(isPositionOccupied(oldPosition, ID));
+    //    Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
+    //    Assert.IsTrue(oldPositionOnGrid != currentPositionOnGrid);
 
-        Assert.IsTrue(getPoint(currentPositionOnGrid).isEmpty());
-        getPoint(oldPositionOnGrid).reset();
-        getPoint(currentPositionOnGrid).assign(ID, factionName);
-    }
+    //    Assert.IsTrue(getPoint(currentPositionOnGrid).isEmpty());
+    //    getPoint(oldPositionOnGrid).reset();
+    //    getPoint(currentPositionOnGrid).assign(ID, factionName);
+    //}
 
-    public bool isPositionOnOccupiedCell(Vector3 newPosition, Vector3 currentPosition)
-    {
-        Assert.IsTrue(isInBounds(currentPosition));
-        Assert.IsTrue(isInBounds(newPosition));
+    //public bool isPositionOnOccupiedCell(Vector3 newPosition, Vector3 currentPosition)
+    //{
+    //    Assert.IsTrue(isInBounds(currentPosition));
+    //    Assert.IsTrue(isInBounds(newPosition));
 
-        Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
-        Vector2Int newPositionOnGrid = Utilities.convertToGridPosition(newPosition);
+    //    Vector2Int currentPositionOnGrid = Utilities.convertToGridPosition(currentPosition);
+    //    Vector2Int newPositionOnGrid = Utilities.convertToGridPosition(newPosition);
 
-        return currentPositionOnGrid == newPositionOnGrid;
-    }
+    //    return currentPositionOnGrid == newPositionOnGrid;
+    //}
 
-    public bool isPositionOccupied(Vector3 position, int senderID)
-    {
-        Assert.IsTrue(isInBounds(position));
+    //public bool isPositionOccupied(Vector3 position, int senderID)
+    //{
+    //    Assert.IsTrue(isInBounds(position));
 
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        return getPoint(positionOnGrid).unitID == senderID;
-    }
+    //    Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+    //    return getPoint(positionOnGrid).unitID == senderID;
+    //}
 
-    public bool isPositionOccupied(Vector3 position)
-    {
-        Assert.IsTrue(isInBounds(position));
+    //public bool isPositionOccupied(Vector3 position)
+    //{
+    //    Assert.IsTrue(isInBounds(position));
 
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        return !getPoint(positionOnGrid).isEmpty();
-    }
+    //    Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+    //    return !getPoint(positionOnGrid).isEmpty();
+    //}
 
-    public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
-    {
-        Assert.IsTrue(isInBounds(position));
-        if (getPoint(position).unitID != Utilities.INVALID_ID)
-        {
-            targetID = getPoint(position).unitID;
-            return getPoint(position).unitFactionName != factionName;
-        }
-        else
-        {
-            targetID = Utilities.INVALID_ID;
-            return false;
-        }
-    }
+    //public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
+    //{
+    //    Assert.IsTrue(isInBounds(position));
+    //    if (getPoint(position).unitID != Utilities.INVALID_ID)
+    //    {
+    //        targetID = getPoint(position).unitID;
+    //        return getPoint(position).unitFactionName != factionName;
+    //    }
+    //    else
+    //    {
+    //        targetID = Utilities.INVALID_ID;
+    //        return false;
+    //    }
+    //}
 
-    public bool isPointOnScenery(Vector2Int position)
-    {
-        Assert.IsTrue(isInBounds(position));
-        return getPoint(position).scenery;
-    }
+    //public bool isPointOnScenery(Vector2Int position)
+    //{
+    //    Assert.IsTrue(isInBounds(position));
+    //    return getPoint(position).scenery;
+    //}
 
     public PointOnMap getPoint(int x, int y)
     {
@@ -192,12 +192,12 @@ public class Map : MonoBehaviour
         return getPoint(x, y).scenery;
     }
 
-    public void clear(Vector3 position, int senderID)
-    {
-        Assert.IsTrue(isInBounds(position));
-        Assert.IsTrue(isPositionOccupied(position, senderID));
+    //public void clear(Vector3 position, int senderID)
+    //{
+    //    Assert.IsTrue(isInBounds(position));
+    //    Assert.IsTrue(isPositionOccupied(position, senderID));
 
-        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-        getPoint(positionOnGrid).reset();
-    }
+    //    Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+    //    getPoint(positionOnGrid).reset();
+    //}
 }

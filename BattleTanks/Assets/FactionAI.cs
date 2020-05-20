@@ -142,27 +142,27 @@ public class FactionAI : Faction
         return false;
     }
 
-    private void assignTankToEnemyInRange(Unit unit)
-    {
-        iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(unit.transform.position), unit.getVisibilityDistance());
-        for (int y = searchRect.m_bottom; y <= searchRect.m_top; ++y)
-        {
-            for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
-            {
-                Vector2Int positionOnGrid = new Vector2Int(x, y);
-                int targetID = Utilities.INVALID_ID;
-                Vector2Int vBetween = Utilities.convertToGridPosition(unit.transform.position) - positionOnGrid;
-                if (vBetween.sqrMagnitude <= unit.getVisibilityDistance() * unit.getVisibilityDistance() &&
-                    Map.Instance.isEnemyOnPosition(positionOnGrid, unit.getFactionName(), out targetID))
-                {
-                    Debug.Log("Enemy Spotted");
-                    Assert.IsTrue(targetID != Utilities.INVALID_ID);
+    //private void assignTankToEnemyInRange(Unit unit)
+    //{
+    //    iRectangle searchRect = new iRectangle(Utilities.convertToGridPosition(unit.transform.position), unit.getVisibilityDistance());
+    //    for (int y = searchRect.m_bottom; y <= searchRect.m_top; ++y)
+    //    {
+    //        for (int x = searchRect.m_left; x <= searchRect.m_right; ++x)
+    //        {
+    //            Vector2Int positionOnGrid = new Vector2Int(x, y);
+    //            int targetID = Utilities.INVALID_ID;
+    //            Vector2Int vBetween = Utilities.convertToGridPosition(unit.transform.position) - positionOnGrid;
+    //            if (vBetween.sqrMagnitude <= unit.getVisibilityDistance() * unit.getVisibilityDistance() &&
+    //                Map.Instance.isEnemyOnPosition(positionOnGrid, unit.getFactionName(), out targetID))
+    //            {
+    //                Debug.Log("Enemy Spotted");
+    //                Assert.IsTrue(targetID != Utilities.INVALID_ID);
 
-                    UnitStateHandler stateHandlerComponent = unit.gameObject.GetComponent<UnitStateHandler>();
-                    Assert.IsNotNull(stateHandlerComponent);
-                    stateHandlerComponent.switchToState(eUnitState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
-                }
-            }
-        }
-    }
+    //                UnitStateHandler stateHandlerComponent = unit.gameObject.GetComponent<UnitStateHandler>();
+    //                Assert.IsNotNull(stateHandlerComponent);
+    //                stateHandlerComponent.switchToState(eUnitState.MovingToNewPosition, targetID, Utilities.convertToWorldPosition(positionOnGrid));
+    //            }
+    //        }
+    //    }
+    //}
 }

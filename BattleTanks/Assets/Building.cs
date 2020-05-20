@@ -71,35 +71,28 @@ public class Building : MonoBehaviour
                 transform.position, m_spawnOffSet);
         }
         
-        if (!Map.Instance.isPositionOccupied(spawnPosition))
+        Unit newUnit = null;
+        if (unitType == eUnitType.Harvester)
         {
-            Unit newUnit = null;
-            if (unitType == eUnitType.Harvester)
-            {
-                newUnit = Instantiate(m_harvesterToSpawn, spawnPosition, Quaternion.identity);
-                Harvester harvester = newUnit.GetComponent<Harvester>();
-                Assert.IsNotNull(harvester);
-                harvester.m_buildingToReturnResource = this;
-            }
-            else if(unitType == eUnitType.Attacker)
-            {
-                newUnit = Instantiate(m_tankToSpawn, spawnPosition, Quaternion.identity);
-            }
-
-            if (m_wayPointClone.transform.position != transform.position)
-            {
-                Assert.IsTrue(m_wayPointClone.activeSelf);
-                UnitStateHandler stateHandlerComponent = newUnit.GetComponent<UnitStateHandler>();
-                Assert.IsNotNull(stateHandlerComponent);
-
-                stateHandlerComponent.switchToState(eUnitState.SetDestination, Utilities.INVALID_ID, m_wayPointClone.transform.position);
-            }
-
-            return newUnit;
+            newUnit = Instantiate(m_harvesterToSpawn, spawnPosition, Quaternion.identity);
+            Harvester harvester = newUnit.GetComponent<Harvester>();
+            Assert.IsNotNull(harvester);
+            harvester.m_buildingToReturnResource = this;
         }
-        else
+        else if(unitType == eUnitType.Attacker)
         {
-            return null;
+            newUnit = Instantiate(m_tankToSpawn, spawnPosition, Quaternion.identity);
         }
+
+        if (m_wayPointClone.transform.position != transform.position)
+        {
+            Assert.IsTrue(m_wayPointClone.activeSelf);
+            UnitStateHandler stateHandlerComponent = newUnit.GetComponent<UnitStateHandler>();
+            Assert.IsNotNull(stateHandlerComponent);
+
+            stateHandlerComponent.switchToState(eUnitState.SetDestination, Utilities.INVALID_ID, m_wayPointClone.transform.position);
+        }
+
+        return newUnit;
     }
 }
