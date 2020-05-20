@@ -79,7 +79,7 @@ public class Building : MonoBehaviour
                 newUnit = Instantiate(m_harvesterToSpawn, spawnPosition, Quaternion.identity);
                 Harvester harvester = newUnit.GetComponent<Harvester>();
                 Assert.IsNotNull(harvester);
-                harvester.setBuildingToReturnResource(this);
+                harvester.m_buildingToReturnResource = this;
             }
             else if(unitType == eUnitType.Attacker)
             {

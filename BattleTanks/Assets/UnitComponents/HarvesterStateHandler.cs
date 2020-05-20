@@ -9,7 +9,7 @@ public enum eHarvesterState
     NotHarvesting = 0,
     SetDestinationResourceBuilding,
     MovingToResourceBuilding,
-    SetBoidSpawner,
+    Initialize,
     TargetAvailableBoid,
     MovingToTargetedBoid,
     HarvestTargetedBoid
@@ -65,52 +65,36 @@ public class HarvesterStateHandler : UnitStateHandler
                     Assert.IsNotNull(m_harvester.m_targetBoid);
                     if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= m_distanceToHarvest * m_distanceToHarvest)
                     {
-                        Debug.Log("Begin Harvest");
                         switchToState(eHarvesterState.HarvestTargetedBoid);
                     }
-                    //else if(m_tankMovement.reachedDestination())
-                    //{
-                    //    Debug.Log("Reached Destination");
-                    //}
-
-                    //if (m_tankMovement.reachedDestination())
-                    //{
-                    //    switchToState(eHarvesterState.Harvesting);
-                    //}
-                    }
-                    break;
+                }
+                break;
             case eHarvesterState.HarvestTargetedBoid:
                 {
-                    //if(m_tankMovement.reachedDestination()) //From move towards
-                    //{
-                    //    Destroy(m_boidToHarvest.gameObject);
-                    //    m_boidToHarvest = null;
-                    //}
+                    Assert.IsNotNull(m_harvester.m_targetBoid);
                     if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= m_distanceToHarvest * m_distanceToHarvest)
                     {
-                        Assert.IsNotNull(m_harvester.m_targetBoid);
                         Assert.IsNotNull(m_harvester.m_boidSpawner);
-
                         m_harvester.m_boidSpawner.destroyBoid(m_harvester.m_targetBoid);
-                        Debug.Log("Harvested Boid");
-                        switchToState(eHarvesterState.TargetAvailableBoid);
+                        
+                        bool harvesterResourceCapacityReached = false;
+                        m_harvester.incrementResource(out harvesterResourceCapacityReached);
+                        if (harvesterResourceCapacityReached)
+                        {
+                            switchToState(eHarvesterState.SetDestinationResourceBuilding);
+                        }
+                        else
+                        {
+                            switchToState(eHarvesterState.TargetAvailableBoid);
+                        }
                     }
-                    else
-                    {
-                        //Resource lost
-                        //Acquire new resource to harvest
-                    }
-                    //bool maximumExtracted = false;
-                    //if(m_harvester.extractResource(m_boidToHarvest, out maximumExtracted) && maximumExtracted)
-                    //{
-                    //    switchToState(eHarvesterState.SetDestinationResourceBuilding);
-                    //}
                 }
                 break;
             case eHarvesterState.MovingToResourceBuilding:
                 {
                     if (m_tankMovement.reachedDestination())
                     {
+                        m_harvester.extractHarvestedResources();
                         GameManager.Instance.addResourcesToFaction(m_harvester);
                         switchToState(eHarvesterState.TargetAvailableBoid);
                     }
@@ -140,7 +124,7 @@ public class HarvesterStateHandler : UnitStateHandler
 
         switch (newState)
         {
-            case eHarvesterState.SetBoidSpawner:
+            case eHarvesterState.Initialize:
                 {
                     Assert.IsNotNull(boidSpawner);
 
@@ -166,11 +150,11 @@ public class HarvesterStateHandler : UnitStateHandler
                 break;
             case eHarvesterState.SetDestinationResourceBuilding:
                 {
-                    Assert.IsNotNull(m_harvester.getBuildingToReturnResource());
+                    Assert.IsNotNull(m_harvester.m_buildingToReturnResource);
                     
-                    fRectangle AABB = m_harvester.getBuildingToReturnResource().GetComponent<Selection>().getAABB();
+                    fRectangle AABB = m_harvester.m_buildingToReturnResource.GetComponent<Selection>().getAABB();
                     m_tankMovement.moveTo(
-                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_harvester.getBuildingToReturnResource().transform.position, m_destinationOffSetHQ));
+                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_harvester.m_buildingToReturnResource.transform.position, m_destinationOffSetHQ));
                     
                     m_harvesterState = eHarvesterState.MovingToResourceBuilding;
                 }

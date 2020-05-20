@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -9,16 +10,17 @@ public class Harvester : MonoBehaviour
     private int m_harvestedResources = 0;
     [SerializeField]
     private int m_maximumExtractableAmount = 2;
-    [SerializeField]
-    private Building m_buildingToReturnResource = null;
+
+    public Building m_buildingToReturnResource { get; set; }
     public BoidSpawner m_boidSpawner { get; set; }
     public Boid m_targetBoid { get; set; }
 
-    public Building getBuildingToReturnResource()
+    public int extractHarvestedResources()
     {
-        Assert.IsNotNull(m_buildingToReturnResource);
+        int harvestedResources = m_harvestedResources;
+        m_harvestedResources = 0;
 
-        return m_buildingToReturnResource;
+        return harvestedResources;
     }
 
     public void incrementResource(out bool resourceLimitReached)
@@ -32,12 +34,5 @@ public class Harvester : MonoBehaviour
         {
             resourceLimitReached = false;
         }
-    }
-
-    public void setBuildingToReturnResource(Building building)
-    {
-        Assert.IsNotNull(building);
-
-        m_buildingToReturnResource = building;
     }
 }
