@@ -64,7 +64,7 @@ public class FactionPlayer : Faction
 
                     if (unitSelection.isSelected() && harvesterStateHandler)
                     {
-                        harvesterStateHandler.switchToState(eHarvesterState.Initialize, m_boidSpawner);
+                        harvesterStateHandler.switchToState(eHarvesterState.SetBoidSpawner, m_boidSpawner);
                         harvesterStateHandler.switchToState(eHarvesterState.TargetAvailableBoid);
                     }
                 }

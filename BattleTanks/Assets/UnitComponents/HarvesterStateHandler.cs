@@ -9,7 +9,7 @@ public enum eHarvesterState
     NotHarvesting = 0,
     SetDestinationResourceBuilding,
     MovingToResourceBuilding,
-    Initialize,
+    SetBoidSpawner,
     TargetAvailableBoid,
     MovingToTargetedBoid,
     HarvestTargetedBoid
@@ -121,7 +121,7 @@ public class HarvesterStateHandler : UnitStateHandler
 
         switch (newState)
         {
-            case eHarvesterState.Initialize:
+            case eHarvesterState.SetBoidSpawner:
                 {
                     Assert.IsNotNull(boidSpawner);
 
