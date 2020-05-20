@@ -111,19 +111,32 @@ public class BoidSpawner : MonoBehaviour
         }
     }
 
+    public void releaseBoid(Boid boidToRelease)
+    {
+        foreach (BoidTracker boid in m_boids)
+        {
+            if (boid.m_boid == boidToRelease)
+            {
+                Destroy(boid.m_boid.gameObject);
+                return;
+            }
+        }
+
+        Assert.IsTrue(false);
+    }
+
     public void destroyBoid(Boid boidToDestroy)
     {
-        bool boidDestroyed = false;
         foreach (BoidTracker boid in m_boids)
         {
             if (boid.m_boid == boidToDestroy)
             {
-                Destroy(boid.m_boid.gameObject);
-                boidDestroyed = true;
+                boid.m_harvesterID = Utilities.INVALID_ID;
+                return;
             }
         }
 
-        Assert.IsTrue(boidDestroyed);
+        Assert.IsTrue(false);
     }
 
     public Boid getAvailableBoid(int harvesterID)

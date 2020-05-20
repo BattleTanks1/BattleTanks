@@ -48,7 +48,7 @@ public class HarvesterStateHandler : UnitStateHandler
     protected override void Update()
     {
         base.Update();
-
+        
         if (m_currentState != eUnitState.InUseBySecondaryState)
         {
             m_harvesterState = eHarvesterState.NotHarvesting;
