@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -48,7 +49,19 @@ public class FactionAI : Faction
     {
         m_controllerType = eFactionControllerType.AI;
         m_building.setWayPoint(new Vector3(110, 1, 70));
-        m_building.spawnUnit(eUnitType.Attacker);
+        
+        addUnit(m_building.spawnUnit(eUnitType.Attacker));
+
+        for(int i = 0; i < 2; ++i)
+        {
+            Unit harvester = m_building.spawnUnit(eUnitType.Harvester);
+            addUnit(harvester);
+
+            HarvesterStateHandler harvesterStateHandler = harvester.GetComponent<HarvesterStateHandler>();
+            Assert.IsNotNull(harvesterStateHandler);
+            harvesterStateHandler.switchToState(eHarvesterState.Initialize, m_boidSpawner);
+            harvesterStateHandler.switchToState(eHarvesterState.TargetAvailableBoid);
+        }
     }
 
     private void Update() 

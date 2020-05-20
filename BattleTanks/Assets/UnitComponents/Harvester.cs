@@ -29,7 +29,6 @@ public class Harvester : MonoBehaviour
         releaseTargetBoid();
     }
 
-
     public void releaseTargetBoid()
     {
         if (m_targetBoid)
