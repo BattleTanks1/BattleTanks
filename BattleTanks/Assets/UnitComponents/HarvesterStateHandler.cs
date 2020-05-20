@@ -52,6 +52,7 @@ public class HarvesterStateHandler : UnitStateHandler
         if (m_currentState != eUnitState.InUseBySecondaryState)
         {
             m_harvesterState = eHarvesterState.NotHarvesting;
+            m_harvester.releaseTargetBoid();
         }
         if(m_findAvailableBoid)
         {

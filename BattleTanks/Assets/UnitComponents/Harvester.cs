@@ -15,14 +15,19 @@ public class Harvester : MonoBehaviour
     public BoidSpawner m_boidSpawner { get; set; }
     public Boid m_targetBoid { get; set; }
 
-    private void OnDestroy()
+    public void releaseTargetBoid()
     {
-        if(m_targetBoid)
+        if (m_targetBoid)
         {
             Assert.IsNotNull(m_boidSpawner);
             m_boidSpawner.releaseBoid(m_targetBoid);
             m_targetBoid = null;
         }
+    }
+
+    private void OnDestroy()
+    {
+        releaseTargetBoid();
     }
 
     public int extractHarvestedResources()
