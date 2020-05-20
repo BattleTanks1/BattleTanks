@@ -6,14 +6,29 @@ using UnityEngine.Assertions;
 
 public class Harvester : MonoBehaviour
 {
-    [SerializeField]
-    private int m_harvestedResources = 0;
-    [SerializeField]
-    private int m_maximumExtractableAmount = 2;
-
+    public int m_harvestedResources { get; private set; }
+    public int m_maximumExtractableAmount { get; private set; }
+    public float m_timeBetweenPathUpdates { get; private set; }
+    public float m_distanceToHarvest { get; private set; }
+    public float m_destinationOffSetHQ { get; private set; }
     public Building m_buildingToReturnResource { get; set; }
     public BoidSpawner m_boidSpawner { get; set; }
     public Boid m_targetBoid { get; set; }
+
+    private void Awake()
+    {
+        m_harvestedResources = 0;
+        m_maximumExtractableAmount = 3;
+        m_timeBetweenPathUpdates = 0.2f;
+        m_distanceToHarvest = 1.0f;
+        m_destinationOffSetHQ = 1.0f;
+    }
+
+    private void OnDestroy()
+    {
+        releaseTargetBoid();
+    }
+
 
     public void releaseTargetBoid()
     {
@@ -23,11 +38,6 @@ public class Harvester : MonoBehaviour
             m_boidSpawner.releaseBoid(m_targetBoid);
             m_targetBoid = null;
         }
-    }
-
-    private void OnDestroy()
-    {
-        releaseTargetBoid();
     }
 
     public int extractHarvestedResources()

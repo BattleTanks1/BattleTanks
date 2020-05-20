@@ -18,12 +18,6 @@ public enum eHarvesterState
 public class HarvesterStateHandler : UnitStateHandler
 {
     [SerializeField]
-    private float m_timeBetweenPathUpdates = 0.2f;
-    [SerializeField]
-    private float m_distanceToHarvest = 1.0f;
-    [SerializeField]
-    private float m_destinationOffSetHQ = 1.0f;
-    [SerializeField]
     private eHarvesterState m_harvesterState;
     private Harvester m_harvester = null;
     private bool m_findAvailableBoid = false;
@@ -64,7 +58,8 @@ public class HarvesterStateHandler : UnitStateHandler
             case eHarvesterState.MovingToTargetedBoid:
                 {
                     Assert.IsNotNull(m_harvester.m_targetBoid);
-                    if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= m_distanceToHarvest * m_distanceToHarvest)
+                    if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= 
+                        m_harvester.m_distanceToHarvest * m_harvester.m_distanceToHarvest)
                     {
                         switchToState(eHarvesterState.HarvestTargetedBoid);
                     }
@@ -73,7 +68,8 @@ public class HarvesterStateHandler : UnitStateHandler
             case eHarvesterState.HarvestTargetedBoid:
                 {
                     Assert.IsNotNull(m_harvester.m_targetBoid);
-                    if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= m_distanceToHarvest * m_distanceToHarvest)
+                    if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= 
+                        m_harvester.m_distanceToHarvest * m_harvester.m_distanceToHarvest)
                     {
                         Assert.IsNotNull(m_harvester.m_boidSpawner);
                         m_harvester.m_boidSpawner.destroyBoid(m_harvester.m_targetBoid);
@@ -108,7 +104,7 @@ public class HarvesterStateHandler : UnitStateHandler
     {
         while(gameObject.activeSelf)
         {
-            yield return new WaitForSeconds(m_timeBetweenPathUpdates);
+            yield return new WaitForSeconds(m_harvester.m_timeBetweenPathUpdates);
 
             if (m_harvester.m_targetBoid)
             {
@@ -155,7 +151,8 @@ public class HarvesterStateHandler : UnitStateHandler
                     
                     fRectangle AABB = m_harvester.m_buildingToReturnResource.GetComponent<Selection>().getAABB();
                     m_tankMovement.moveTo(
-                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_harvester.m_buildingToReturnResource.transform.position, m_destinationOffSetHQ));
+                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, 
+                        m_harvester.m_buildingToReturnResource.transform.position, m_harvester.m_destinationOffSetHQ));
                     
                     m_harvesterState = eHarvesterState.MovingToResourceBuilding;
                 }
