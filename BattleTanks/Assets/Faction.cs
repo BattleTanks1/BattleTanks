@@ -42,7 +42,7 @@ abstract public class Faction : MonoBehaviour
 
     protected virtual void Start()
     {
-        for (int i = 0; i < 2; ++i)
+        for (int i = 0; i < m_startingHarvesterCount; ++i)
         {
             Unit harvester = m_building.spawnUnit(eUnitType.Harvester);
             addUnit(harvester);
