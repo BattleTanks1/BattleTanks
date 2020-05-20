@@ -91,7 +91,6 @@ public class HarvesterStateHandler : UnitStateHandler
                 {
                     if (m_tankMovement.reachedDestination())
                     {
-                        m_harvester.extractHarvestedResources();
                         GameManager.Instance.addResourcesToFaction(m_harvester);
                         switchToState(eHarvesterState.TargetAvailableBoid);
                     }

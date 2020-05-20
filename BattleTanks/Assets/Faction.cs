@@ -75,7 +75,7 @@ abstract public class Faction : MonoBehaviour
     public void addResources(Harvester harvester)
     {
         Assert.IsNotNull(harvester);
-       // m_resourceCount += harvester.extractResources();
+        m_resourceCount += harvester.extractHarvestedResources();
     }
 
     public void addUnit(Unit newUnit)
