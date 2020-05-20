@@ -117,7 +117,7 @@ public class BoidSpawner : MonoBehaviour
         {
             if (boid.m_boid == boidToRelease)
             {
-                Destroy(boid.m_boid.gameObject);
+                boid.m_harvesterID = Utilities.INVALID_ID;
                 return;
             }
         }
@@ -131,7 +131,7 @@ public class BoidSpawner : MonoBehaviour
         {
             if (boid.m_boid == boidToDestroy)
             {
-                boid.m_harvesterID = Utilities.INVALID_ID;
+                Destroy(boid.m_boid.gameObject);
                 return;
             }
         }
