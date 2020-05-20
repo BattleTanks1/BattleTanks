@@ -31,9 +31,8 @@ public class Harvester : MonoBehaviour
 
     public void releaseTargetBoid()
     {
-        if (m_targetBoid)
-        {
-            Assert.IsNotNull(m_boidSpawner);
+        if (m_targetBoid && m_boidSpawner)
+        { 
             m_boidSpawner.releaseBoid(m_targetBoid);
             m_targetBoid = null;
         }

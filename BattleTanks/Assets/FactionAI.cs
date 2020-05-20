@@ -52,8 +52,7 @@ public class FactionAI : Faction
     {
         base.Start();
         m_building.setWayPoint(new Vector3(110, 1, 70));
-        addUnit(m_building.spawnUnit(eUnitType.Attacker));
-        
+        addUnit(m_building.spawnUnit(eUnitType.Attacker));   
     }
 
     protected override void Update() 

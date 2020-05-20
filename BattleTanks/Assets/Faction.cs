@@ -55,9 +55,7 @@ abstract public class Faction : MonoBehaviour
     }
 
     protected virtual void Update()
-    {
-
-    }
+    {}
 
     public void spawnUnit(eUnitType unitType)
     {
