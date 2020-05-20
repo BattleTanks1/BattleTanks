@@ -6,37 +6,13 @@ using UnityEngine.Assertions;
 public class Harvester : MonoBehaviour
 {
     [SerializeField]
-    private int m_extractedResources = 0;
+    private int m_harvestedResources = 0;
     [SerializeField]
-    private int m_maximumExtractableAmount = 1;
-    [SerializeField]
-    private float m_timeBetweenExtract = 0.0f;
+    private int m_maximumExtractableAmount = 2;
     [SerializeField]
     private Building m_buildingToReturnResource = null;
-
-    private float m_elaspedTime = 0.0f;
-
-    // Update is called once per frame
-    private void Update()
-    {
-        m_elaspedTime += Time.deltaTime;
-    }
-
-    public bool extractResource(Resource resourceToHarvest, out bool maximumExtracted)
-    {
-        Assert.IsNotNull(resourceToHarvest);
-        if(m_elaspedTime >= m_timeBetweenExtract)
-        {
-            m_elaspedTime = 0.0f;
-            m_extractedResources += resourceToHarvest.extractResource();
-            maximumExtracted = m_extractedResources >= m_maximumExtractableAmount;
-
-            return true;
-        }
-
-        maximumExtracted = false;
-        return false;
-    }
+    public BoidSpawner m_boidSpawner { get; set; }
+    public Boid m_targetBoid { get; set; }
 
     public Building getBuildingToReturnResource()
     {
@@ -45,12 +21,17 @@ public class Harvester : MonoBehaviour
         return m_buildingToReturnResource;
     }
 
-    public int extractResources()
+    public void incrementResource(out bool resourceLimitReached)
     {
-        int resources = m_extractedResources;
-        m_extractedResources = 0;
-
-        return resources;
+        ++m_harvestedResources;
+        if(m_harvestedResources >= m_maximumExtractableAmount)
+        {
+            resourceLimitReached = true;
+        }
+        else
+        {
+            resourceLimitReached = false;
+        }
     }
 
     public void setBuildingToReturnResource(Building building)

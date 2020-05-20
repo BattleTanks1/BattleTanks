@@ -138,6 +138,32 @@ public class GameManager : MonoBehaviour
         m_resources.Add(newResource);
     }
 
+    //public BoidSpawner getFactionBoidSpawner(eFactionName factionName)
+    //{
+    //    BoidSpawner boidSpawner = null;
+    //    switch (factionName)
+    //    {
+    //        case eFactionName.Red:
+    //        {
+    //            m_factions[(int)factionName]
+    //        }
+    //        break;
+    //    }
+
+
+    //    return boidSpawner;
+    //    foreach (Resource resource in m_resources)
+    //    {
+    //        Selection selection = resource.GetComponent<Selection>();
+    //        Assert.IsNotNull(selection);
+
+    //        if (selection.contains(position))
+    //        {
+    //            return resource;
+    //        }
+    //    }
+    //}
+
     public Resource getResource(Vector3 position)
     {
         foreach (Resource resource in m_resources)

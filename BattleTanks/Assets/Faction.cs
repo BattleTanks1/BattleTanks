@@ -21,6 +21,8 @@ abstract public class Faction : MonoBehaviour
     public List<Unit> m_units;
 
     [SerializeField]
+    protected BoidSpawner m_boidSpawner = null;
+    [SerializeField]
     protected Building m_building = null;
     [SerializeField]
     protected eFactionName m_factionName;
@@ -30,6 +32,9 @@ abstract public class Faction : MonoBehaviour
 
     private void Awake()
     {
+        Assert.IsNotNull(m_boidSpawner);
+        Assert.IsNotNull(m_building);
+
         m_units = new List<Unit>();
     }
 
@@ -48,20 +53,10 @@ abstract public class Faction : MonoBehaviour
         }
     }
 
-    public eFactionControllerType getControllerType()
-    {
-        return m_controllerType;
-    }
-
-    public eFactionName getFactionName()
-    {
-        return m_factionName;
-    }
-
     public void addResources(Harvester harvester)
     {
         Assert.IsNotNull(harvester);
-        m_resourceCount += harvester.extractResources();
+       // m_resourceCount += harvester.extractResources();
     }
 
     public void addUnit(Unit newUnit)

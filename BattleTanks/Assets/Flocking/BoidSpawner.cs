@@ -3,13 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-public struct BoidTracker
-{
+public class BoidTracker
+{ 
+    public BoidTracker(float deathTime, int boidID)
+    {
+        m_boid = null;
+        m_deathTime = deathTime;
+        m_boidID = boidID;
+    }
+
     public Boid m_boid;
     public float m_deathTime;
+    public int m_boidID;
+    public int m_harvesterID = Utilities.INVALID_ID;
 }
 
-public class BoidBox : MonoBehaviour
+public class BoidSpawner : MonoBehaviour
 {
     [SerializeField]
     int m_maxBoids = 20;
@@ -42,18 +51,18 @@ public class BoidBox : MonoBehaviour
     private float m_boidViewAngle = 0.75f;
     // Start is called before the first frame update
 
-
     void Awake()
     {
-        Debug.Log("Gooooood morning vietnam");
+        //Debug.Log("Gooooood morning vietnam");
         m_spawnPosition = new Vector3(transform.position.x, 1.0f, transform.position.z);
         m_boids = new BoidTracker[m_maxActiveBoids];
         m_boidsRemaining = m_maxBoids;
         for (int i = 0; i < m_boids.Length; ++i)
         {
-            m_boids[i].m_deathTime = Time.time + 0.1f;
+            m_boids[i] = new BoidTracker(Time.time + 0.1f, i);
         }
     }
+
     void Start()
     {
         IEnumerator coroutine = spawnNewBoids();
@@ -70,10 +79,10 @@ public class BoidBox : MonoBehaviour
 
                 for (int i = 0; i < m_boids.Length; ++i)
                 {
-                    Debug.Log("Checking element" + i.ToString());
+                    //Debug.Log("Checking element" + i.ToString());
                     if (m_boids[i].m_deathTime != 0.0f && Time.time - m_boids[i].m_deathTime > m_respawnTime && m_boidsRemaining > 0)
                     {
-                        Debug.Log("HOOHAA");
+                        //Debug.Log("HOOHAA");
                         //create a new wobject
                         GameObject newBoid = Instantiate(m_boidTemplate, m_spawnPosition, Quaternion.identity);
                         //Get the wobjects boid script via GetComponent<Boid>()
@@ -101,9 +110,34 @@ public class BoidBox : MonoBehaviour
                 yield return new WaitForSeconds(1.0f);
         }
     }
-    // Update is called once per frame
-    void Update()
+
+    public void destroyBoid(Boid boidToDestroy)
     {
+        bool boidDestroyed = false;
+        foreach (BoidTracker boid in m_boids)
+        {
+            if (boid.m_boid == boidToDestroy)
+            {
+                Destroy(boid.m_boid.gameObject);
+                boidDestroyed = true;
+            }
+        }
+
+        Assert.IsTrue(boidDestroyed);
+    }
+
+    public Boid getAvailableBoid(int harvesterID)
+    {
+        foreach(BoidTracker boid in m_boids)
+        {
+            if(boid.m_harvesterID == Utilities.INVALID_ID && boid.m_deathTime == 0.0f)
+            {
+                boid.m_harvesterID = harvesterID;
+                return boid.m_boid;
+            }
+        }
+
+        return null;
     }
 
     public BoidTracker[] getBoids()
@@ -117,6 +151,7 @@ public class BoidBox : MonoBehaviour
         {
             m_boids[index].m_boid = null;
             m_boids[index].m_deathTime = Time.time;
+            m_boids[index].m_harvesterID = Utilities.INVALID_ID;
         }
     }
 }

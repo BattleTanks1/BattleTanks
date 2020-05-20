@@ -13,11 +13,8 @@ public class Building : MonoBehaviour
     private Unit m_harvesterToSpawn = null;
     [SerializeField]
     private GameObject m_wayPointPrefab = null;
-
     [SerializeField]
-    private Critters m_critterPrefab = null;
-    [SerializeField]
-    private List<Critters> m_critters = null;
+    private BoidSpawner m_boidSpawner = null;
 
     private GameObject m_wayPointClone = null;
     private Selection m_selectionComponent = null;
@@ -27,30 +24,12 @@ public class Building : MonoBehaviour
         Assert.IsNotNull(m_tankToSpawn);
         Assert.IsNotNull(m_harvesterToSpawn);
         Assert.IsNotNull(m_wayPointPrefab);
+        Assert.IsNotNull(m_boidSpawner);
 
         m_selectionComponent = GetComponent<Selection>();
         Assert.IsNotNull(m_selectionComponent);
 
         m_wayPointClone = Instantiate(m_wayPointPrefab, transform.position, Quaternion.identity);
-        m_critters = new List<Critters>();
-    }
-
-    private void Start()
-    { 
-        StartCoroutine(spawnCritter());        
-    }
-
-    private IEnumerator spawnCritter()
-    {
-        while(true)
-        {
-            yield return new WaitForSeconds(GameConstants.TIME_BETWEEN_CRITTER_SPAWN);
-
-            if(m_critters.Count < GameConstants.MAX_CRITTER_SPAWN_COUNT)
-            {
-               
-            }
-        }
     }
 
     public void setWayPoint(Vector3 position)

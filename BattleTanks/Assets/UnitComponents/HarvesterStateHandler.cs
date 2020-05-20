@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -6,24 +7,26 @@ using UnityEngine.Assertions;
 public enum eHarvesterState
 {
     NotHarvesting = 0,
-    SetDestinationHarvest,
     SetDestinationResourceBuilding,
-    MovingToHarvestPosition,
     MovingToResourceBuilding,
-    Harvesting,
-    ReturningHarvestedResource
+    SetBoidSpawner,
+    TargetAvailableBoid,
+    MovingToTargetedBoid,
+    HarvestTargetedBoid
 }
 
 public class HarvesterStateHandler : UnitStateHandler
 {
     [SerializeField]
-    private float m_destinationOffSetResource = 1.0f;
+    private float m_timeBetweenPathUpdates = 0.2f;
+    [SerializeField]
+    private float m_distanceToHarvest = 1.0f;
     [SerializeField]
     private float m_destinationOffSetHQ = 1.0f;
     [SerializeField]
     private eHarvesterState m_harvesterState;
     private Harvester m_harvester = null;
-    private Resource m_resourceToHarvest = null;
+    private bool m_findAvailableBoid = false;
 
     protected override void Awake()
     {
@@ -35,6 +38,13 @@ public class HarvesterStateHandler : UnitStateHandler
         m_harvester = harvesterComponent;
     }
 
+    protected override void Start()
+    {
+        base.Start();
+
+        StartCoroutine(updateMovementPath());
+    }
+
     protected override void Update()
     {
         base.Update();
@@ -43,40 +53,86 @@ public class HarvesterStateHandler : UnitStateHandler
         {
             m_harvesterState = eHarvesterState.NotHarvesting;
         }
+        if(m_findAvailableBoid)
+        {
+            switchToState(eHarvesterState.TargetAvailableBoid);
+        }
 
         switch (m_harvesterState)
         {
-            case eHarvesterState.MovingToHarvestPosition:
+            case eHarvesterState.MovingToTargetedBoid:
                 {
-                    if(m_tankMovement.reachedDestination())
+                    Assert.IsNotNull(m_harvester.m_targetBoid);
+                    if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= m_distanceToHarvest * m_distanceToHarvest)
                     {
-                        switchToState(eHarvesterState.Harvesting);
+                        Debug.Log("Begin Harvest");
+                        switchToState(eHarvesterState.HarvestTargetedBoid);
                     }
-                }   
-                break;
-            case eHarvesterState.Harvesting:
+                    //else if(m_tankMovement.reachedDestination())
+                    //{
+                    //    Debug.Log("Reached Destination");
+                    //}
+
+                    //if (m_tankMovement.reachedDestination())
+                    //{
+                    //    switchToState(eHarvesterState.Harvesting);
+                    //}
+                    }
+                    break;
+            case eHarvesterState.HarvestTargetedBoid:
                 {
-                    Assert.IsNotNull(m_resourceToHarvest);
-                    bool maximumExtracted = false;
-                    if(m_harvester.extractResource(m_resourceToHarvest, out maximumExtracted) && maximumExtracted)
+                    //if(m_tankMovement.reachedDestination()) //From move towards
+                    //{
+                    //    Destroy(m_boidToHarvest.gameObject);
+                    //    m_boidToHarvest = null;
+                    //}
+                    if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= m_distanceToHarvest * m_distanceToHarvest)
                     {
-                        switchToState(eHarvesterState.SetDestinationResourceBuilding);
+                        Assert.IsNotNull(m_harvester.m_targetBoid);
+                        Assert.IsNotNull(m_harvester.m_boidSpawner);
+
+                        m_harvester.m_boidSpawner.destroyBoid(m_harvester.m_targetBoid);
+                        Debug.Log("Harvested Boid");
+                        switchToState(eHarvesterState.TargetAvailableBoid);
                     }
+                    else
+                    {
+                        //Resource lost
+                        //Acquire new resource to harvest
+                    }
+                    //bool maximumExtracted = false;
+                    //if(m_harvester.extractResource(m_boidToHarvest, out maximumExtracted) && maximumExtracted)
+                    //{
+                    //    switchToState(eHarvesterState.SetDestinationResourceBuilding);
+                    //}
                 }
                 break;
             case eHarvesterState.MovingToResourceBuilding:
                 {
-                    if (m_tankMovement.reachedDestination() && m_resourceToHarvest)
+                    if (m_tankMovement.reachedDestination())
                     {
                         GameManager.Instance.addResourcesToFaction(m_harvester);
-                        switchToState(eHarvesterState.SetDestinationHarvest);
+                        switchToState(eHarvesterState.TargetAvailableBoid);
                     }
                 }
                 break;
         }
     }
 
-    public void switchToState(eHarvesterState newState, Resource resource = null)
+    private IEnumerator updateMovementPath()
+    {
+        while(gameObject.activeSelf)
+        {
+            yield return new WaitForSeconds(m_timeBetweenPathUpdates);
+
+            if (m_harvester.m_targetBoid)
+            {
+                m_tankMovement.moveTo(m_harvester.m_targetBoid.transform.position);
+            }
+        }
+    }
+
+    public void switchToState(eHarvesterState newState, BoidSpawner boidSpawner = null)
     {
         m_harvesterState = newState;
         m_currentState = eUnitState.InUseBySecondaryState;
@@ -84,19 +140,28 @@ public class HarvesterStateHandler : UnitStateHandler
 
         switch (newState)
         {
-            case eHarvesterState.SetDestinationHarvest:
+            case eHarvesterState.SetBoidSpawner:
                 {
-                    if (resource)
-                    {
-                        m_resourceToHarvest = resource;
-                    }
+                    Assert.IsNotNull(boidSpawner);
 
-                    Assert.IsNotNull(m_resourceToHarvest);
-                    fRectangle AABB = m_resourceToHarvest.GetComponent<Selection>().getAABB();
-                    m_tankMovement.moveTo(
-                        Utilities.getClosestPositionOutsideAABB(AABB, transform.position, m_resourceToHarvest.transform.position, m_destinationOffSetResource));
-                    
-                    m_harvesterState = eHarvesterState.MovingToHarvestPosition;
+                    m_harvester.m_boidSpawner = boidSpawner;
+                }
+                break;
+            case eHarvesterState.TargetAvailableBoid:
+                {
+                    Assert.IsNotNull(m_harvester.m_boidSpawner);
+
+                    m_harvester.m_targetBoid = m_harvester.m_boidSpawner.getAvailableBoid(m_unit.getID());
+                    if(m_harvester.m_targetBoid)
+                    {
+                        m_tankMovement.moveTo(m_harvester.m_targetBoid.transform.position);
+                        m_harvesterState = eHarvesterState.MovingToTargetedBoid;
+                        m_findAvailableBoid = false;
+                    }
+                    else
+                    {
+                        m_findAvailableBoid = true;
+                    }
                 }
                 break;
             case eHarvesterState.SetDestinationResourceBuilding:

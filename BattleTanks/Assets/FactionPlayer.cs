@@ -52,17 +52,20 @@ public class FactionPlayer : Faction
         //Handle units
         else
         {
-            Resource resourceAtPosition = GameManager.Instance.getResource(position);
-            if (resourceAtPosition)
+            Selection boidSpawnerSelection = m_boidSpawner.GetComponent<Selection>();
+            Assert.IsNotNull(boidSpawnerSelection);
+            if (boidSpawnerSelection.contains(position))
             {
                 foreach (Unit unit in m_units)
                 {
                     Selection unitSelection = unit.gameObject.GetComponent<Selection>();
                     Assert.IsNotNull(unitSelection);
                     HarvesterStateHandler harvesterStateHandler = unit.GetComponent<HarvesterStateHandler>();
+
                     if (unitSelection.isSelected() && harvesterStateHandler)
                     {
-                        harvesterStateHandler.switchToState(eHarvesterState.SetDestinationHarvest, resourceAtPosition);
+                        harvesterStateHandler.switchToState(eHarvesterState.SetBoidSpawner, m_boidSpawner);
+                        harvesterStateHandler.switchToState(eHarvesterState.TargetAvailableBoid);
                     }
                 }
             }

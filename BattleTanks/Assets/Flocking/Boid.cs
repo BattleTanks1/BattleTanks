@@ -11,7 +11,7 @@ public class Boid : MonoBehaviour
     [SerializeField]
     private Vector3 m_acceleration = Vector3.zero;
 
-    private BoidBox m_parent = null;
+    private BoidSpawner m_parent = null;
     private int m_index = 0;
     private Vector3 m_homePos = Vector3.zero;
 
@@ -165,7 +165,7 @@ public class Boid : MonoBehaviour
         transform.rotation = Quaternion.LookRotation(m_velocity, Vector3.up);
     }
 
-    public void setParent(in BoidBox parent, int index)
+    public void setParent(in BoidSpawner parent, int index)
     {
         m_parent = parent;
         m_index = index;

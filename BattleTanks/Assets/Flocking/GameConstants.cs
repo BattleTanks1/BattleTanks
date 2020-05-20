@@ -9,4 +9,5 @@ public static class GameConstants
     public const int MIN_CRITTER_COUNT = 3;
     public const int MAX_CRITTER_COUNT = 7;
     public const int MAX_CRITTER_SPAWN_COUNT = 10;
+
 }
