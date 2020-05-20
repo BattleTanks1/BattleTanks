@@ -39,33 +39,27 @@ public class FactionAI : Faction
     private Queue<MessageToAIController> m_receivedMessages;
     private HashSet<int> m_visibleTargets;
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+        m_controllerType = eFactionControllerType.AI;
+        
         m_receivedMessages = new Queue<MessageToAIController>();
         m_visibleTargets = new HashSet<int>();
     }
 
-    private void Start()
+    protected override void Start()
     {
-        m_controllerType = eFactionControllerType.AI;
+        base.Start();
         m_building.setWayPoint(new Vector3(110, 1, 70));
-        
         addUnit(m_building.spawnUnit(eUnitType.Attacker));
-
-        for(int i = 0; i < 2; ++i)
-        {
-            Unit harvester = m_building.spawnUnit(eUnitType.Harvester);
-            addUnit(harvester);
-
-            HarvesterStateHandler harvesterStateHandler = harvester.GetComponent<HarvesterStateHandler>();
-            Assert.IsNotNull(harvesterStateHandler);
-            harvesterStateHandler.switchToState(eHarvesterState.SetBoidSpawner, m_boidSpawner);
-            harvesterStateHandler.switchToState(eHarvesterState.TargetAvailableBoid);
-        }
+        
     }
 
-    private void Update() 
+    protected override void Update() 
     {
+        base.Update();
+
         handleReceivedMessages();
 
         //foreach (Tank tank in m_tanks)

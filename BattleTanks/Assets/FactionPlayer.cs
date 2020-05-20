@@ -7,9 +7,10 @@ public class FactionPlayer : Faction
 {
     private bool m_attackMoveNextSelection = false;
 
-    private void Awake()
+    protected override void Awake()
     {
-        Assert.IsNotNull(m_building);
+        base.Awake();
+
         m_controllerType = eFactionControllerType.Human;
     }
 

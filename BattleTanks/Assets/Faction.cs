@@ -21,6 +21,8 @@ abstract public class Faction : MonoBehaviour
     public List<Unit> m_units;
 
     [SerializeField]
+    protected int m_startingHarvesterCount = 2;
+    [SerializeField]
     protected BoidSpawner m_boidSpawner = null;
     [SerializeField]
     protected Building m_building = null;
@@ -30,12 +32,31 @@ abstract public class Faction : MonoBehaviour
     [SerializeField]
     private int m_resourceCount = 0;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         Assert.IsNotNull(m_boidSpawner);
         Assert.IsNotNull(m_building);
 
         m_units = new List<Unit>();
+    }
+
+    protected virtual void Start()
+    {
+        for (int i = 0; i < 2; ++i)
+        {
+            Unit harvester = m_building.spawnUnit(eUnitType.Harvester);
+            addUnit(harvester);
+
+            HarvesterStateHandler harvesterStateHandler = harvester.GetComponent<HarvesterStateHandler>();
+            Assert.IsNotNull(harvesterStateHandler);
+            harvesterStateHandler.switchToState(eHarvesterState.SetBoidSpawner, m_boidSpawner);
+            harvesterStateHandler.switchToState(eHarvesterState.TargetAvailableBoid);
+        }
+    }
+
+    protected virtual void Update()
+    {
+
     }
 
     public void spawnUnit(eUnitType unitType)
