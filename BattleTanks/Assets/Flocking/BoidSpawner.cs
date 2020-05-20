@@ -21,20 +21,20 @@ public class BoidTracker
 public class BoidSpawner : MonoBehaviour
 {
     [SerializeField]
-    int m_maxBoids = 20;
+    private int m_maxBoids = 20;
     [SerializeField]
-    int m_boidsRemaining;
+    private int m_boidsRemaining;
     [SerializeField]
-    int m_maxActiveBoids = 10;
+    private int m_maxActiveBoids = 10;
     BoidTracker[] m_boids;
-    float m_respawnTime = 0.5f;
+    private float m_respawnTime = 0.5f;
     [SerializeField]
-    float m_spawnRate = 2.0f;
-    Vector3 m_spawnPosition;
+    private float m_spawnRate = 2.0f;
+    private Vector3 m_spawnPosition;
     [SerializeField]
-    bool m_isTesting = false;
+    private bool m_isTesting = false;
     [SerializeField]
-    GameObject m_boidTemplate;
+    private GameObject m_boidTemplate;
 
     //Boid defaults
     [SerializeField]
@@ -42,18 +42,17 @@ public class BoidSpawner : MonoBehaviour
     [SerializeField]
     private float m_boidMaxAcceleration = 3.0f;
     [SerializeField]
-    private float m_boidDragEffect = 0.05f;
+    private float m_boidSpeed = 5.0f;
     [SerializeField]
     private float m_boidAvoidanceDistance = 3.0f;
     [SerializeField]
-    private float m_boidDetectionDistance = 5.0f;
+    private float m_boidDetectionDistance = 10.0f;
     [SerializeField]
     private float m_boidViewAngle = 0.75f;
     // Start is called before the first frame update
 
     void Awake()
     {
-        //Debug.Log("Gooooood morning vietnam");
         m_spawnPosition = new Vector3(transform.position.x, 1.0f, transform.position.z);
         m_boids = new BoidTracker[m_maxActiveBoids];
         m_boidsRemaining = m_maxBoids;
@@ -82,14 +81,13 @@ public class BoidSpawner : MonoBehaviour
                     //Debug.Log("Checking element" + i.ToString());
                     if (m_boids[i].m_deathTime != 0.0f && Time.time - m_boids[i].m_deathTime > m_respawnTime && m_boidsRemaining > 0)
                     {
-                        //Debug.Log("HOOHAA");
                         //create a new wobject
                         GameObject newBoid = Instantiate(m_boidTemplate, m_spawnPosition, Quaternion.identity);
                         //Get the wobjects boid script via GetComponent<Boid>()
                         m_boids[i].m_boid = newBoid.GetComponent<Boid>();
                         //Set its home pos to your location
                         m_boids[i].m_boid.setParent(this, i);
-                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidDragEffect, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
+                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidSpeed, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
                         m_boids[i].m_deathTime = 0.0f;
                         --m_boidsRemaining;
                         break;
@@ -102,7 +100,7 @@ public class BoidSpawner : MonoBehaviour
                     {
                         if (m_boids[i].m_boid == null)
                             continue;
-                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidDragEffect, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
+                        m_boids[i].m_boid.setStats(m_spawnPosition, m_boidBounds, m_boidMaxAcceleration, m_boidSpeed, m_boidAvoidanceDistance, m_boidDetectionDistance, m_boidViewAngle);
                     }
                 }
             }

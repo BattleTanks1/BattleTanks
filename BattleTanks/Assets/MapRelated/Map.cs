@@ -128,37 +128,36 @@ public class Map : MonoBehaviour
 
     //    return currentPositionOnGrid == newPositionOnGrid;
     //}
+    public bool isPositionOccupied(Vector3 position, int senderID)
+    {
+        Assert.IsTrue(isInBounds(position));
 
-    //public bool isPositionOccupied(Vector3 position, int senderID)
-    //{
-    //    Assert.IsTrue(isInBounds(position));
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+        return getPoint(positionOnGrid).unitID == senderID;
+    }
 
-    //    Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-    //    return getPoint(positionOnGrid).unitID == senderID;
-    //}
+    public bool isPositionOccupied(Vector3 position)
+    {
+        Assert.IsTrue(isInBounds(position));
 
-    //public bool isPositionOccupied(Vector3 position)
-    //{
-    //    Assert.IsTrue(isInBounds(position));
+        Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
+        return !getPoint(positionOnGrid).isEmpty();
+    }
 
-    //    Vector2Int positionOnGrid = Utilities.convertToGridPosition(position);
-    //    return !getPoint(positionOnGrid).isEmpty();
-    //}
-
-    //public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
-    //{
-    //    Assert.IsTrue(isInBounds(position));
-    //    if (getPoint(position).unitID != Utilities.INVALID_ID)
-    //    {
-    //        targetID = getPoint(position).unitID;
-    //        return getPoint(position).unitFactionName != factionName;
-    //    }
-    //    else
-    //    {
-    //        targetID = Utilities.INVALID_ID;
-    //        return false;
-    //    }
-    //}
+    public bool isEnemyOnPosition(Vector2Int position, eFactionName factionName, out int targetID)
+    {
+        Assert.IsTrue(isInBounds(position));
+        if (getPoint(position).unitID != Utilities.INVALID_ID)
+        {
+            targetID = getPoint(position).unitID;
+            return getPoint(position).unitFactionName != factionName;
+        }
+        else
+        {
+            targetID = Utilities.INVALID_ID;
+            return false;
+        }
+    }
 
     //public bool isPointOnScenery(Vector2Int position)
     //{

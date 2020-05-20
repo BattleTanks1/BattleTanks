@@ -16,9 +16,9 @@ public struct ExplorationNode
 
 public class Pathfinder : MonoBehaviour
 {
-    public ExplorationNode[,] m_exploredTiles;
-    public Vector2Int m_mapSize = new Vector2Int(250, 250);
-    public SortedList<float, Vector2Int> m_searchList = new SortedList<float, Vector2Int>();
+    private ExplorationNode[,] m_exploredTiles;
+    private Vector2Int m_mapSize = new Vector2Int(250, 250);
+    private SortedList<float, Vector2Int> m_searchList = new SortedList<float, Vector2Int>();
 
     private static Pathfinder _instance;
     public static Pathfinder Instance { get { return _instance; } }

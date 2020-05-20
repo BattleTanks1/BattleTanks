@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class PointOnInfluenceMap
 {
     public float value = 0.0f;
@@ -106,9 +105,9 @@ public class FactionInfluenceMap
 public class InfluenceMap : MonoBehaviour
 {
     //Visual aides
-    List<GameObject> m_boxes;
-    public GameObject m_redBox;
-    public GameObject m_blueBox;
+    private List<GameObject> m_boxes;
+    private GameObject m_redBox;
+    private GameObject m_blueBox;
 
 
     //Proximity Map

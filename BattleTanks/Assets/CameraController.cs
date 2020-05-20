@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour
 {
@@ -22,7 +24,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float m_maxDistanceFromMap = 0.0f;
     [SerializeField]
-    private bool m_movableByMouse = false;
+    private bool m_movableByMouse = true;
 
     private GameObject m_selectionBoxClone = null;
     private Vector3 m_mousePressedPosition;
@@ -40,6 +42,11 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+        
         if (m_movableByMouse)
         {
             MoveByMouse();
