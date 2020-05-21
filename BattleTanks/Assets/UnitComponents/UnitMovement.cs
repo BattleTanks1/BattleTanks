@@ -130,7 +130,7 @@ public class UnitMovement : MonoBehaviour
 
             //If the unit is bumping into other units and no walls are nearby, let it hit nearby waypoints without needing to get as close
             if (unitResult != Vector3.zero && wallsNearby && m_positionToMoveTo.Count != 0 &&
-                (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 2.0f)
+                (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 1.0f)
                 m_positionToMoveTo.Dequeue();
 
             //Accumulate velocity change
@@ -192,7 +192,7 @@ public class UnitMovement : MonoBehaviour
     {
         if (m_positionToMoveTo.Count == 0)
             return true;
-        return (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.2f;
+        return (new Vector3(m_positionToMoveTo.Peek().x, 1.0f, m_positionToMoveTo.Peek().y) - transform.position).sqrMagnitude < 0.1f;
     }
 
     public void moveTo(Vector3 position)

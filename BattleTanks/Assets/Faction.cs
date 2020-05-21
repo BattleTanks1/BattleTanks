@@ -88,10 +88,11 @@ abstract public class Faction : MonoBehaviour
 
     public void removeUnit(Unit unit)
     {
-        Assert.IsNotNull(unit);
-
-        bool removed = m_units.Remove(unit);
-        Assert.IsTrue(removed);
+        if (unit)
+        {
+            bool removed = m_units.Remove(unit);
+            Assert.IsTrue(removed);
+        }
 
         Destroy(unit.gameObject);
     }

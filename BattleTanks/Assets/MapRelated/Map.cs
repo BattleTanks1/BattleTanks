@@ -178,7 +178,7 @@ public class Map : MonoBehaviour
             for (int y = rect.m_bottom; y <= rect.m_top; ++y)
             {
                 Assert.IsTrue(isInBounds(x, y));
-                Assert.IsTrue(getPoint(x, y).isEmpty());
+                //Assert.IsTrue(getPoint(x, y).isEmpty());
                 getPoint(x, y).scenery = true;
             }
         }
