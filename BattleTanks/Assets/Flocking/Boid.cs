@@ -68,6 +68,7 @@ public class Boid : MonoBehaviour
         return acc;
     }
 
+    //Enacts the various heirarchical stages of collision avoidance in the direction perpendicular to velocity
     Vector3 collisionAvoidance(BoidTracker[] boids, Vector3 perpNormal)
     {
         
