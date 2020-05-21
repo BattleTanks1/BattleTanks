@@ -68,13 +68,14 @@ public class Boid : MonoBehaviour
         return acc;
     }
 
+    //Enacts the various heirarchical stages of collision avoidance in the direction perpendicular to velocity
     Vector3 collisionAvoidance(BoidTracker[] boids, Vector3 perpNormal)
     {
         
         Vector2Int roundedPosition = Utilities.convertToGridPosition(m_position);
         Vector3 oobAvoid = Vector3.zero;
         //OOB avoidance
-        if (!Map.Instance.isInBounds(roundedPosition))
+        if (roundedPosition.x < 3 || roundedPosition.y < 3 || roundedPosition.x > 247 || roundedPosition.y > 247)
         {
             Vector3 centreOfMap = new Vector3(125.0f, 1.0f, 125.0f);
 
