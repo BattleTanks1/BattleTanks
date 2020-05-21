@@ -20,7 +20,7 @@ public class Harvester : MonoBehaviour
         m_harvestedResources = 0;
         m_maximumExtractableAmount = 3;
         m_timeBetweenPathUpdates = 0.2f;
-        m_distanceToHarvest = 1.0f;
+        m_distanceToHarvest = 1.5f;
         m_destinationOffSetHQ = 1.0f;
     }
 
