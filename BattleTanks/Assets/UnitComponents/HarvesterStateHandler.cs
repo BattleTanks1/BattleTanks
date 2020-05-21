@@ -69,7 +69,7 @@ public class HarvesterStateHandler : UnitStateHandler
                 {
                     Assert.IsNotNull(m_harvester.m_targetBoid);
                     if ((m_harvester.m_targetBoid.transform.position - transform.position).sqrMagnitude <= 
-                        m_harvester.m_distanceToHarvest * m_harvester.m_distanceToHarvest)
+                        m_harvester.m_distanceToHarvest * m_harvester.m_distanceToHarvest / 2)
                     {
                         Assert.IsNotNull(m_harvester.m_boidSpawner);
                         m_harvester.m_boidSpawner.destroyBoid(m_harvester.m_targetBoid);
