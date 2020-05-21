@@ -18,7 +18,7 @@ public class FactionAI : Faction
     protected override void Start()
     {
         base.Start();
-        m_building.setWayPoint(new Vector3(110, 1, 45));
+        m_building.setWayPoint(new Vector3(175, 1, 90));
         StartCoroutine(spawnAttacker());
     }
 
