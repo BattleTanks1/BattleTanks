@@ -39,7 +39,9 @@ public class UnitStateHandler : MonoBehaviour
     }
 
     protected virtual void Start()
-    {}
+    {
+        StartCoroutine(updateMovementPath());
+    }
 
     protected virtual void Update()
     {
@@ -74,10 +76,6 @@ public class UnitStateHandler : MonoBehaviour
                         if (m_tankShooting.isTargetInAttackRange(enemyPosition))
                         {
                             switchToState(eUnitState.AttackingEnemy, m_targetID);
-                        }
-                        else
-                        {
-                            m_tankMovement.moveTo(enemyPosition);
                         }
                     }
                     else if (m_targetID != Utilities.INVALID_ID)
@@ -125,6 +123,24 @@ public class UnitStateHandler : MonoBehaviour
                 break;
         }
     }
+
+    private IEnumerator updateMovementPath()
+    {
+        while (gameObject.activeSelf)
+        {
+            yield return new WaitForSeconds(0.75f);
+
+            Vector3 enemyPosition = new Vector3();
+            if (m_targetID != Utilities.INVALID_ID && isTargetInVisibleSight(out enemyPosition))
+            {
+                if (!m_tankShooting.isTargetInAttackRange(enemyPosition))
+                {
+                    m_tankMovement.moveTo(enemyPosition);
+                }
+            }
+        }
+    }
+
 
     public void switchToState(eUnitState newState, int targetID = Utilities.INVALID_ID, Vector3 position = new Vector3())
     {

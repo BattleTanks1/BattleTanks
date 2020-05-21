@@ -36,6 +36,8 @@ public class MessageToAIController
 
 public class FactionAI : Faction
 {
+    [SerializeField]
+    private float m_timeBetweenAttackerSpawn = 3.0f;
     private Queue<MessageToAIController> m_receivedMessages;
     private HashSet<int> m_visibleTargets;
 
@@ -51,8 +53,8 @@ public class FactionAI : Faction
     protected override void Start()
     {
         base.Start();
-        m_building.setWayPoint(new Vector3(110, 1, 70));
-        addUnit(m_building.spawnUnit(eUnitType.Attacker));   
+        m_building.setWayPoint(new Vector3(110, 1, 45));
+        StartCoroutine(spawnAttacker());
     }
 
     protected override void Update() 
@@ -71,6 +73,16 @@ public class FactionAI : Faction
         //        assignTankToEnemyInRange(tank);
         //    }
         //}
+    }
+
+    private IEnumerator spawnAttacker()
+    {
+        while(gameObject.activeSelf)
+        {
+            yield return new WaitForSeconds(m_timeBetweenAttackerSpawn);
+
+            addUnit(m_building.spawnUnit(eUnitType.Attacker));
+        }
     }
 
     public void addMessage(MessageToAIController newMessage)
