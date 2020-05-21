@@ -74,7 +74,7 @@ public class Boid : MonoBehaviour
         Vector2Int roundedPosition = Utilities.convertToGridPosition(m_position);
         Vector3 oobAvoid = Vector3.zero;
         //OOB avoidance
-        if (!Map.Instance.isInBounds(roundedPosition))
+        if (roundedPosition.x < 3 || roundedPosition.y < 3 || roundedPosition.x > 247 || roundedPosition.y > 247)
         {
             Vector3 centreOfMap = new Vector3(125.0f, 1.0f, 125.0f);
 
