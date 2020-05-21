@@ -201,4 +201,9 @@ public class GameManager : MonoBehaviour
 
         m_factions[(int)unit.getFactionName()].addResources(harvester);
     }
+
+    public int getPlayerResources()
+    {
+        return m_factions[0].getResources();
+    }
 }

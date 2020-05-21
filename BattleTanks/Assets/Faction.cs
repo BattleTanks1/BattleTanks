@@ -55,7 +55,7 @@ abstract public class Faction : MonoBehaviour
     }
 
     protected virtual void Update()
-    {}
+    { }
 
     public void spawnUnit(eUnitType unitType)
     {
@@ -76,6 +76,11 @@ abstract public class Faction : MonoBehaviour
     {
         Assert.IsNotNull(harvester);
         m_resourceCount += harvester.extractHarvestedResources();
+    }
+
+    public int getResources()
+    {
+        return m_resourceCount;
     }
 
     public void addUnit(Unit newUnit)
